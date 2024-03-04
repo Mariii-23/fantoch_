@@ -165,11 +165,11 @@ fn tempo(aws: bool) {
     let ns = vec![5];
     // let clients_per_region = vec![64, 128, 256, 512];
     // let pool_sizes = vec![100, 50, 10, 1];
-    let conflicts = vec![0, 2, 10, 30, 50, 100];
+    // let conflicts = vec![0, 2, 10, 30, 50, 100];
     let clients_per_region = vec![
         32,
-        512,
-        1024,
+        // 512,
+        // 1024,
         // 1024 * 2,
         // 1024 * 4,
         // 1024 * 8,
@@ -177,7 +177,7 @@ fn tempo(aws: bool) {
         // 1024 * 20,
     ];
     let pool_sizes = vec![1];
-    // let conflicts = vec![20];
+    let conflicts = vec![80];
     // let conflicts = vec![49];
 
     ns.into_par_iter().for_each(|n| {
@@ -187,7 +187,7 @@ fn tempo(aws: bool) {
             vec![
                 // (protocol, (n, f, tiny quorums, clock bump interval, skip
                 // fast ack))
-                // ("Atlas", config!(n, 1, false, None, false, false)),
+                ("Atlas", config!(n, 1, false, None, false, false)),
                 ("EPaxos", config!(n, 1, false, None, false, false)),
                 // ("FPaxos", config!(n, 1, false, None, false, false)),
                 // ("Tempo", config!(n, 1, false, None, false, false)),
@@ -196,7 +196,7 @@ fn tempo(aws: bool) {
             vec![
                 // (protocol, (n, f, tiny quorums, clock bump interval, skip
                 // fast ack))
-                // ("Atlas", config!(n, 1, false, None, false, false)),
+                ("Atlas", config!(n, 1, false, None, false, false)),
                 // ("Atlas", config!(n, 2, false, None, false, false)),
                 ("EPaxos", config!(n, 0, false, None, false, false)),
                 // ("FPaxos", config!(n, 1, false, None, false, false)),
