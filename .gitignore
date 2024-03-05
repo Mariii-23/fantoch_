@@ -6,3 +6,4 @@ target/
 */*.execution_log
 *DS_Store
 results_*
+fantoch_plot/myenv/
