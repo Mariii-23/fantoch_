@@ -111,12 +111,12 @@ pub struct PreviousExperimentConfig {
 
 fn main() -> Result<(), Report> {
     for results_dir in vec![
-        // "/home/mari/eurosys_results/results_fairness_and_tail_latency",
-        // "/home/mari/eurosys_results/results_increasing_load",
-        // "/home/mari/eurosys_results/results_partial_replication",
-        // "/home/mari/eurosys_results/results_batching",
-        // "/home/mari/thesis_results/results_increasing_sites",
-        // "/home/mari/thesis_results/results_fast_path",
+        // "/home/mariana.d.rodrigueseurosys_results/results_fairness_and_tail_latency",
+        // "/home/mariana.d.rodrigueseurosys_results/results_increasing_load",
+        // "/home/mariana.d.rodrigueseurosys_results/results_partial_replication",
+        // "/home/mariana.d.rodrigueseurosys_results/results_batching",
+        // "/home/mariana.d.rodriguesthesis_results/results_increasing_sites",
+        // "/home/mariana.d.rodriguesthesis_results/results_fast_path",
     ] {
         // load results
         let timestamps =
