@@ -1,5 +1,6 @@
 use color_eyre::eyre::WrapErr;
 use color_eyre::Report;
+use fantoch::protocol;
 use fantoch_plot::plot::pyplot::PyPlot;
 use pyo3::prelude::*;
 use std::collections::{BTreeMap, HashMap};
@@ -103,6 +104,7 @@ fn main() -> Result<(), Report> {
 
     for line in sim_out.lines() {
         let parts: Vec<_> = line.split(":").collect();
+        // println!("{}", line);
         assert_eq!(parts.len(), 2);
 
         match last_line {
@@ -151,20 +153,30 @@ fn main() -> Result<(), Report> {
 
 fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     let plot_types = vec![
-        PlotType::WaitConditionDelay,
-        PlotType::CommitLatency,
+        // PlotType::WaitConditionDelay,
+        // PlotType::CommitLatency,
         PlotType::ExecutionLatency,
-        PlotType::ExecutionDelay,
+        // PlotType::ExecutionDelay,
+        // PlotType::FastPath,
     ];
     let metric_types =
         vec![MetricType::Avg, MetricType::P99, MetricType::P99_9];
-    let pool_sizes = vec![100, 50, 10, 1];
+    let pool_sizes = vec![1];
     let conflicts = vec![0, 2, 10, 30, 50, 100];
-    let protocol = String::from("Caesar");
+    // let conflicts = vec![80];
+    let protocols = [
+        // String::from("FPaxos"),
+        // String::from("Tempo"),
+        // String::from("Atlas"),
+        String::from("EPaxos"),
+        // String::from("CaesarNW"),
+    ];
     let n = 5;
-    let f = 2;
-    let cs = vec![64, 128, 256, 512];
+    let f = 1;
+    let cs = vec![32];
+    // let cs = vec![32, 512, 1024];
 
+    for protocol in protocols.clone() {
     for pool_size in pool_sizes.clone() {
         for plot_type in plot_types.clone() {
             for metric_type in metric_types.clone() {
@@ -181,7 +193,7 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
                 )?;
             }
         }
-    }
+    }}
 
     Ok(())
 }
@@ -232,7 +244,7 @@ fn plot(
         .collect();
     let title = format!("{} (pool size = {:?})", plot_type.title(), pool_size);
     let output_file =
-        format!("{}_{:?}_{:?}.pdf", pool_size, metric_type, plot_type);
+        format!("{}_{}_{:?}_{:?}.pdf",protocol, pool_size, metric_type, plot_type);
     latency_plot(title, metric_type, conflicts, data, PLOT_DIR, &output_file)
 }
 
@@ -249,7 +261,8 @@ fn latency_plot(
     // 80% of `BLOCK_WIDTH ` when `MAX_COMBINATIONS` is reached
     const BAR_WIDTH: f64 = BLOCK_WIDTH * 0.8 / MAX_COMBINATIONS as f64;
 
-    assert_eq!(data.len(), MAX_COMBINATIONS);
+    //FIXME:
+    // assert_eq!(data.len(), MAX_COMBINATIONS);
 
     // compute x: one per region
     let x: Vec<_> = (0..conflicts.len())
