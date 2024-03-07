@@ -1,5 +1,7 @@
 use color_eyre::eyre::WrapErr;
+use color_eyre::owo_colors::colors::xterm::Mercury;
 use color_eyre::Report;
+use fantoch::protocol;
 use fantoch_plot::plot::pyplot::PyPlot;
 use pyo3::prelude::*;
 use std::collections::{BTreeMap, HashMap};
@@ -51,6 +53,7 @@ enum PlotType {
     CommitLatency,
     ExecutionLatency,
     ExecutionDelay,
+    FastPath,
 }
 
 impl PlotType {
@@ -60,6 +63,7 @@ impl PlotType {
             PlotType::CommitLatency => "Commit Latency",
             PlotType::ExecutionLatency => "Execution Latency",
             PlotType::ExecutionDelay => "Execution Delay",
+            PlotType::FastPath => "Fast Path",
         }
     }
 }
@@ -71,6 +75,7 @@ impl fmt::Debug for PlotType {
             PlotType::CommitLatency => write!(f, "commit_latency"),
             PlotType::ExecutionLatency => write!(f, "execution_latency"),
             PlotType::ExecutionDelay => write!(f, "execution_delay"),
+            PlotType::FastPath => write!(f, "fast_path"),
         }
     }
 }
@@ -80,6 +85,7 @@ enum MetricType {
     Avg,
     P99,
     P99_9,
+    FastPathRath,
 }
 
 impl fmt::Debug for MetricType {
@@ -88,6 +94,7 @@ impl fmt::Debug for MetricType {
             MetricType::Avg => write!(f, "avg"),
             MetricType::P99 => write!(f, "p99"),
             MetricType::P99_9 => write!(f, "p99.9"),
+            MetricType::FastPathRath => write!(f, "rath"),
         }
     }
 }
@@ -103,6 +110,7 @@ fn main() -> Result<(), Report> {
 
     for line in sim_out.lines() {
         let parts: Vec<_> = line.split(":").collect();
+        // println!("{}", line);
         assert_eq!(parts.len(), 2);
 
         match last_line {
@@ -151,22 +159,47 @@ fn main() -> Result<(), Report> {
 
 fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     let plot_types = vec![
-        PlotType::WaitConditionDelay,
-        PlotType::CommitLatency,
+        // PlotType::WaitConditionDelay,
+        // PlotType::CommitLatency,
         PlotType::ExecutionLatency,
         PlotType::ExecutionDelay,
+        PlotType::FastPath,
     ];
     let metric_types =
         vec![MetricType::Avg, MetricType::P99, MetricType::P99_9];
-    let pool_sizes = vec![100, 50, 10, 1];
-    let conflicts = vec![0, 2, 10, 30, 50, 100];
-    let protocol = String::from("Caesar");
+    let pool_sizes = vec![1];
+    let conflicts = vec![0, 2, 10, 30, 50, 60, 70,80,90, 100];
+    // let conflicts = vec![0, 2, 10, 30];
+    // let conflicts = vec![80];
+    let protocols = [
+        // String::from("FPaxos"),
+        // String::from("Tempo"),
+        // String::from("Atlas"),
+        String::from("EPaxos"),
+        // String::from("CaesarNW"),
+    ];
     let n = 5;
-    let f = 2;
-    let cs = vec![64, 128, 256, 512];
+    let f = 0;
+    // let cs = vec![32];
+    let cs = vec![32, 512, 1024];
 
+    for protocol in protocols.clone() {
     for pool_size in pool_sizes.clone() {
         for plot_type in plot_types.clone() {
+            if plot_type == PlotType::FastPath {
+                plot(
+                    plot_type,
+                    MetricType::FastPathRath,
+                    pool_size,
+                    conflicts.clone(),
+                    protocol.clone(),
+                    n,
+                    f,
+                    cs.clone(),
+                    &all_data,
+                )?;
+                continue;
+            }
             for metric_type in metric_types.clone() {
                 plot(
                     plot_type,
@@ -181,7 +214,7 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
                 )?;
             }
         }
-    }
+    }}
 
     Ok(())
 }
@@ -232,7 +265,7 @@ fn plot(
         .collect();
     let title = format!("{} (pool size = {:?})", plot_type.title(), pool_size);
     let output_file =
-        format!("{}_{:?}_{:?}.pdf", pool_size, metric_type, plot_type);
+        format!("{}_{}_{:?}_{:?}.pdf",protocol, pool_size, metric_type, plot_type);
     latency_plot(title, metric_type, conflicts, data, PLOT_DIR, &output_file)
 }
 
@@ -249,7 +282,8 @@ fn latency_plot(
     // 80% of `BLOCK_WIDTH ` when `MAX_COMBINATIONS` is reached
     const BAR_WIDTH: f64 = BLOCK_WIDTH * 0.8 / MAX_COMBINATIONS as f64;
 
-    assert_eq!(data.len(), MAX_COMBINATIONS);
+    //FIXME:
+    // assert_eq!(data.len(), MAX_COMBINATIONS);
 
     // compute x: one per region
     let x: Vec<_> = (0..conflicts.len())
@@ -311,7 +345,11 @@ fn latency_plot(
     // set labels
     let xlabel = "conflict rate";
     ax.set_xlabel(xlabel, None)?;
-    let ylabel = format!("{:?} latency (ms)", metric_type);
+    let ylabel = if metric_type == MetricType::FastPathRath {
+        format!("fast path rate (%)")
+    } else {
+        format!("{:?} latency (ms)", metric_type)
+    };
     ax.set_ylabel(&ylabel, None)?;
 
     // set title
@@ -341,6 +379,19 @@ fn latency_plot(
     Ok(())
 }
 
+fn get_histogram_value(histogram: &Option<Histogram>, metric_type: MetricType) -> Option<usize> {
+    if MetricType::FastPathRath == metric_type {
+        return None;
+    }
+    
+    histogram.as_ref().map(|histogram| match metric_type {
+        MetricType::Avg => histogram.avg,
+        MetricType::P99 => histogram.p99,
+        MetricType::P99_9 => histogram.p99_9,
+        MetricType::FastPathRath => 0,
+    })
+}
+
 fn get_plot_value(
     plot_type: PlotType,
     metric_type: MetricType,
@@ -352,17 +403,14 @@ fn get_plot_value(
     } else {
         panic!("config {:?} should exist", config);
     };
-    let histogram = match plot_type {
-        PlotType::WaitConditionDelay => &data.wait_condition_delay,
-        PlotType::CommitLatency => &data.commit_latency,
-        PlotType::ExecutionLatency => &data.execution_latency,
-        PlotType::ExecutionDelay => &data.execution_delay,
-    };
-    histogram.as_ref().map(|histogram| match metric_type {
-        MetricType::Avg => histogram.avg,
-        MetricType::P99 => histogram.p99,
-        MetricType::P99_9 => histogram.p99_9,
-    })
+
+    match plot_type {
+        PlotType::WaitConditionDelay => get_histogram_value(&data.wait_condition_delay, metric_type),
+        PlotType::CommitLatency => get_histogram_value(&data.commit_latency, metric_type),
+        PlotType::ExecutionLatency => get_histogram_value(&data.execution_latency, metric_type),
+        PlotType::ExecutionDelay => get_histogram_value(&data.execution_delay, metric_type),
+        PlotType::FastPath => data.fast_path_rate.map(|value| value.round() as usize),
+    }
 }
 
 fn parse_pool_size(
