@@ -346,9 +346,9 @@ fn latency_plot(
     let xlabel = "conflict rate";
     ax.set_xlabel(xlabel, None)?;
     let ylabel = if metric_type == MetricType::FastPathRath {
-        format!("fast path rate (%)");
+        format!("fast path rate (%)")
     } else {
-        format!("{:?} latency (ms)", metric_type);
+        format!("{:?} latency (ms)", metric_type)
     };
     ax.set_ylabel(&ylabel, None)?;
 
