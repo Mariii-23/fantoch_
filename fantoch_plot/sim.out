@@ -3,99 +3,49 @@ CONFLICTS: 0
 EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
 EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
 EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 100.0  
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 100.0  
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 100.0  
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 3.0775
 CONFLICTS: 2
-EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=149   std=49    p95=186   p99=350   p99.9=508   p99.99=568   min=78    max=583  
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=1     std=15    p95=0     p99=29    p99.9=222   p99.99=330   min=0     max=387  
-EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 99.0   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=164   std=176   p95=186   p99=746   p99.9=3011  p99.99=3832  min=78    max=4127 
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=15    std=155   p95=0     p99=453   p99.9=2715  p99.99=3534  min=0     max=3920 
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 98.6   
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=179   std=322   p95=186   p99=1314  p99.9=5156  p99.99=6580  min=78    max=6765 
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=31    std=303   p95=0     p99=1000  p99.9=4867  p99.99=6257  min=0     max=6580 
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 98.6   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=149   std=49    p95=186   p99=350   p99.9=485   p99.99=562   min=78    max=625  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=1     std=14    p95=0     p99=30    p99.9=217   p99.99=314   min=0     max=341  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 98.9   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 2.7350
 CONFLICTS: 10
-EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=181   std=123   p95=480   p99=681   p99.9=1040  p99.99=1259  min=78    max=1329 
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=20    std=79    p95=176   p99=397   p99.9=769   p99.99=961   min=0     max=1143 
-EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 93.4   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=254   std=402   p95=996   p99=2324  p99.9=3311  p99.99=3597  min=78    max=3756 
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=91    std=361   p95=684   p99=2017  p99.9=3005  p99.99=3323  min=0     max=3567 
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 92.4   
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=276   std=540   p95=860   p99=3411  p99.9=4472  p99.99=4663  min=78    max=4749 
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=113   std=502   p95=557   p99=3107  p99.9=4145  p99.99=4402  min=0     max=4567 
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 92.5   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=181   std=122   p95=482   p99=679   p99.9=962   p99.99=1090  min=78    max=1132 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=20    std=77    p95=182   p99=387   p99.9=679   p99.99=891   min=0     max=1002 
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 93.1   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 2.4631
 CONFLICTS: 30
-EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=267   std=210   p95=722   p99=936   p99.9=1127  p99.99=1307  min=78    max=1314 
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=71    std=149   p95=410   p99=650   p99.9=845   p99.99=982   min=0     max=1105 
-EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 78.8   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=309   std=304   p95=948   p99=1486  p99.9=1936  p99.99=2104  min=78    max=2162 
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=113   std=247   p95=646   p99=1202  p99.9=1635  p99.99=1845  min=0     max=1980 
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 78.5   
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=397   std=492   p95=1648  p99=2080  p99.9=2521  p99.99=2600  min=78    max=2614 
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=202   std=436   p95=1326  p99=1802  p99.9=2209  p99.99=2366  min=0     max=2452 
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 79.0   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=271   std=221   p95=740   p99=962   p99.9=1264  p99.99=1286  min=78    max=1286 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=77    std=161   p95=447   p99=713   p99.9=926   p99.99=1001  min=0     max=1100 
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 79.7   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 2.2564
 CONFLICTS: 50
-EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=327   std=209   p95=726   p99=902   p99.9=1027  p99.99=1118  min=78    max=1120 
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=95    std=146   p95=404   p99=585   p99.9=742   p99.99=852   min=0     max=932  
-EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 63.0   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=429   std=361   p95=1199  p99=1433  p99.9=1628  p99.99=1663  min=78    max=1689 
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=194   std=299   p95=885   p99=1109  p99.9=1302  p99.99=1427  min=0     max=1529 
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 62.0   
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=412   std=351   p95=1224  p99=1488  p99.9=1699  p99.99=1828  min=78    max=1901 
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=176   std=296   p95=914   p99=1198  p99.9=1427  p99.99=1568  min=0     max=1750 
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 61.2   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=333   std=218   p95=740   p99=910   p99.9=964   p99.99=1116  min=78    max=1116 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=104   std=157   p95=438   p99=610   p99.9=767   p99.99=847   min=0     max=930  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 64.9   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.7711
 CONFLICTS: 60
-EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=355   std=202   p95=721   p99=896   p99.9=1043  p99.99=1132  min=78    max=1132 
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=105   std=144   p95=401   p99=578   p99.9=745   p99.99=826   min=0     max=946  
-EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 55.0   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=401   std=261   p95=916   p99=1104  p99.9=1385  p99.99=1569  min=78    max=1616 
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=145   std=204   p95=597   p99=829   p99.9=1068  p99.99=1298  min=0     max=1385 
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 53.6   
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=446   std=309   p95=1026  p99=1273  p99.9=1377  p99.99=1477  min=78    max=1488 
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=192   std=252   p95=742   p99=921   p99.9=1120  p99.99=1213  min=0     max=1347 
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 54.4   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=357   std=202   p95=719   p99=900   p99.9=1054  p99.99=1094  min=78    max=1094 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=102   std=140   p95=391   p99=569   p99.9=738   p99.99=830   min=0     max=938  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 51.6   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.4976
 CONFLICTS: 70
-EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=375   std=178   p95=636   p99=779   p99.9=926   p99.99=952   min=78    max=967  
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=104   std=126   p95=361   p99=501   p99.9=624   p99.99=708   min=0     max=766  
-EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 44.6   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=446   std=262   p95=918   p99=1097  p99.9=1220  p99.99=1308  min=78    max=1308 
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=166   std=209   p95=611   p99=774   p99.9=954   p99.99=1111  min=0     max=1126 
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 41.7   
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=455   std=270   p95=942   p99=1108  p99.9=1290  p99.99=1292  min=78    max=1315 
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=181   std=219   p95=642   p99=795   p99.9=957   p99.99=1081  min=0     max=1154 
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 43.7   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=377   std=178   p95=659   p99=757   p99.9=918   p99.99=952   min=78    max=952  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=108   std=128   p95=365   p99=508   p99.9=620   p99.99=744   min=0     max=770  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 46.2   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.4526
 CONFLICTS: 80
-EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=384   std=149   p95=558   p99=720   p99.9=747   p99.99=764   min=78    max=793  
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=101   std=106   p95=314   p99=390   p99.9=529   p99.99=572   min=0     max=679  
-EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 38.2   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=432   std=184   p95=728   p99=908   p99.9=1108  p99.99=1220  min=78    max=1252 
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=138   std=148   p95=417   p99=609   p99.9=838   p99.99=922   min=0     max=1066 
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 34.9   
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=454   std=211   p95=882   p99=1072  p99.9=1190  p99.99=1308  min=78    max=1308 
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=164   std=176   p95=540   p99=730   p99.9=936   p99.99=1059  min=0     max=1122 
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 38.5   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=386   std=151   p95=562   p99=728   p99.9=904   p99.99=937   min=78    max=937  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=104   std=110   p95=326   p99=404   p99.9=562   p99.99=721   min=0     max=751  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 39.9   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.4836
 CONFLICTS: 90
-EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=390   std=113   p95=554   p99=561   p99.9=716   p99.99=740   min=78    max=740  
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=86    std=88    p95=232   p99=334   p99.9=383   p99.99=448   min=0     max=558  
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=390   std=112   p95=554   p99=561   p99.9=614   p99.99=716   min=78    max=716  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=83    std=89    p95=239   p99=330   p99.9=399   p99.99=485   min=0     max=530  
 EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 25.0   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=434   std=140   p95=604   p99=748   p99.9=899   p99.99=914   min=78    max=940  
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=131   std=124   p95=372   p99=482   p99.9=602   p99.99=674   min=0     max=765  
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 33.6   
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=454   std=155   p95=724   p99=795   p99.9=936   p99.99=936   min=78    max=950  
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=141   std=137   p95=401   p99=547   p99.9=637   p99.99=719   min=0     max=766  
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 25.7   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.3662
 CONFLICTS: 100
 EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=366   std=28    p95=425   p99=467   p99.9=500   p99.99=533   min=299   max=533  
-EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=79    std=90    p95=232   p99=287   p99.9=294   p99.99=347   min=0     max=347  
-EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 22.2   
-EPaxos   n = 5 f = 0 c = 512 | execution latency   : avg=366   std=27    p95=425   p99=467   p99.9=500   p99.99=533   min=299   max=533  
-EPaxos   n = 5 f = 0 c = 512 | execution delay     : avg=60    std=81    p95=214   p99=270   p99.9=294   p99.99=294   min=0     max=347  
-EPaxos   n = 5 f = 0 c = 512 | fast path rate      : 9.0    
-EPaxos   n = 5 f = 0 c = 1024 | execution latency   : avg=366   std=28    p95=466   p99=467   p99.9=500   p99.99=533   min=299   max=533  
-EPaxos   n = 5 f = 0 c = 1024 | execution delay     : avg=83    std=88    p95=214   p99=270   p99.9=292   p99.99=294   min=0     max=347  
-EPaxos   n = 5 f = 0 c = 1024 | fast path rate      : 23.6   
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=74    std=85    p95=213   p99=263   p99.9=289   p99.99=294   min=0     max=347  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 16.8   
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.4883

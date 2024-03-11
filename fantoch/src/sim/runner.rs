@@ -13,7 +13,7 @@ use crate::HashMap;
 use rand::Rng;
 use std::fmt;
 use std::fmt::Debug;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 #[derive(PartialEq, Eq)]
 enum ScheduleAction<Message, PeriodicEvent> {
@@ -206,6 +206,7 @@ where
         HashMap<ProcessId, (ProtocolMetrics, ExecutorMetrics)>,
         HashMap<ProcessId, Option<ExecutionOrderMonitor>>,
         HashMap<Region, (usize, Histogram)>,
+        Duration
     ) {
         // start clients
         self.simulation.start_clients().into_iter().for_each(
@@ -219,14 +220,19 @@ where
             },
         );
 
+        let start_time = Instant::now();
         // run simulation loop
         self.simulation_loop(extra_sim_time);
+        let end_time = Instant::now();
+
+        let elapsed_time = end_time - start_time;
 
         // return metrics and client latencies
         (
             self.metrics(),
             self.executors_monitors(),
             self.clients_latencies(),
+            elapsed_time,
         )
     }
 
@@ -600,8 +606,8 @@ where
         &mut self,
     ) -> HashMap<ProcessId, (ProtocolMetrics, ExecutorMetrics)> {
         self.check_processes_and_executors(|process, executor| {
-            let process_metrics = process.metrics().clone();
-            let executor_metrics = executor.metrics().clone();
+            let process_metrics: crate::metrics::Metrics<crate::protocol::ProtocolMetricsKind> = process.metrics().clone();
+            let executor_metrics: crate::metrics::Metrics<crate::executor::ExecutorMetricsKind> = executor.metrics().clone();
             (process_metrics, executor_metrics)
         })
     }
@@ -779,7 +785,7 @@ mod tests {
         );
 
         // run simulation until the clients end + another second second
-        let (metrics, _executors_monitors, mut clients_latencies) =
+        let (metrics, _executors_monitors, mut clients_latencies, _) =
             runner.run(Some(Duration::from_secs(1)));
 
         // check client stats

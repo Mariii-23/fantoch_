@@ -45,6 +45,7 @@ struct Data {
     execution_latency: Option<Histogram>,
     execution_delay: Option<Histogram>,
     fast_path_rate: Option<f64>,
+    throughput: Option<f64>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -54,6 +55,7 @@ enum PlotType {
     ExecutionLatency,
     ExecutionDelay,
     FastPath,
+    Throughput,
 }
 
 impl PlotType {
@@ -64,6 +66,7 @@ impl PlotType {
             PlotType::ExecutionLatency => "Execution Latency",
             PlotType::ExecutionDelay => "Execution Delay",
             PlotType::FastPath => "Fast Path",
+            PlotType::Throughput => "Throughput",
         }
     }
 }
@@ -76,6 +79,7 @@ impl fmt::Debug for PlotType {
             PlotType::ExecutionLatency => write!(f, "execution_latency"),
             PlotType::ExecutionDelay => write!(f, "execution_delay"),
             PlotType::FastPath => write!(f, "fast_path"),
+            PlotType::Throughput => write!(f, "throughput"),
         }
     }
 }
@@ -86,6 +90,7 @@ enum MetricType {
     P99,
     P99_9,
     FastPathRath,
+    Throughput,
 }
 
 impl fmt::Debug for MetricType {
@@ -95,6 +100,7 @@ impl fmt::Debug for MetricType {
             MetricType::P99 => write!(f, "p99"),
             MetricType::P99_9 => write!(f, "p99.9"),
             MetricType::FastPathRath => write!(f, "rath"),
+            MetricType::Throughput => write!(f, "throughput"),
         }
     }
 }
@@ -164,6 +170,7 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
         PlotType::ExecutionLatency,
         PlotType::ExecutionDelay,
         PlotType::FastPath,
+        PlotType::Throughput,
     ];
     let metric_types =
         vec![MetricType::Avg, MetricType::P99, MetricType::P99_9];
@@ -180,8 +187,8 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     ];
     let n = 5;
     let f = 0;
-    // let cs = vec![32];
-    let cs = vec![32, 512, 1024];
+    let cs = vec![32];
+    // let cs = vec![32, 512, 1024];
 
     for protocol in protocols.clone() {
     for pool_size in pool_sizes.clone() {
@@ -190,6 +197,19 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
                 plot(
                     plot_type,
                     MetricType::FastPathRath,
+                    pool_size,
+                    conflicts.clone(),
+                    protocol.clone(),
+                    n,
+                    f,
+                    cs.clone(),
+                    &all_data,
+                )?;
+                continue;
+            } else if plot_type == PlotType::Throughput {
+                plot(
+                    plot_type,
+                    MetricType::Throughput,
                     pool_size,
                     conflicts.clone(),
                     protocol.clone(),
@@ -345,11 +365,12 @@ fn latency_plot(
     // set labels
     let xlabel = "conflict rate";
     ax.set_xlabel(xlabel, None)?;
-    let ylabel = if metric_type == MetricType::FastPathRath {
-        format!("fast path rate (%)")
-    } else {
-        format!("{:?} latency (ms)", metric_type)
+    let ylabel = match metric_type {
+        MetricType::FastPathRath => format!("fast path rate (%)"),
+        MetricType::Throughput => format!("throughput (Requests per Millisecond)"),
+        _ =>  format!("{:?} latency (ms)", metric_type),
     };
+
     ax.set_ylabel(&ylabel, None)?;
 
     // set title
@@ -389,6 +410,7 @@ fn get_histogram_value(histogram: &Option<Histogram>, metric_type: MetricType) -
         MetricType::P99 => histogram.p99,
         MetricType::P99_9 => histogram.p99_9,
         MetricType::FastPathRath => 0,
+        MetricType::Throughput => 0,
     })
 }
 
@@ -410,6 +432,7 @@ fn get_plot_value(
         PlotType::ExecutionLatency => get_histogram_value(&data.execution_latency, metric_type),
         PlotType::ExecutionDelay => get_histogram_value(&data.execution_delay, metric_type),
         PlotType::FastPath => data.fast_path_rate.map(|value| value.round() as usize),
+        PlotType::Throughput => data.throughput.map(|value| value.round() as usize),
     }
 }
 
@@ -557,7 +580,15 @@ fn parse_result_entry(
                 .parse()
                 .expect("fast path rate should be a float");
             data.fast_path_rate = Some(fast_path_rate);
-        }
+        },
+        "throughput" => {
+            assert!(data.throughput.is_none());
+            let throughput = entry
+                .trim()
+                .parse()
+                .expect("throughput should be a float");
+            data.throughput = Some(throughput);
+        },
         entry_type => {
             panic!("unsupported entry type: {:?}", entry_type);
         }

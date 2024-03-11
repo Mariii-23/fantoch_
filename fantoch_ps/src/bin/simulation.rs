@@ -168,8 +168,8 @@ fn tempo(aws: bool) {
     let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
     let clients_per_region = vec![
         32,
-        512,
-        1024,
+        // 512,
+        // 1024,
         // 1024 * 2,
         // 1024 * 4,
         // 1024 * 8,
@@ -247,7 +247,7 @@ fn tempo(aws: bool) {
                         let client_regions = regions.clone();
                         let planet = planet.clone();
 
-                        let (metrics, client_latencies) = match protocol {
+                        let (metrics, client_latencies, elapsed_time) = match protocol {
                             "Atlas" => run::<AtlasSequential>(
                                 config,
                                 workload,
@@ -296,6 +296,7 @@ fn tempo(aws: bool) {
                             clients,
                             metrics,
                             client_latencies,
+                            elapsed_time,
                         );
                     })
                 })
@@ -340,7 +341,7 @@ fn fairest_leader() {
             let client_regions = regions.clone();
             let planet = planet.clone();
 
-            let (_, client_latencies) = run::<FPaxos>(
+            let (_, client_latencies, _) = run::<FPaxos>(
                 config,
                 workload,
                 clients_per_region,
@@ -418,7 +419,7 @@ fn equidistant<P: Protocol>(protocol_name: &str) {
         // config
         let config = Config::new(n, f);
 
-        let (process_metrics, client_latencies) = run::<P>(
+        let (process_metrics, client_latencies, elapsed_time) = run::<P>(
             config,
             workload,
             clients_per_region,
@@ -432,6 +433,7 @@ fn equidistant<P: Protocol>(protocol_name: &str) {
             clients_per_region,
             process_metrics,
             client_latencies,
+            elapsed_time,
         );
     }
 }
@@ -493,7 +495,7 @@ fn increasing_regions<P: Protocol>(protocol_name: &str) {
         // client regions
         let client_regions = regions13.clone();
 
-        let (process_metrics, client_latencies) = run::<P>(
+        let (process_metrics, client_latencies, elapsed_time) = run::<P>(
             config,
             workload,
             clients_per_region,
@@ -507,6 +509,7 @@ fn increasing_regions<P: Protocol>(protocol_name: &str) {
             clients_per_region,
             process_metrics,
             client_latencies,
+            elapsed_time,
         );
     }
 }
@@ -521,6 +524,7 @@ fn run<P: Protocol>(
 ) -> (
     HashMap<ProcessId, (ProtocolMetrics, ExecutorMetrics)>,
     HashMap<Region, (usize, Histogram)>,
+    Duration,
 ) {
     // compute number of regions and total number of expected commands per
     // region
@@ -537,7 +541,8 @@ fn run<P: Protocol>(
         process_regions,
         client_regions,
     );
-    let (metrics, _executors_monitors, client_latencies) = runner.run(None);
+
+    let (metrics, _executors_monitors, client_latencies, elapsed_time) = runner.run(None);
 
     // compute clients stats
     let issued_commands = client_latencies
@@ -552,7 +557,7 @@ fn run<P: Protocol>(
         );
     }
 
-    (metrics, client_latencies)
+    (metrics, client_latencies, elapsed_time)
 }
 
 fn handle_run_result(
@@ -561,6 +566,7 @@ fn handle_run_result(
     clients_per_region: usize,
     metrics: HashMap<ProcessId, (ProtocolMetrics, ExecutorMetrics)>,
     client_latencies: HashMap<Region, (usize, Histogram)>,
+    elapsed_time: Duration,
 ) {
     let mut fast_paths = 0;
     let mut slow_paths = 0;
@@ -605,9 +611,13 @@ fn handle_run_result(
             }
         },
     );
+
     // compute the percentage of fast paths
     let total = fast_paths + slow_paths;
     let fp_percentage = (fast_paths as f64 * 100f64) / total as f64;
+
+    // compute throughput
+    let throughput = total as f64 / elapsed_time.as_millis() as f64;
 
     // compute clients stats
     let execution_latency = client_latencies.into_iter().fold(
@@ -643,4 +653,6 @@ fn handle_run_result(
     println!("{} | execution latency   : {:?}", prefix, execution_latency);
     println!("{} | execution delay     : {:?}", prefix, execution_delay);
     println!("{} | fast path rate      : {:<7.1}", prefix, fp_percentage);
+    println!("{} | total orders        : {:?}", prefix, total);
+    println!("{} | throughput          : {:.4}", prefix, throughput);
 }
