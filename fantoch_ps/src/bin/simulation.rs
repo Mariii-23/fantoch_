@@ -8,7 +8,7 @@ use fantoch::protocol::{Protocol, ProtocolMetrics, ProtocolMetricsKind};
 use fantoch::sim::Runner;
 use fantoch::HashMap;
 use fantoch_ps::protocol::{
-    AtlasSequential, CaesarLocked, EPaxosSequential, FPaxos, TempoSequential,
+    AtlasSequential, CaesarLocked, EPaxosSequential, FPaxos, TempoSequential, EPaxosMRV
 };
 use rayon::prelude::*;
 use std::time::Duration;
@@ -177,7 +177,7 @@ fn tempo(aws: bool) {
         // 1024 * 20,
     ];
     let pool_sizes = vec![1];
-    // let conflicts = vec![80];
+    // let conflicts = vec![0, 20, 80];
     // let conflicts = vec![49];
 
     ns.into_par_iter().for_each(|n| {
@@ -189,6 +189,7 @@ fn tempo(aws: bool) {
                 // fast ack))
                 // ("Atlas", config!(n, 1, false, None, false, false)),
                 ("EPaxos", config!(n, 1, false, None, false, false)),
+                ("EPaxosMRV", config!(n, 1, false, None, false, false)),
                 // ("FPaxos", config!(n, 1, false, None, false, false)),
                 // ("Tempo", config!(n, 1, false, None, false, false)),
             ]
@@ -198,7 +199,8 @@ fn tempo(aws: bool) {
                 // fast ack))
                 // ("Atlas", config!(n, 1, false, None, false, false)),
                 // ("Atlas", config!(n, 2, false, None, false, false)),
-                ("EPaxos", config!(n, 0, false, None, false, false)),
+                // ("EPaxos", config!(n, 0, false, None, false, false)),
+                ("EPaxosMRV", config!(n, 0, false, None, false, false)),
                 // ("FPaxos", config!(n, 1, false, None, false, false)),
                 // ("FPaxos", config!(n, 2, false, None, false, false)),
                 // ("Tempo", config!(n, 1, false, None, false, false)),
@@ -257,6 +259,14 @@ fn tempo(aws: bool) {
                                 planet,
                             ),
                             "EPaxos" => run::<EPaxosSequential>(
+                                config,
+                                workload,
+                                clients,
+                                process_regions,
+                                client_regions,
+                                planet,
+                            ),
+                            "EPaxosMRV" => run::<EPaxosMRV>(
                                 config,
                                 workload,
                                 clients,

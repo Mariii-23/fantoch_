@@ -1,11 +1,13 @@
 use crate::executor::{GraphExecutionInfo, GraphExecutor};
 use crate::protocol::common::graph::{
-    Dependency, KeyDeps, LockedKeyDeps, QuorumDeps, SequentialKeyDeps, MultiRecordValues
+    Dependency, KeyDeps, LockedKeyDeps, QuorumDeps, SequentialKeyDeps,
+    Key_Deps_MRV
 };
 use crate::protocol::common::synod::{Synod, SynodMessage};
 use fantoch::command::Command;
 use fantoch::config::Config;
 use fantoch::id::{Dot, ProcessId, ShardId};
+use fantoch::kvs::Key;
 use fantoch::protocol::{
     Action, BaseProcess, Info, MessageIndex, Protocol, ProtocolMetrics,
     SequentialCommandsInfo, VClockGCTrack,
@@ -14,16 +16,16 @@ use fantoch::time::SysTime;
 use fantoch::{singleton, trace};
 use fantoch::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
+use std::ops::Mul;
 use std::time::Duration;
 use threshold::VClock;
 
-pub type EPaxosSequential = EPaxos<SequentialKeyDeps>;
-pub type EPaxosLocked = EPaxos<LockedKeyDeps>;
+use super::common::graph::MultiRecordValues;
 
 #[derive(Debug, Clone)]
-pub struct EPaxos<KD: KeyDeps> {
+pub struct EPaxosMRV {
     bp: BaseProcess,
-    key_deps: KD,
+    key_deps: MultiRecordValues,
     cmds: SequentialCommandsInfo<EPaxosInfo>,
     gc_track: VClockGCTrack,
     to_processes: Vec<Action<Self>>,
@@ -33,8 +35,8 @@ pub struct EPaxos<KD: KeyDeps> {
     buffered_commits: HashMap<Dot, (ProcessId, ConsensusValue)>,
 }
 
-impl<KD: KeyDeps> Protocol for EPaxos<KD> {
-    type Message = Message;
+impl Protocol for EPaxosMRV {
+    type Message = MessageMRV;
     type PeriodicEvent = PeriodicEvent;
     type Executor = GraphExecutor;
 
@@ -56,7 +58,7 @@ impl<KD: KeyDeps> Protocol for EPaxos<KD> {
             fast_quorum_size,
             write_quorum_size,
         );
-        let key_deps = KD::new(shard_id, config.nfr());
+        let key_deps = MultiRecordValues::new(shard_id, config.nfr());
         let f = Self::allowed_faults(config.n());
         let cmds = SequentialCommandsInfo::new(
             process_id,
@@ -127,31 +129,32 @@ impl<KD: KeyDeps> Protocol for EPaxos<KD> {
         time: &dyn SysTime,
     ) {
         match msg {
-            Message::MCollect {
+            MessageMRV::MCollect {
                 dot,
                 cmd,
+                keys_n,
                 quorum,
                 deps,
-            } => self.handle_mcollect(from, dot, cmd, quorum, deps, time),
-            Message::MCollectAck { dot, deps } => {
+            } => self.handle_mcollect(from, dot, cmd, quorum, deps, time, keys_n),
+            MessageMRV::MCollectAck { dot, deps } => {
                 self.handle_mcollectack(from, dot, deps, time)
             }
-            Message::MCommit { dot, value } => {
+            MessageMRV::MCommit { dot, value } => {
                 self.handle_mcommit(from, dot, value, time)
             }
-            Message::MConsensus { dot, ballot, value } => {
+            MessageMRV::MConsensus { dot, ballot, value } => {
                 self.handle_mconsensus(from, dot, ballot, value, time)
             }
-            Message::MConsensusAck { dot, ballot } => {
+            MessageMRV::MConsensusAck { dot, ballot } => {
                 self.handle_mconsensusack(from, dot, ballot, time)
             }
-            Message::MCommitDot { dot } => {
+            MessageMRV::MCommitDot { dot } => {
                 self.handle_mcommit_dot(from, dot, time)
             }
-            Message::MGarbageCollection { committed } => {
+            MessageMRV::MGarbageCollection { committed } => {
                 self.handle_mgc(from, committed, time)
             }
-            Message::MStable { stable } => {
+            MessageMRV::MStable { stable } => {
                 self.handle_mstable(from, stable, time)
             }
         }
@@ -177,7 +180,7 @@ impl<KD: KeyDeps> Protocol for EPaxos<KD> {
     }
 
     fn parallel() -> bool {
-        KD::parallel()
+        MultiRecordValues::parallel()
     }
 
     fn leaderless() -> bool {
@@ -189,7 +192,7 @@ impl<KD: KeyDeps> Protocol for EPaxos<KD> {
     }
 }
 
-impl<KD: KeyDeps> EPaxos<KD> {
+impl EPaxosMRV {
     /// EPaxos always tolerates a minority of faults.
     pub fn allowed_faults(n: usize) -> usize {
         n / 2
@@ -201,15 +204,16 @@ impl<KD: KeyDeps> EPaxos<KD> {
         let dot = dot.unwrap_or_else(|| self.bp.next_dot());
 
         // compute its deps
-        let deps = self.key_deps.add_cmd(dot, &cmd, None);
+        let (deps, keys_n) = self.key_deps.add_cmd(dot, &cmd, None, None);
 
         // create `MCollect` and target
         let quorum = self.bp.maybe_adjust_fast_quorum(&cmd);
-        let mcollect = Message::MCollect {
+        let mcollect = MessageMRV::MCollect {
             dot,
             cmd,
             deps,
             quorum,
+            keys_n
         };
         let target = self.bp.all();
 
@@ -228,6 +232,7 @@ impl<KD: KeyDeps> EPaxos<KD> {
         quorum: HashSet<ProcessId>,
         remote_deps: HashSet<Dependency>,
         time: &dyn SysTime,
+        key_deps: Key_Deps_MRV,
     ) {
         trace!(
             "p{}: MCollect({:?}, {:?}, {:?}) from {} | time={}",
@@ -273,7 +278,8 @@ impl<KD: KeyDeps> EPaxos<KD> {
             remote_deps
         } else {
             // otherwise, compute deps with the remote deps as past
-            self.key_deps.add_cmd(dot, &cmd, Some(remote_deps))
+            let (deps, _) = self.key_deps.add_cmd(dot, &cmd, Some(remote_deps),Some(key_deps));
+            deps
         };
 
         // update command info
@@ -289,7 +295,7 @@ impl<KD: KeyDeps> EPaxos<KD> {
 
         // create `MCollectAck` and target (only if not message from self)
         if !message_from_self {
-            let mcollectack = Message::MCollectAck { dot, deps };
+            let mcollectack = MessageMRV::MCollectAck { dot, deps };
             let target = singleton![from];
 
             // save new action
@@ -345,7 +351,7 @@ impl<KD: KeyDeps> EPaxos<KD> {
 
             if fast_path {
                 // fast path: create `MCommit`
-                let mcommit = Message::MCommit { dot, value };
+                let mcommit = MessageMRV::MCommit { dot, value };
                 let target = self.bp.all();
 
                 // save new action
@@ -356,7 +362,7 @@ impl<KD: KeyDeps> EPaxos<KD> {
             } else {
                 // slow path: create `MConsensus`
                 let ballot = info.synod.skip_prepare();
-                let mconsensus = Message::MConsensus { dot, ballot, value };
+                let mconsensus = MessageMRV::MConsensus { dot, ballot, value };
                 let target = self.bp.write_quorum();
                 // save new action
                 self.to_processes.push(Action::ToSend {
@@ -419,7 +425,7 @@ impl<KD: KeyDeps> EPaxos<KD> {
         if self.gc_running() {
             // notify self with the committed dot
             self.to_processes.push(Action::ToForward {
-                msg: Message::MCommitDot { dot },
+                msg: MessageMRV::MCommitDot { dot },
             });
         } else {
             // if we're not running gc, remove the dot info now
@@ -454,11 +460,11 @@ impl<KD: KeyDeps> EPaxos<KD> {
         {
             Some(SynodMessage::MAccepted(ballot)) => {
                 // the accept message was accepted: create `MConsensusAck`
-                Message::MConsensusAck { dot, ballot }
+                MessageMRV::MConsensusAck { dot, ballot }
             }
             Some(SynodMessage::MChosen(value)) => {
                 // the value has already been chosen: create `MCommit`
-                Message::MCommit { dot, value }
+                MessageMRV::MCommit { dot, value }
             }
             None => {
                 // ballot too low to be accepted: nothing to do
@@ -499,7 +505,7 @@ impl<KD: KeyDeps> EPaxos<KD> {
             Some(SynodMessage::MChosen(value)) => {
                 // enough accepts were gathered and the value has been chosen: create `MCommit` and target
                 let target = self.bp.all();
-                let mcommit = Message::MCommit { dot, value };
+                let mcommit = MessageMRV::MCommit { dot, value };
 
                 // save new action
                 self.to_processes.push(Action::ToSend {
@@ -551,7 +557,7 @@ impl<KD: KeyDeps> EPaxos<KD> {
         // create `ToForward` to self
         if !stable.is_empty() {
             self.to_processes.push(Action::ToForward {
-                msg: Message::MStable { stable },
+                msg: MessageMRV::MStable { stable },
             });
         }
     }
@@ -587,7 +593,7 @@ impl<KD: KeyDeps> EPaxos<KD> {
         // save new action
         self.to_processes.push(Action::ToSend {
             target: self.bp.all_but_me(),
-            msg: Message::MGarbageCollection { committed },
+            msg: MessageMRV::MGarbageCollection { committed },
         });
     }
 
@@ -665,10 +671,11 @@ impl Info for EPaxosInfo {
 
 // `EPaxos` protocol messages
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Message {
+pub enum MessageMRV {
     MCollect {
         dot: Dot,
         cmd: Command,
+        keys_n: Key_Deps_MRV,
         deps: HashSet<Dependency>,
         quorum: HashSet<ProcessId>,
     },
@@ -700,7 +707,7 @@ pub enum Message {
     },
 }
 
-impl MessageIndex for Message {
+impl MessageIndex for MessageMRV {
     fn index(&self) -> Option<(usize, usize)> {
         use fantoch::load_balance::{
             worker_dot_index_shift, worker_index_no_shift, GC_WORKER_INDEX,
@@ -807,11 +814,11 @@ mod tests {
 
         // epaxos
         let (mut epaxos_1, _) =
-            EPaxos::<KD>::new(process_id_1, shard_id, config);
+            EPaxosMRV::new(process_id_1, shard_id, config);
         let (mut epaxos_2, _) =
-            EPaxos::<KD>::new(process_id_2, shard_id, config);
+            EPaxosMRV::new(process_id_2, shard_id, config);
         let (mut epaxos_3, _) =
-            EPaxos::<KD>::new(process_id_3, shard_id, config);
+            EPaxosMRV::new(process_id_3, shard_id, config);
 
         // discover processes in all epaxos
         let sorted = util::sort_processes_by_distance(
@@ -921,7 +928,7 @@ mod tests {
 
         // check the MCommitDot
         let check_msg =
-            |msg: &Message| matches!(msg, Message::MCommitDot { .. });
+            |msg: &MessageMRV| matches!(msg, MessageMRV::MCommitDot { .. });
         assert!(to_sends.into_iter().all(|(_, action)| {
             matches!(action, Action::ToForward { msg } if check_msg(&msg))
         }));
@@ -961,7 +968,7 @@ mod tests {
         assert_eq!(actions.len(), 1);
         let mcollect = actions.pop().unwrap();
 
-        let check_msg = |msg: &Message| matches!(msg, Message::MCollect {dot, ..} if dot == &Dot::new(process_id_1, 2));
+        let check_msg = |msg: &MessageMRV| matches!(msg, MessageMRV::MCollect {dot, ..} if dot == &Dot::new(process_id_1, 2));
         assert!(
             matches!(mcollect, Action::ToSend {msg, ..} if check_msg(&msg))
         );
