@@ -182,7 +182,8 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
         // String::from("FPaxos"),
         // String::from("Tempo"),
         // String::from("Atlas"),
-        String::from("EPaxos"),
+        // String::from("EPaxos"),
+        String::from("EPaxosMRV"),
         // String::from("CaesarNW"),
     ];
     let n = 5;
@@ -588,6 +589,10 @@ fn parse_result_entry(
                 .parse()
                 .expect("throughput should be a float");
             data.throughput = Some(throughput);
+        },
+        "total orders" => {
+            //FIXME:
+            //DO nothing for now
         },
         entry_type => {
             panic!("unsupported entry type: {:?}", entry_type);
