@@ -1,19 +1,44 @@
-use super::{Dependency, KeyDeps, LatestDep, LatestRWDep};
+use std::sync::Arc;
+
+use super::{Dependency, LatestDep, LatestRWDep};
 use fantoch::command::Command;
 use fantoch::id::{Dot, ShardId};
-use fantoch::kvs::Key;
+use fantoch::kvs::{KVOp, Key};
 use fantoch::{HashMap, HashSet};
-use parking_lot::lock_api::MappedReentrantMutexGuard;
 use rand::Rng;
 
-const N: usize = 10;
+const N: usize = 30;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LatestRWDepArray {
+    data: Vec<LatestRWDep>,
+    n: usize,
+}
+
+// Implemente Default para LatestRWDepArray
+impl Default for LatestRWDepArray {
+    fn default() -> Self {
+        let mut data = Vec::new();
+
+        for _ in 0..N {
+            data.push(LatestRWDep{
+                read: None,
+                write: None
+            })
+        }
+
+        LatestRWDepArray {
+            data,
+            n:N,
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MultiRecordValues {
     shard_id: ShardId,
     nfr: bool,
-    latest: HashMap<Key, [LatestRWDep;N]>,
+    latest: HashMap<Key, LatestRWDepArray>,
     latest_noop: LatestDep,
 }
 
@@ -27,6 +52,44 @@ impl MultiRecordValues {
         }
     }
 
+    // fn get_all_deps_add_subtract(&mut self, keys_deps_mrv: &mut Key_Deps_MRV, deps: &mut HashSet<Dependency>, key: String, read_only: bool, cmd_dep: &Dependency) {
+    //     let n = match keys_deps_mrv.get(key) {
+    //        Some(value)  => *value,
+    //        None => {
+    //             let n = rand::thread_rng().gen_range(0..N);
+    //             keys_deps_mrv.insert(key.clone(), n);
+    //             n
+    //        }
+    //     };
+
+            
+    //     let latest_rw = match self.latest.get_mut(&key) {
+    //         Some(vec) => { 
+    //             if let Some(value) = vec.get_mut(n) {
+    //                 value
+    //             } else {
+    //                 //TODO: por erro
+    //                 panic!("should not ...");
+    //                 // self.latest.entry(key.clone()).or_default()
+    //             }
+    //         },
+    //         None => {
+    //             &mut self.latest.entry(key.clone()).or_default().data[n]
+    //         },
+    //     };
+
+    //     super::maybe_add_deps(read_only, self.nfr, latest_rw, deps);
+
+    //     // finally, store the command
+    //     if read_only {
+    //         // if a command is read-only, then added it as the latest read
+    //         latest_rw.read = Some(cmd_dep.clone());
+    //     } else {
+    //         // otherwise, add it as the latest write
+    //         latest_rw.write = Some(cmd_dep.clone());
+    //     }
+    // }
+
     fn do_add_cmd_init(
         &mut self,
         dot: Dot,
@@ -36,7 +99,7 @@ impl MultiRecordValues {
         // create cmd dep
         let cmd_dep  = Dependency::from_cmd(dot, cmd);
 
-        let mut key_deps: Key_Deps_MRV = HashMap::new();
+        let mut keys_deps_mrv: Key_Deps_MRV = HashMap::new();
 
         // flag indicating whether the command is read-only
         let read_only = cmd.read_only();
@@ -47,39 +110,59 @@ impl MultiRecordValues {
             true
         });
 
+
+        // cmd.into_iter(self.shard_id).for_each(move |(key, ops)| {
+        //     // take the ops inside the arc if we're the last with a
+        //     // reference to it (otherwise, clone them)
+        //     let ops =
+        //         Arc::try_unwrap(ops).unwrap_or_else(|ops| ops.as_ref().clone());
+
+        //     for kvop in ops {
+        //         match kvop {
+        //             KVOp::Add(_) | KVOp::Subtract(_) | KVOp::Put(_) | KVOp::Delete | KVOp::Get => {
+        //                 self.get_all_deps_add_subtract(&mut keys_deps_mrv, &mut deps, key.clone(), read_only, &cmd_dep);
+        //             }
+        //         }
+        //     }
+        // });
+
         // iterate through all command keys, get their current latest and set
         // ourselves to be the new latest
         cmd.keys(self.shard_id).for_each(|key| {
-            // get latest read and write on this key
-
-            let n = rand::thread_rng().gen_range(0..N);
-            key_deps.insert(key.clone(), n);
-            //TODO: se for read ele tem que ir buscar todos e nao só o N
             
-            let latest_rw = match self.latest.get_mut(key) {
-                Some(vec) => { 
-                    if let Some(value) = vec.get_mut(n) {
-                        value
-                    } else {
-                        //TODO: por erro
-                        panic!("should ...");
-                        // self.latest.entry(key.clone()).or_default()
-                    }
-                },
-                None => {
-                    &mut self.latest.entry(key.clone()).or_default()[n]
-                },
-            };
+            let operations = cmd.operations(self.shard_id, key);
+            for op in operations {
 
-            super::maybe_add_deps(read_only, self.nfr, latest_rw, &mut deps);
+                let n = rand::thread_rng().gen_range(0..N);
+                keys_deps_mrv.insert(key.clone(), n);
+                //TODO: se for read ele tem que ir buscar todos e nao só o N
+            
+                let latest_rw = match self.latest.get_mut(key) {
+                    Some(vec) => { 
+                        if let Some(value) = vec.data.get_mut(n) {
+                            value
+                        } else {
+                            //TODO: por erro
+                            panic!("should not ...");
+                            // self.latest.entry(key.clone()).or_default()
+                        }
+                    },
+                    None => {
+                        &mut self.latest.entry(key.clone()).or_default().data[n]
+                    },
+                };
 
-            // finally, store the command
-            if read_only {
-                // if a command is read-only, then added it as the latest read
-                latest_rw.read = Some(cmd_dep.clone());
-            } else {
-                // otherwise, add it as the latest write
-                latest_rw.write = Some(cmd_dep.clone());
+                super::maybe_add_deps(read_only, self.nfr, latest_rw, &mut deps);
+
+                // finally, store the command
+                if read_only {
+                    // if a command is read-only, then added it as the latest read
+                    latest_rw.read = Some(cmd_dep.clone());
+                } else {
+                    // otherwise, add it as the latest write
+                    latest_rw.write = Some(cmd_dep.clone());
+                }
+                // get latest read and write on this key
             }
         });
 
@@ -87,7 +170,7 @@ impl MultiRecordValues {
         self.maybe_add_noop_latest(&mut deps);
 
         // and finally return the computed deps
-        (deps, key_deps)
+        (deps, keys_deps_mrv)
     }
 
     fn do_add_cmd(
@@ -112,41 +195,46 @@ impl MultiRecordValues {
         // iterate through all command keys, get their current latest and set
         // ourselves to be the new latest
         cmd.keys(self.shard_id).for_each(|key| {
-            // get latest read and write on this key
 
-            let n = match keys_deps.get(key) {
-               Some(value)  => *value,
-               None => {
-                    let n = rand::thread_rng().gen_range(0..N);
-                    keys_deps.insert(key.clone(), n);
-                    n
-               }
-            };
-            
-            let latest_rw = match self.latest.get_mut(key) {
-                Some(vec) => { 
-                    if let Some(value) = vec.get_mut(n) {
-                        value
-                    } else {
-                        //TODO: por erro
-                        panic!("should ...");
-                        // self.latest.entry(key.clone()).or_default()
-                    }
-                },
-                None => {
-                    &mut self.latest.entry(key.clone()).or_default()[n]
-                },
-            };
+            let operations = cmd.operations(self.shard_id, key);
+            for op in operations {
+                
+                // get latest read and write on this key
 
-            super::maybe_add_deps(read_only, self.nfr, latest_rw, &mut deps);
+                let n = match keys_deps.get(key) {
+                   Some(value)  => *value,
+                   None => {
+                        let n = rand::thread_rng().gen_range(0..N);
+                        keys_deps.insert(key.clone(), n);
+                        n
+                   }
+                };
 
-            // finally, store the command
-            if read_only {
-                // if a command is read-only, then added it as the latest read
-                latest_rw.read = Some(cmd_dep.clone());
-            } else {
-                // otherwise, add it as the latest write
-                latest_rw.write = Some(cmd_dep.clone());
+                let latest_rw = match self.latest.get_mut(key) {
+                    Some(vec) => { 
+                        if let Some(value) = vec.data.get_mut(n) {
+                            value
+                        } else {
+                            //TODO: por erro
+                            panic!("should ...");
+                            // self.latest.entry(key.clone()).or_default()
+                        }
+                    },
+                    None => {
+                        &mut self.latest.entry(key.clone()).or_default().data[n]
+                    },
+                };
+
+                super::maybe_add_deps(read_only, self.nfr, latest_rw, &mut deps);
+
+                // finally, store the command
+                if read_only {
+                    // if a command is read-only, then added it as the latest read
+                    latest_rw.read = Some(cmd_dep.clone());
+                } else {
+                    // otherwise, add it as the latest write
+                    latest_rw.write = Some(cmd_dep.clone());
+                }
             }
         });
 
@@ -162,7 +250,7 @@ impl MultiRecordValues {
         // iterate through all keys, grab a read lock, and include their latest
         // in the final `deps`
         self.latest.values().for_each(|vec| {
-            for latest_rw in vec {
+            for latest_rw in &vec.data {
                 if let Some(rdep) = latest_rw.read.as_ref() {
                     deps.insert(rdep.clone());
                 }
@@ -181,8 +269,8 @@ impl MultiRecordValues {
         cmd.keys(self.shard_id).for_each(|key| {
             // get latest command on this key
             if let Some(vec) = self.latest.get(key) {
-                for latest_rw in vec {
-                    super::maybe_add_deps(read_only, self.nfr, latest_rw, deps);
+                for latest_rw in vec.data {
+                    super::maybe_add_deps(read_only, self.nfr, &latest_rw, deps);
                 }
             }
         });
