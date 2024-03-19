@@ -7,7 +7,7 @@ use fantoch::kvs::{KVOp, Key};
 use fantoch::{HashMap, HashSet};
 use rand::Rng;
 
-const N: usize = 30;
+const N: usize = 10;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LatestRWDepArray {
@@ -42,7 +42,7 @@ pub struct MultiRecordValues {
     latest_noop: LatestDep,
 }
 
-pub type Key_Deps_MRV = HashMap<Key, usize>;
+pub type Key_Deps_MRV = HashMap<Key, Vec<usize>>;
 
 impl MultiRecordValues {
 
@@ -50,127 +50,6 @@ impl MultiRecordValues {
         if let Some(dep) = self.latest_noop.as_ref() {
             deps.insert(dep.clone());
         }
-    }
-
-    // fn get_all_deps_add_subtract(&mut self, keys_deps_mrv: &mut Key_Deps_MRV, deps: &mut HashSet<Dependency>, key: String, read_only: bool, cmd_dep: &Dependency) {
-    //     let n = match keys_deps_mrv.get(key) {
-    //        Some(value)  => *value,
-    //        None => {
-    //             let n = rand::thread_rng().gen_range(0..N);
-    //             keys_deps_mrv.insert(key.clone(), n);
-    //             n
-    //        }
-    //     };
-
-            
-    //     let latest_rw = match self.latest.get_mut(&key) {
-    //         Some(vec) => { 
-    //             if let Some(value) = vec.get_mut(n) {
-    //                 value
-    //             } else {
-    //                 //TODO: por erro
-    //                 panic!("should not ...");
-    //                 // self.latest.entry(key.clone()).or_default()
-    //             }
-    //         },
-    //         None => {
-    //             &mut self.latest.entry(key.clone()).or_default().data[n]
-    //         },
-    //     };
-
-    //     super::maybe_add_deps(read_only, self.nfr, latest_rw, deps);
-
-    //     // finally, store the command
-    //     if read_only {
-    //         // if a command is read-only, then added it as the latest read
-    //         latest_rw.read = Some(cmd_dep.clone());
-    //     } else {
-    //         // otherwise, add it as the latest write
-    //         latest_rw.write = Some(cmd_dep.clone());
-    //     }
-    // }
-
-    fn do_add_cmd_init(
-        &mut self,
-        dot: Dot,
-        cmd: &Command,
-        mut deps: HashSet<Dependency>,
-    ) -> (HashSet<Dependency>, Key_Deps_MRV) {
-        // create cmd dep
-        let cmd_dep  = Dependency::from_cmd(dot, cmd);
-
-        let mut keys_deps_mrv: Key_Deps_MRV = HashMap::new();
-
-        // flag indicating whether the command is read-only
-        let read_only = cmd.read_only();
-        // we only support single-key read commands with NFR
-        assert!(if self.nfr && read_only {
-            cmd.total_key_count() == 1
-        } else {
-            true
-        });
-
-
-        // cmd.into_iter(self.shard_id).for_each(move |(key, ops)| {
-        //     // take the ops inside the arc if we're the last with a
-        //     // reference to it (otherwise, clone them)
-        //     let ops =
-        //         Arc::try_unwrap(ops).unwrap_or_else(|ops| ops.as_ref().clone());
-
-        //     for kvop in ops {
-        //         match kvop {
-        //             KVOp::Add(_) | KVOp::Subtract(_) | KVOp::Put(_) | KVOp::Delete | KVOp::Get => {
-        //                 self.get_all_deps_add_subtract(&mut keys_deps_mrv, &mut deps, key.clone(), read_only, &cmd_dep);
-        //             }
-        //         }
-        //     }
-        // });
-
-        // iterate through all command keys, get their current latest and set
-        // ourselves to be the new latest
-        cmd.keys(self.shard_id).for_each(|key| {
-            
-            let operations = cmd.operations(self.shard_id, key);
-            for op in operations {
-
-                let n = rand::thread_rng().gen_range(0..N);
-                keys_deps_mrv.insert(key.clone(), n);
-                //TODO: se for read ele tem que ir buscar todos e nao só o N
-            
-                let latest_rw = match self.latest.get_mut(key) {
-                    Some(vec) => { 
-                        if let Some(value) = vec.data.get_mut(n) {
-                            value
-                        } else {
-                            //TODO: por erro
-                            panic!("should not ...");
-                            // self.latest.entry(key.clone()).or_default()
-                        }
-                    },
-                    None => {
-                        &mut self.latest.entry(key.clone()).or_default().data[n]
-                    },
-                };
-
-                super::maybe_add_deps(read_only, self.nfr, latest_rw, &mut deps);
-
-                // finally, store the command
-                if read_only {
-                    // if a command is read-only, then added it as the latest read
-                    latest_rw.read = Some(cmd_dep.clone());
-                } else {
-                    // otherwise, add it as the latest write
-                    latest_rw.write = Some(cmd_dep.clone());
-                }
-                // get latest read and write on this key
-            }
-        });
-
-        // always include latest noop, if any
-        self.maybe_add_noop_latest(&mut deps);
-
-        // and finally return the computed deps
-        (deps, keys_deps_mrv)
     }
 
     fn do_add_cmd(
@@ -198,42 +77,64 @@ impl MultiRecordValues {
 
             let operations = cmd.operations(self.shard_id, key);
             for op in operations {
-                
                 // get latest read and write on this key
 
-                let n = match keys_deps.get(key) {
-                   Some(value)  => *value,
+                let deps_n : Vec<usize> = match keys_deps.get(key) {
+                   Some(value)  => value.clone(),
                    None => {
-                        let n = rand::thread_rng().gen_range(0..N);
-                        keys_deps.insert(key.clone(), n);
-                        n
+                    //TODO: Add operations
+                    let n = rand::thread_rng().gen_range(0..N);
+                    let vec = vec![n];
+                    keys_deps.insert(key.clone(), vec.clone());
+                    vec
+                    // match op {
+                    //     KVOp::Add(_) | KVOp::Subtract(_) => {
+                    //         let n = rand::thread_rng().gen_range(0..N);
+                    //         let vec = vec![n];
+                    //         keys_deps.insert(key.clone(), vec.clone());
+                    //         vec
+                    //     },
+                    //     KVOp::Delete |  KVOp::Get | KVOp::Put(_) => {
+                    //         // let n = rand::thread_rng().gen_range(0..N);
+                    //         let mut vec = Vec::new();
+                    //         for i in 0..N {
+                    //             vec.push(i);
+                    //         };
+                    //         keys_deps.insert(key.clone(), vec.clone());
+                    //         vec
+                    //     }
+                    // }
                    }
                 };
 
-                let latest_rw = match self.latest.get_mut(key) {
-                    Some(vec) => { 
-                        if let Some(value) = vec.data.get_mut(n) {
-                            value
-                        } else {
-                            //TODO: por erro
-                            panic!("should ...");
-                            // self.latest.entry(key.clone()).or_default()
-                        }
-                    },
-                    None => {
-                        &mut self.latest.entry(key.clone()).or_default().data[n]
-                    },
-                };
 
-                super::maybe_add_deps(read_only, self.nfr, latest_rw, &mut deps);
+                for n in deps_n {
+                    let latest_rw = match self.latest.get_mut(key) {
 
-                // finally, store the command
-                if read_only {
-                    // if a command is read-only, then added it as the latest read
-                    latest_rw.read = Some(cmd_dep.clone());
-                } else {
-                    // otherwise, add it as the latest write
-                    latest_rw.write = Some(cmd_dep.clone());
+                        Some(vec) => { 
+                            if let Some(value) = vec.data.get_mut(n) {
+                                value
+                            } else {
+                                //TODO: por erro
+                                panic!("should ...");
+                                // self.latest.entry(key.clone()).or_default()
+                            }
+                        },
+                        None => {
+                            &mut self.latest.entry(key.clone()).or_default().data[n]
+                        },
+                    };
+
+                    super::maybe_add_deps(read_only, self.nfr, latest_rw, &mut deps);
+
+                    // finally, store the command
+                    if read_only {
+                        // if a command is read-only, then added it as the latest read
+                        latest_rw.read = Some(cmd_dep.clone());
+                    } else {
+                        // otherwise, add it as the latest write
+                        latest_rw.write = Some(cmd_dep.clone());
+                    }
                 }
             }
         });
@@ -317,7 +218,7 @@ impl MultiRecordValues {
             None => HashSet::new(),
         };
         match keys_deps {
-           None => self.do_add_cmd_init(dot, cmd, deps),
+           None => self.do_add_cmd(dot, cmd, deps, HashMap::new()),
            Some(value) => self.do_add_cmd(dot, cmd, deps, value),
         }
     }

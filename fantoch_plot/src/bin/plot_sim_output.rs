@@ -182,7 +182,7 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
         // String::from("FPaxos"),
         // String::from("Tempo"),
         // String::from("Atlas"),
-        String::from("EPaxos"),
+        // String::from("EPaxos"),
         String::from("EPaxosMRV"),
         // String::from("CaesarNW"),
     ];

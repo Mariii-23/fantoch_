@@ -199,7 +199,7 @@ fn tempo(aws: bool) {
                 // fast ack))
                 // ("Atlas", config!(n, 1, false, None, false, false)),
                 // ("Atlas", config!(n, 2, false, None, false, false)),
-                ("EPaxos", config!(n, 0, false, None, false, false)),
+                // ("EPaxos", config!(n, 0, false, None, false, false)),
                 ("EPaxosMRV", config!(n, 0, false, None, false, false)),
                 // ("FPaxos", config!(n, 1, false, None, false, false)),
                 // ("FPaxos", config!(n, 2, false, None, false, false)),
@@ -236,13 +236,16 @@ fn tempo(aws: bool) {
                         let keys_per_command = 1;
                         let commands_per_client = 200;
                         let payload_size = 0;
-                        let workload = Workload::new(
+                        let mut workload = Workload::new(
                             shard_count,
                             key_gen,
                             keys_per_command,
                             commands_per_client,
                             payload_size,
                         );
+
+                        let read_only_percentage = 20;
+                        workload.set_read_only_percentage(read_only_percentage);
 
                         // process regions, client regions and planet
                         let process_regions = regions.clone();
