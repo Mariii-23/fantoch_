@@ -1,4 +1,6 @@
+// This module contains the definition of `MultiRecordValues`.
 mod mrvs;
+
 // This module contains the definition of `SequentialKeyDeps`.
 mod sequential;
 

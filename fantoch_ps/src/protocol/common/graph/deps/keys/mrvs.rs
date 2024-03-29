@@ -1,4 +1,3 @@
-use std::sync::Arc;
 
 use super::{Dependency, LatestDep, LatestRWDep};
 use fantoch::command::Command;
@@ -82,28 +81,22 @@ impl MultiRecordValues {
                 let deps_n : Vec<usize> = match keys_deps.get(key) {
                    Some(value)  => value.clone(),
                    None => {
-                    //TODO: Add operations
-                    let n = rand::thread_rng().gen_range(0..N);
-                    let vec = vec![n];
-                    keys_deps.insert(key.clone(), vec.clone());
-                    vec
-                    // match op {
-                    //     KVOp::Add(_) | KVOp::Subtract(_) => {
-                    //         let n = rand::thread_rng().gen_range(0..N);
-                    //         let vec = vec![n];
-                    //         keys_deps.insert(key.clone(), vec.clone());
-                    //         vec
-                    //     },
-                    //     KVOp::Delete |  KVOp::Get | KVOp::Put(_) => {
-                    //         // let n = rand::thread_rng().gen_range(0..N);
-                    //         let mut vec = Vec::new();
-                    //         for i in 0..N {
-                    //             vec.push(i);
-                    //         };
-                    //         keys_deps.insert(key.clone(), vec.clone());
-                    //         vec
-                    //     }
-                    // }
+                    match op {
+                        KVOp::Add(_) | KVOp::Subtract(_) => {
+                            let n = rand::thread_rng().gen_range(0..N);
+                            let vec = vec![n];
+                            keys_deps.insert(key.clone(), vec.clone());
+                            vec
+                        },
+                        KVOp::Delete |  KVOp::Get | KVOp::Put(_) => {
+                            let mut vec = Vec::new();
+                            for i in 0..N {
+                                vec.push(i);
+                            };
+                            keys_deps.insert(key.clone(), vec.clone());
+                            vec
+                        }
+                    }
                    }
                 };
 

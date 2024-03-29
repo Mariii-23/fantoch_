@@ -13,7 +13,7 @@ const MAX_NUMBER: u16 = u16::MAX;
 const MIN_NUMBER: u16 = u16::MIN; 
 
 // Put, Add, Subtract, Delete
-const WEIGHTED_KVO_WRITES: [u8;4] = [3,3,3,1];
+const WEIGHTED_KVO_WRITES: [u8;4] = [0,4,4,0];
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Workload {
