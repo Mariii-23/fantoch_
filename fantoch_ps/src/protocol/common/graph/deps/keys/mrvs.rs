@@ -6,7 +6,7 @@ use fantoch::kvs::{KVOp, Key};
 use fantoch::{HashMap, HashSet};
 use rand::Rng;
 
-const N: usize = 10;
+const N: usize = 30;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LatestRWDepArray {
