@@ -175,15 +175,15 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     let metric_types =
         vec![MetricType::Avg, MetricType::P99, MetricType::P99_9];
     let pool_sizes = vec![1];
-    // let conflicts = vec![0, 2, 10, 30, 50, 60, 70,80,90, 100];
-    let conflicts = vec![0, 10, 30, 50, 60, 70];
+    let conflicts = vec![0, 2, 10, 30, 50, 60, 70,80,90, 100];
+    // let conflicts = vec![0, 10, 30, 50, 60, 70];
     // let conflicts = vec![0, 2, 10, 30];
     // let conflicts = vec![80];
     let protocols = [
         // String::from("FPaxos"),
         // String::from("Tempo"),
         // String::from("Atlas"),
-        String::from("EPaxos"),
+        // String::from("EPaxos"),
         String::from("EPaxosMRV"),
         // String::from("CaesarNW"),
     ];
