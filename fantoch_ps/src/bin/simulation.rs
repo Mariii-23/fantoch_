@@ -199,8 +199,8 @@ fn tempo(aws: bool) {
                 // fast ack))
                 // ("Atlas", config!(n, 1, false, None, false, false)),
                 // ("Atlas", config!(n, 2, false, None, false, false)),
-                // ("EPaxos", config!(n, 0, false, None, false, false)),
-                ("EPaxosMRV", config!(n, 0, false, None, false, false)),
+                ("EPaxos", config!(n, 0, false, None, false, false)),
+                // ("EPaxosMRV", config!(n, 0, false, None, false, false)),
                 // ("FPaxos", config!(n, 1, false, None, false, false)),
                 // ("FPaxos", config!(n, 2, false, None, false, false)),
                 // ("Tempo", config!(n, 1, false, None, false, false)),
