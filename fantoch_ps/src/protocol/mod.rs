@@ -6,6 +6,7 @@ mod atlas;
 
 // This module contains the definition of `EPaxos`.
 mod epaxos;
+mod epaxos_mrv;
 
 // This module contains the definition of `Tempo`.
 mod tempo;
@@ -23,6 +24,7 @@ mod partial;
 pub use atlas::{AtlasLocked, AtlasSequential};
 pub use caesar::CaesarLocked;
 pub use epaxos::{EPaxosLocked, EPaxosSequential};
+pub use epaxos_mrv::EPaxosMRV;
 pub use fpaxos::FPaxos;
 pub use tempo::{TempoAtomic, TempoLocked, TempoSequential};
 

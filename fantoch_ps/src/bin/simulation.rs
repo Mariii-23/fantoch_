@@ -8,7 +8,7 @@ use fantoch::protocol::{Protocol, ProtocolMetrics, ProtocolMetricsKind};
 use fantoch::sim::Runner;
 use fantoch::HashMap;
 use fantoch_ps::protocol::{
-    AtlasSequential, CaesarLocked, EPaxosSequential, FPaxos, TempoSequential,
+    AtlasSequential, CaesarLocked, EPaxosSequential, FPaxos, TempoSequential, EPaxosMRV
 };
 use rayon::prelude::*;
 use std::time::Duration;
@@ -165,10 +165,10 @@ fn tempo(aws: bool) {
     let ns = vec![5];
     // let clients_per_region = vec![64, 128, 256, 512];
     // let pool_sizes = vec![100, 50, 10, 1];
-    let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
+    // let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
     let clients_per_region = vec![
         32,
-        // 512,
+        512,
         // 1024,
         // 1024 * 2,
         // 1024 * 4,
@@ -177,7 +177,7 @@ fn tempo(aws: bool) {
         // 1024 * 20,
     ];
     let pool_sizes = vec![1];
-    // let conflicts = vec![80];
+    let conflicts = vec![30, 50, 60];
     // let conflicts = vec![49];
 
     ns.into_par_iter().for_each(|n| {
@@ -188,7 +188,8 @@ fn tempo(aws: bool) {
                 // (protocol, (n, f, tiny quorums, clock bump interval, skip
                 // fast ack))
                 // ("Atlas", config!(n, 1, false, None, false, false)),
-                ("EPaxos", config!(n, 1, false, None, false, false)),
+                // ("EPaxos", config!(n, 1, false, None, false, false)),
+                ("EPaxosMRV", config!(n, 1, false, None, false, false)),
                 // ("FPaxos", config!(n, 1, false, None, false, false)),
                 // ("Tempo", config!(n, 1, false, None, false, false)),
             ]
@@ -199,6 +200,7 @@ fn tempo(aws: bool) {
                 // ("Atlas", config!(n, 1, false, None, false, false)),
                 // ("Atlas", config!(n, 2, false, None, false, false)),
                 ("EPaxos", config!(n, 0, false, None, false, false)),
+                ("EPaxosMRV", config!(n, 0, false, None, false, false)),
                 // ("FPaxos", config!(n, 1, false, None, false, false)),
                 // ("FPaxos", config!(n, 2, false, None, false, false)),
                 // ("Tempo", config!(n, 1, false, None, false, false)),
@@ -234,13 +236,16 @@ fn tempo(aws: bool) {
                         let keys_per_command = 1;
                         let commands_per_client = 200;
                         let payload_size = 0;
-                        let workload = Workload::new(
+                        let mut workload = Workload::new(
                             shard_count,
                             key_gen,
                             keys_per_command,
                             commands_per_client,
                             payload_size,
                         );
+
+                        let read_only_percentage = 30;
+                        workload.set_read_only_percentage(read_only_percentage);
 
                         // process regions, client regions and planet
                         let process_regions = regions.clone();
@@ -257,6 +262,14 @@ fn tempo(aws: bool) {
                                 planet,
                             ),
                             "EPaxos" => run::<EPaxosSequential>(
+                                config,
+                                workload,
+                                clients,
+                                process_regions,
+                                client_regions,
+                                planet,
+                            ),
+                            "EPaxosMRV" => run::<EPaxosMRV>(
                                 config,
                                 workload,
                                 clients,

@@ -1,3 +1,6 @@
+// This module contains the definition of `MultiRecordValues`.
+mod mrvs;
+
 // This module contains the definition of `SequentialKeyDeps`.
 mod sequential;
 
@@ -7,6 +10,8 @@ mod locked;
 // Re-exports.
 pub use locked::LockedKeyDeps;
 pub use sequential::SequentialKeyDeps;
+pub use mrvs::MultiRecordValues;
+pub use mrvs::Key_Deps_MRV;
 
 use fantoch::kvs::Value;
 use fantoch::command::Command;

@@ -121,6 +121,16 @@ impl Command {
             .unwrap_or_else(|| self._empty_keys.keys())
     }
 
+    /// Returns references to the operations accessed by this command on the shard and key
+    /// provided.
+    pub fn operations(&self, shard_id: ShardId, key: &Key) -> impl Iterator<Item = &KVOp> {
+        self.shard_to_ops
+            .get(&shard_id)
+            .and_then(|shard_ops| shard_ops.get(key))
+            .into_iter()
+            .flat_map(|ops| ops.iter())
+    }
+
     /// Returns references to all the keys accessed by this command.
     pub fn all_keys(&self) -> impl Iterator<Item = (&ShardId, &Key)> {
         self.shard_to_ops.iter().flat_map(|(shard_id, shard_ops)| {
