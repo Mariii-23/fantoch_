@@ -165,10 +165,10 @@ fn tempo(aws: bool) {
     let ns = vec![5];
     // let clients_per_region = vec![64, 128, 256, 512];
     // let pool_sizes = vec![100, 50, 10, 1];
-    // let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
+    let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
     let clients_per_region = vec![
         32,
-        512,
+        // 512,
         // 1024,
         // 1024 * 2,
         // 1024 * 4,
@@ -177,7 +177,7 @@ fn tempo(aws: bool) {
         // 1024 * 20,
     ];
     let pool_sizes = vec![1];
-    let conflicts = vec![30, 50, 60];
+    // let conflicts = vec![30, 50, 60];
     // let conflicts = vec![49];
 
     ns.into_par_iter().for_each(|n| {
@@ -244,7 +244,7 @@ fn tempo(aws: bool) {
                             payload_size,
                         );
 
-                        let read_only_percentage = 30;
+                        let read_only_percentage = 15;
                         workload.set_read_only_percentage(read_only_percentage);
 
                         // process regions, client regions and planet
