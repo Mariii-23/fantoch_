@@ -1,119 +1,111 @@
 POOL_SIZE: 1
 CONFLICTS: 0
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 100.0  
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 3.0211
 EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
 EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
 EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 100.0  
 EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
-EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1.3068
-EPaxosMRV n = 5 f = 0 c = 512 | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
-EPaxosMRV n = 5 f = 0 c = 512 | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
-EPaxosMRV n = 5 f = 0 c = 512 | fast path rate      : 100.0  
-EPaxosMRV n = 5 f = 0 c = 512 | total orders        : 512000
-EPaxosMRV n = 5 f = 0 c = 512 | throughput          : 1.3476
-EPaxosMRV n = 5 f = 0 c = 1024 | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
-EPaxosMRV n = 5 f = 0 c = 1024 | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
-EPaxosMRV n = 5 f = 0 c = 1024 | fast path rate      : 100.0  
-EPaxosMRV n = 5 f = 0 c = 1024 | total orders        : 1024000
-EPaxosMRV n = 5 f = 0 c = 1024 | throughput          : 1.3467
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1.8795
 CONFLICTS: 2
-EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=147   std=44    p95=186   p99=269   p99.9=421   p99.99=511   min=78    max=563  
-EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=0     std=8     p95=0     p99=0     p99.9=140   p99.99=249   min=0     max=309  
-EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 99.1   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=149   std=48    p95=186   p99=348   p99.9=484   p99.99=555   min=78    max=578  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=1     std=12    p95=0     p99=0     p99.9=192   p99.99=288   min=0     max=341  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 98.8   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 2.7409
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=149   std=48    p95=186   p99=358   p99.9=466   p99.99=524   min=78    max=536  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=1     std=13    p95=0     p99=0     p99.9=206   p99.99=296   min=0     max=345  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 98.5   
 EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
-EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1.2699
-EPaxosMRV n = 5 f = 0 c = 512 | execution latency   : avg=156   std=93    p95=186   p99=563   p99.9=1297  p99.99=1692  min=78    max=1976 
-EPaxosMRV n = 5 f = 0 c = 512 | execution delay     : avg=7     std=65    p95=0     p99=261   p99.9=989   p99.99=1427  min=0     max=1779 
-EPaxosMRV n = 5 f = 0 c = 512 | fast path rate      : 98.4   
-EPaxosMRV n = 5 f = 0 c = 512 | total orders        : 512000
-EPaxosMRV n = 5 f = 0 c = 512 | throughput          : 1.1603
-EPaxosMRV n = 5 f = 0 c = 1024 | execution latency   : avg=169   std=212   p95=186   p99=1056  p99.9=3226  p99.99=4264  min=78    max=4522 
-EPaxosMRV n = 5 f = 0 c = 1024 | execution delay     : avg=20    std=189   p95=0     p99=736   p99.9=2911  p99.99=3940  min=0     max=4340 
-EPaxosMRV n = 5 f = 0 c = 1024 | fast path rate      : 98.3   
-EPaxosMRV n = 5 f = 0 c = 1024 | total orders        : 1024000
-EPaxosMRV n = 5 f = 0 c = 1024 | throughput          : 0.7931
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1.7288
 CONFLICTS: 10
-EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=168   std=85    p95=375   p99=505   p99.9=583   p99.99=676   min=78    max=752  
-EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=9     std=39    p95=69    p99=219   p99.9=321   p99.99=384   min=0     max=451  
-EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 93.4   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=181   std=118   p95=484   p99=655   p99.9=862   p99.99=967   min=78    max=1098 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=18    std=70    p95=164   p99=368   p99.9=588   p99.99=723   min=0     max=804  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 92.0   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 2.3414
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=175   std=103   p95=436   p99=570   p99.9=735   p99.99=808   min=78    max=815  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=13    std=52    p95=116   p99=282   p99.9=428   p99.99=533   min=0     max=637  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 91.8   
 EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
-EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1.0997
-EPaxosMRV n = 5 f = 0 c = 512 | execution latency   : avg=225   std=286   p95=786   p99=1662  p99.9=2422  p99.99=2614  min=78    max=2782 
-EPaxosMRV n = 5 f = 0 c = 512 | execution delay     : avg=60    std=240   p95=459   p99=1331  p99.9=2120  p99.99=2366  min=0     max=2592 
-EPaxosMRV n = 5 f = 0 c = 512 | fast path rate      : 91.2   
-EPaxosMRV n = 5 f = 0 c = 512 | total orders        : 512000
-EPaxosMRV n = 5 f = 0 c = 512 | throughput          : 0.4220
-EPaxosMRV n = 5 f = 0 c = 1024 | execution latency   : avg=260   std=437   p95=1002  p99=2623  p99.9=3378  p99.99=3646  min=78    max=3712 
-EPaxosMRV n = 5 f = 0 c = 1024 | execution delay     : avg=96    std=394   p95=653   p99=2305  p99.9=3069  p99.99=3324  min=0     max=3520 
-EPaxosMRV n = 5 f = 0 c = 1024 | fast path rate      : 91.4   
-EPaxosMRV n = 5 f = 0 c = 1024 | total orders        : 1024000
-EPaxosMRV n = 5 f = 0 c = 1024 | throughput          : 0.2374
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1.5157
 CONFLICTS: 30
-EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=238   std=157   p95=549   p99=702   p99.9=775   p99.99=896   min=78    max=912  
-EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=43    std=92    p95=257   p99=384   p99.9=533   p99.99=600   min=0     max=726  
-EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 77.5   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=265   std=205   p95=716   p99=928   p99.9=1101  p99.99=1123  min=78    max=1142 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=65    std=139   p95=384   p99=628   p99.9=809   p99.99=944   min=0     max=970  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 75.4   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 2.0102
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=255   std=185   p95=608   p99=804   p99.9=933   p99.99=1074  min=78    max=1095 
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=53    std=115   p95=320   p99=515   p99.9=714   p99.99=774   min=0     max=840  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 73.8   
 EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
-EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.9166
-EPaxosMRV n = 5 f = 0 c = 512 | execution latency   : avg=335   std=352   p95=1193  p99=1519  p99.9=1849  p99.99=2018  min=78    max=2046 
-EPaxosMRV n = 5 f = 0 c = 512 | execution delay     : avg=132   std=287   p95=867   p99=1228  p99.9=1542  p99.99=1731  min=0     max=1862 
-EPaxosMRV n = 5 f = 0 c = 512 | fast path rate      : 74.6   
-EPaxosMRV n = 5 f = 0 c = 512 | total orders        : 512000
-EPaxosMRV n = 5 f = 0 c = 512 | throughput          : 0.2157
-EPaxosMRV n = 5 f = 0 c = 1024 | execution latency   : avg=373   std=434   p95=1467  p99=1844  p99.9=2030  p99.99=2108  min=78    max=2162 
-EPaxosMRV n = 5 f = 0 c = 1024 | execution delay     : avg=171   std=369   p95=1132  p99=1528  p99.9=1756  p99.99=1858  min=0     max=1931 
-EPaxosMRV n = 5 f = 0 c = 1024 | fast path rate      : 75.1   
-EPaxosMRV n = 5 f = 0 c = 1024 | total orders        : 1024000
-EPaxosMRV n = 5 f = 0 c = 1024 | throughput          : 0.1513
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1.2137
 CONFLICTS: 50
-EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=305   std=180   p95=576   p99=756   p99.9=926   p99.99=990   min=78    max=990  
-EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=73    std=115   p95=316   p99=459   p99.9=635   p99.99=738   min=0     max=757  
-EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 60.4   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=329   std=211   p95=724   p99=910   p99.9=1078  p99.99=1104  min=78    max=1114 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=92    std=144   p95=401   p99=594   p99.9=759   p99.99=879   min=0     max=932  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 59.2   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.7369
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=319   std=198   p95=686   p99=848   p99.9=936   p99.99=975   min=78    max=975  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=78    std=127   p95=362   p99=527   p99.9=686   p99.99=764   min=0     max=814  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 56.4   
 EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
-EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.7579
-EPaxosMRV n = 5 f = 0 c = 512 | execution latency   : avg=399   std=311   p95=1055  p99=1268  p99.9=1450  p99.99=1472  min=78    max=1488 
-EPaxosMRV n = 5 f = 0 c = 512 | execution delay     : avg=164   std=247   p95=730   p99=926   p99.9=1107  p99.99=1177  min=0     max=1298 
-EPaxosMRV n = 5 f = 0 c = 512 | fast path rate      : 62.2   
-EPaxosMRV n = 5 f = 0 c = 512 | total orders        : 512000
-EPaxosMRV n = 5 f = 0 c = 512 | throughput          : 0.1973
-EPaxosMRV n = 5 f = 0 c = 1024 | execution latency   : avg=423   std=351   p95=1144  p99=1352  p99.9=1580  p99.99=1658  min=78    max=1658 
-EPaxosMRV n = 5 f = 0 c = 1024 | execution delay     : avg=184   std=287   p95=840   p99=1077  p99.9=1270  p99.99=1424  min=0     max=1502 
-EPaxosMRV n = 5 f = 0 c = 1024 | fast path rate      : 59.5   
-EPaxosMRV n = 5 f = 0 c = 1024 | total orders        : 1024000
-EPaxosMRV n = 5 f = 0 c = 1024 | throughput          : 0.1322
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.9983
 CONFLICTS: 60
-EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=325   std=169   p95=561   p99=720   p99.9=892   p99.99=936   min=78    max=936  
-EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=73    std=104   p95=280   p99=400   p99.9=562   p99.99=627   min=0     max=710  
-EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 50.5   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=354   std=197   p95=700   p99=893   p99.9=1079  p99.99=1098  min=78    max=1098 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=101   std=138   p95=383   p99=567   p99.9=746   p99.99=840   min=0     max=912  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 52.3   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.7663
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=346   std=190   p95=666   p99=769   p99.9=951   p99.99=992   min=78    max=1042 
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=85    std=122   p95=352   p99=494   p99.9=670   p99.99=801   min=0     max=884  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 46.9   
 EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
-EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.7370
-EPaxosMRV n = 5 f = 0 c = 512 | execution latency   : avg=405   std=261   p95=913   p99=1098  p99.9=1264  p99.99=1295  min=78    max=1295 
-EPaxosMRV n = 5 f = 0 c = 512 | execution delay     : avg=151   std=205   p95=601   p99=777   p99.9=937   p99.99=1018  min=0     max=1113 
-EPaxosMRV n = 5 f = 0 c = 512 | fast path rate      : 54.1   
-EPaxosMRV n = 5 f = 0 c = 512 | total orders        : 512000
-EPaxosMRV n = 5 f = 0 c = 512 | throughput          : 0.2260
-EPaxosMRV n = 5 f = 0 c = 1024 | execution latency   : avg=445   std=314   p95=1092  p99=1276  p99.9=1310  p99.99=1310  min=78    max=1330 
-EPaxosMRV n = 5 f = 0 c = 1024 | execution delay     : avg=183   std=251   p95=744   p99=906   p99.9=1070  p99.99=1124  min=0     max=1154 
-EPaxosMRV n = 5 f = 0 c = 1024 | fast path rate      : 49.6   
-EPaxosMRV n = 5 f = 0 c = 1024 | total orders        : 1024000
-EPaxosMRV n = 5 f = 0 c = 1024 | throughput          : 0.1452
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.9632
 CONFLICTS: 70
-EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=352   std=156   p95=558   p99=695   p99.9=780   p99.99=908   min=78    max=910  
-EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=80    std=100   p95=275   p99=377   p99.9=517   p99.99=595   min=0     max=722  
-EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 40.5   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=366   std=171   p95=585   p99=744   p99.9=918   p99.99=930   min=78    max=934  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=93    std=116   p95=330   p99=461   p99.9=610   p99.99=706   min=0     max=748  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 42.8   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.6781
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=367   std=170   p95=578   p99=735   p99.9=905   p99.99=923   min=78    max=923  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=82    std=107   p95=296   p99=424   p99.9=568   p99.99=628   min=0     max=714  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 35.4   
 EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
-EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.7090
-EPaxosMRV n = 5 f = 0 c = 512 | execution latency   : avg=411   std=214   p95=778   p99=947   p99.9=1093  p99.99=1106  min=78    max=1110 
-EPaxosMRV n = 5 f = 0 c = 512 | execution delay     : avg=134   std=162   p95=472   p99=682   p99.9=829   p99.99=902   min=0     max=928  
-EPaxosMRV n = 5 f = 0 c = 512 | fast path rate      : 42.4   
-EPaxosMRV n = 5 f = 0 c = 512 | total orders        : 512000
-EPaxosMRV n = 5 f = 0 c = 512 | throughput          : 0.3401
-EPaxosMRV n = 5 f = 0 c = 1024 | execution latency   : avg=452   std=262   p95=923   p99=1094  p99.9=1135  p99.99=1191  min=78    max=1276 
-EPaxosMRV n = 5 f = 0 c = 1024 | execution delay     : avg=174   std=209   p95=601   p99=764   p99.9=895   p99.99=954   min=0     max=1066 
-EPaxosMRV n = 5 f = 0 c = 1024 | fast path rate      : 42.9   
-EPaxosMRV n = 5 f = 0 c = 1024 | total orders        : 1024000
-EPaxosMRV n = 5 f = 0 c = 1024 | throughput          : 0.1627
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.9253
 CONFLICTS: 80
-EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=379   std=138   p95=561   p99=622   p99.9=738   p99.99=775   min=78    max=780  
-EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=90    std=99    p95=278   p99=363   p99.9=447   p99.99=523   min=0     max=575  
-EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 31.7   
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=376   std=141   p95=554   p99=597   p99.9=740   p99.99=774   min=78    max=774  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=81    std=92    p95=248   p99=356   p99.9=455   p99.99=546   min=0     max=592  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 31.6   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.6864
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=379   std=144   p95=554   p99=708   p99.9=774   p99.99=908   min=78    max=908  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=79    std=93    p95=248   p99=364   p99.9=482   p99.99=560   min=0     max=588  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 26.7   
 EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
-EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.6872
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.9581
+CONFLICTS: 90
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=394   std=114   p95=554   p99=570   p99.9=715   p99.99=733   min=78    max=733  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=78    std=85    p95=226   p99=325   p99.9=400   p99.99=482   min=0     max=547  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 19.0   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.7377
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=387   std=108   p95=550   p99=584   p99.9=648   p99.99=710   min=78    max=714  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=72    std=81    p95=219   p99=292   p99.9=376   p99.99=430   min=0     max=480  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 15.5   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.9624
+CONFLICTS: 100
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=403   std=29    p95=424   p99=466   p99.9=500   p99.99=533   min=299   max=533  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=89    std=96    p95=266   p99=284   p99.9=344   p99.99=346   min=0     max=347  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 13.2   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1.8212
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=369   std=20    p95=372   p99=466   p99.9=500   p99.99=533   min=299   max=533  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=57    std=75    p95=214   p99=216   p99.9=294   p99.99=294   min=0     max=347  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 4.2    
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 0.9604

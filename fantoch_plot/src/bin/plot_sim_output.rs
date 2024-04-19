@@ -175,22 +175,22 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     let metric_types =
         vec![MetricType::Avg, MetricType::P99, MetricType::P99_9];
     let pool_sizes = vec![1];
-    // let conflicts = vec![0, 2, 10, 30, 50, 60, 70,80,90, 100];
-    let conflicts = vec![0, 2, 10, 30, 50, 60, 70];
+    let conflicts = vec![0, 2, 10, 30, 50, 60, 70,80,90, 100];
+    // let conflicts = vec![0, 2, 10, 30, 50, 60, 70];
     // let conflicts = vec![0, 2, 10, 30];
     // let conflicts = vec![80];
     let protocols = [
         // String::from("FPaxos"),
         // String::from("Tempo"),
         // String::from("Atlas"),
-        // String::from("EPaxos"),
+        String::from("EPaxos"),
         String::from("EPaxosMRV"),
         // String::from("CaesarNW"),
     ];
     let n = 5;
     let f = 0;
-    // let cs = vec![32];
-    let cs = vec![32, 512, 1024];
+    let cs = vec![32];
+    // let cs = vec![32, 512, 1024];
 
     for protocol in protocols.clone() {
     for pool_size in pool_sizes.clone() {
@@ -369,7 +369,7 @@ fn latency_plot(
     ax.set_xlabel(xlabel, None)?;
     let ylabel = match metric_type {
         MetricType::FastPathRath => format!("fast path rate (%)"),
-        MetricType::Throughput => format!("throughput (Requests per Millisecond)"),
+        MetricType::Throughput => format!("throughput (Requests per Second)"),
         _ =>  format!("{:?} latency (ms)", metric_type),
     };
 

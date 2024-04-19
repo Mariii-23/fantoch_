@@ -244,7 +244,7 @@ fn tempo(aws: bool) {
                             payload_size,
                         );
 
-                        let read_only_percentage = 15;
+                        let read_only_percentage = 0;
                         workload.set_read_only_percentage(read_only_percentage);
 
                         // process regions, client regions and planet
@@ -630,7 +630,7 @@ fn handle_run_result(
     let fp_percentage = (fast_paths as f64 * 100f64) / total as f64;
 
     // compute throughput
-    let throughput = total as f64 / elapsed_time.as_millis() as f64;
+    let throughput = total as f64 / elapsed_time.as_secs_f64() as f64;
 
     // compute clients stats
     let execution_latency = client_latencies.into_iter().fold(
