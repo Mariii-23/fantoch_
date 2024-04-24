@@ -244,7 +244,7 @@ fn tempo(aws: bool) {
                             payload_size,
                         );
 
-                        let read_only_percentage = 20;
+                        let read_only_percentage = 0;
                         workload.set_read_only_percentage(read_only_percentage);
 
                         // process regions, client regions and planet
