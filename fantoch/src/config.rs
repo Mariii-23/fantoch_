@@ -27,6 +27,10 @@ pub struct Config {
     gc_interval: Option<Duration>,
     /// starting leader process
     leader: Option<ProcessId>,
+    /// if true -> kv_storage, false -> MRV
+    is_kv_storage: bool,
+    ///
+    n_mrv: usize,
     /// defines whether protocols (atlas, epaxos and tempo) should employ the
     /// NFR optimization
     nfr: bool,
@@ -81,6 +85,9 @@ impl Config {
         let caesar_wait_condition = true;
         // by default `skip_fast_ack = false;
         let skip_fast_ack = false;
+        // by default `is_kv_storage = false;
+        let is_kv_storage = false;
+        let n_mrv = 1;
         Self {
             n,
             f,
@@ -92,6 +99,8 @@ impl Config {
             executor_monitor_execution_order,
             gc_interval,
             leader,
+            is_kv_storage,
+            n_mrv,
             nfr,
             tempo_tiny_quorums,
             tempo_clock_bump_interval,
@@ -206,6 +215,22 @@ impl Config {
         L: Into<Option<ProcessId>>,
     {
         self.leader = leader.into();
+    }
+
+    pub fn is_kv_storage(&self) -> bool {
+        self.is_kv_storage
+    }
+
+    pub fn set_is_kv_storage(&mut self, is_kv_storage: bool){
+        self.is_kv_storage = is_kv_storage;
+    }
+
+    pub fn n_mrv(&mut self) -> usize {
+        self.n_mrv
+    }
+
+    pub fn set_n_mrv(&mut self, n_mrv: usize){
+        self.n_mrv = n_mrv;
     }
 
     /// Checks whether deps NFR is enabled or not.

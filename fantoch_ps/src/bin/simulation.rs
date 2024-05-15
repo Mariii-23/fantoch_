@@ -227,6 +227,12 @@ fn tempo(aws: bool) {
                             config.set_leader(1);
                         }
 
+                        if protocol == "EpaxosMRV" {
+                            config.set_is_kv_storage(true);
+                            //TODO: change this
+                            config.set_n_mrv(10);
+                        }
+
                         // clients workload
                         let shard_count = 1;
                         let key_gen = KeyGen::ConflictPool {

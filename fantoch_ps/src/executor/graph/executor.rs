@@ -36,7 +36,7 @@ impl Executor for GraphExecutor {
         let executor_index = 0;
         let graph = DependencyGraph::new(process_id, shard_id, &config);
         //TODO: Change this
-        let store = Store::new(config.executor_monitor_execution_order(), false, None);
+        let store = Store::new(config.executor_monitor_execution_order(), config.is_kv_storage(), None);
         let to_clients = Default::default();
         let to_executors = Default::default();
         Self {
