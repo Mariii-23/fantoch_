@@ -35,6 +35,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt::{self, Debug};
 use std::time::Duration;
 
+
 // Compact representation of which `Dot`s have been committed and executed.
 pub type CommittedAndExecuted = (u64, Vec<Dot>);
 

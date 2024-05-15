@@ -2,7 +2,7 @@
 use super::{Dependency, LatestDep, LatestRWDep};
 use fantoch::command::Command;
 use fantoch::id::{Dot, ShardId};
-use fantoch::kvs::{KVOp, Key};
+use fantoch::store::{StorageOp, Key};
 use fantoch::{HashMap, HashSet};
 use rand::Rng;
 
@@ -82,13 +82,13 @@ impl MultiRecordValues {
                    Some(value)  => value.clone(),
                    None => {
                     match op {
-                        KVOp::Add(_) | KVOp::Subtract(_) => {
+                        StorageOp::Add(_, _) | StorageOp::Subtract(_,_) => {
                             let n = rand::thread_rng().gen_range(0..N);
                             let vec = vec![n];
                             keys_deps.insert(key.clone(), vec.clone());
                             vec
                         },
-                        KVOp::Delete |  KVOp::Get | KVOp::Put(_) => {
+                        StorageOp::Delete |  StorageOp::Get | StorageOp::Put(_) => {
                             let mut vec = Vec::new();
                             for i in 0..N {
                                 vec.push(i);

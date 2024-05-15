@@ -6,7 +6,7 @@ use fantoch::executor::{
     ExecutionOrderMonitor, Executor, ExecutorMetrics, ExecutorResult,
 };
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::kvs::KVStore;
+use fantoch::store::Store;
 use fantoch::protocol::MessageIndex;
 use fantoch::time::SysTime;
 use fantoch::HashSet;
@@ -23,7 +23,7 @@ pub struct GraphExecutor {
     shard_id: ShardId,
     config: Config,
     graph: DependencyGraph,
-    store: KVStore,
+    store: Store,
     to_clients: VecDeque<ExecutorResult>,
     to_executors: Vec<(ShardId, GraphExecutionInfo)>,
 }
@@ -35,7 +35,8 @@ impl Executor for GraphExecutor {
         // this value will be overwritten
         let executor_index = 0;
         let graph = DependencyGraph::new(process_id, shard_id, &config);
-        let store = KVStore::new(config.executor_monitor_execution_order());
+        //TODO: Change this
+        let store = Store::new(config.executor_monitor_execution_order(), false, None);
         let to_clients = Default::default();
         let to_executors = Default::default();
         Self {

@@ -1,7 +1,7 @@
 use crate::client::key_gen::{KeyGen, KeyGenState};
 use crate::command::Command;
 use crate::id::{RiflGen, ShardId};
-use crate::kvs::{KVOp, Key, Value};
+use crate::store::{StorageOp, Key, Value};
 use crate::trace;
 use crate::HashMap;
 use rand::distributions::{Distribution, WeightedIndex};
@@ -170,7 +170,7 @@ impl Workload {
             // compute op
             let op = if read_only {
                 // if read-only, the op is a `Get`
-                KVOp::Get
+                StorageOp::Get
             } else {
                 // if not read-only, the op is a `Put`, `Add`, `Subtract` or ``Delete`:
                 // - generate payload for op
@@ -180,10 +180,10 @@ impl Workload {
                 let dist = WeightedIndex::new(&WEIGHTED_KVO_WRITES).unwrap();
 
                 match dist.sample(&mut rng) {
-                    0 => KVOp::Put(value),
-                    1 => KVOp::Add(value),
-                    2 => KVOp::Subtract(value),
-                    3 => KVOp::Delete,
+                    0 => StorageOp::Put(value),
+                    1 => StorageOp::Add(value, HashMap::new()),
+                    2 => StorageOp::Subtract(value, HashMap::new()),
+                    3 => StorageOp::Delete,
                     _ => unreachable!(),     
                 }
             };
@@ -340,7 +340,7 @@ mod tests {
                 // check that the value size is `payload_size`
                 // FIXME: remove this because know we use u16 instead of String
                 // FIXME:: maybe remove payload_size
-                // if let KVOp::Put(payload) = op {
+                // if let StorageOp::Put(payload) = op {
                 //     assert_eq!(payload.len(), payload_size);
                 // } else {
                 //     panic!("workload should generate PUT commands");

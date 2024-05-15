@@ -76,7 +76,7 @@ impl Batch {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::kvs::{KVOp, Key};
+    use crate::store::{StorageOp, Key};
 
     #[test]
     fn batch_test() {
@@ -88,7 +88,7 @@ mod tests {
 
         let create_command = |rifl: Rifl, shard_id: ShardId, key: Key| {
             let mut shard_ops = HashMap::new();
-            shard_ops.insert(key, vec![KVOp::Get]);
+            shard_ops.insert(key, vec![StorageOp::Get]);
 
             let mut shard_to_ops = HashMap::new();
             shard_to_ops.insert(shard_id, shard_ops);

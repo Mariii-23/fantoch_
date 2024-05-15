@@ -4,11 +4,11 @@ pub use tests::{gen_cmd, vclock};
 
 #[cfg(test)]
 mod tests {
-    use fantoch::kvs::Value;
+    use fantoch::store::Value;
     use fantoch::command::Command;
     use fantoch::id::ProcessId;
     use fantoch::id::Rifl;
-    use fantoch::kvs::KVOp;
+    use fantoch::store::StorageOp;
     use rand::Rng;
     use threshold::{Clock, EventSet, MaxSet, VClock};
 
@@ -44,7 +44,7 @@ mod tests {
                 // select random key
                 let key = format!("{}", rng.gen_range(0..keys_number));
                 let value = rng.gen_range(Value::MIN..Value::MAX);
-                (key, KVOp::Put(value))
+                (key, StorageOp::Put(value))
             })
             .collect();
         // create fake rifl

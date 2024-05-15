@@ -1,5 +1,5 @@
 use crate::id::ClientId;
-use crate::kvs::Key;
+use crate::store::Key;
 use rand::distributions::Distribution;
 use rand::Rng;
 use serde::{Deserialize, Serialize};

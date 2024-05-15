@@ -43,7 +43,7 @@ mod tests {
     use super::*;
     use crate::util;
     use fantoch::id::Rifl;
-    use fantoch::kvs::{KVOp, Key};
+    use fantoch::store::{StorageOp, Key};
     use std::collections::BTreeSet;
     use std::iter::FromIterator;
     use std::thread;
@@ -105,7 +105,7 @@ mod tests {
         let value = 10;
         Command::from(
             rifl,
-            keys.into_iter().map(|key| (key.clone(), KVOp::Put(value))),
+            keys.into_iter().map(|key| (key.clone(), StorageOp::Put(value))),
         )
     }
 

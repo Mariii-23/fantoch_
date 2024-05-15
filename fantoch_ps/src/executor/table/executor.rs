@@ -6,7 +6,7 @@ use fantoch::executor::{
     MessageKey,
 };
 use fantoch::id::{Dot, ProcessId, Rifl, ShardId};
-use fantoch::kvs::{KVOp, KVStore, Key};
+use fantoch::store::{StorageOp, Store, Key};
 use fantoch::shared::SharedMap;
 use fantoch::time::SysTime;
 use fantoch::trace;
@@ -22,7 +22,7 @@ pub struct TableExecutor {
     shard_id: ShardId,
     execute_at_commit: bool,
     table: MultiVotesTable,
-    store: KVStore,
+    store: Store,
     metrics: ExecutorMetrics,
     to_clients: VecDeque<ExecutorResult>,
     to_executors: Vec<(ShardId, TableExecutionInfo)>,
@@ -44,7 +44,7 @@ pub struct Pending {
     shard_key_count: u64,
     // number of shards the key is not stable at yet
     missing_stable_shards: usize,
-    ops: Arc<Vec<KVOp>>,
+    ops: Arc<Vec<StorageOp>>,
 }
 
 impl Pending {
@@ -52,7 +52,7 @@ impl Pending {
         shard_id: ShardId,
         rifl: Rifl,
         shard_to_keys: Arc<HashMap<ShardId, Vec<Key>>>,
-        ops: Arc<Vec<KVOp>>,
+        ops: Arc<Vec<StorageOp>>,
     ) -> Self {
         let shard_key_count = shard_to_keys
             .get(&shard_id)
@@ -86,7 +86,8 @@ impl Executor for TableExecutor {
             config.n(),
             stability_threshold,
         );
-        let store = KVStore::new(config.executor_monitor_execution_order());
+        //TODO: Change this
+        let store = Store::new(config.executor_monitor_execution_order(), true, None);
         let metrics = ExecutorMetrics::new();
         let to_clients = Default::default();
         let to_executors = Default::default();
@@ -280,7 +281,7 @@ impl TableExecutor {
     fn execute_single_or_mark_it_as_stable(
         key: &Key,
         mut pending: Pending,
-        store: &mut KVStore,
+        store: &mut Store,
         to_clients: &mut VecDeque<ExecutorResult>,
         to_executors: &mut Vec<(ShardId, TableExecutionInfo)>,
         stable_shards_buffered: &mut HashMap<Rifl, usize>,
@@ -365,7 +366,7 @@ impl TableExecutor {
     fn do_execute(
         key: Key,
         stable: Pending,
-        store: &mut KVStore,
+        store: &mut Store,
         to_clients: &mut VecDeque<ExecutorResult>,
     ) {
         // take the ops inside the arc if we're the last with a reference to it
@@ -388,7 +389,7 @@ pub enum TableExecutionInfo {
         key: Key,
         rifl: Rifl,
         shard_to_keys: Arc<HashMap<ShardId, Vec<Key>>>,
-        ops: Arc<Vec<KVOp>>,
+        ops: Arc<Vec<StorageOp>>,
         votes: Vec<VoteRange>,
     },
     DetachedVotes {
@@ -408,7 +409,7 @@ impl TableExecutionInfo {
         key: Key,
         rifl: Rifl,
         shard_to_keys: Arc<HashMap<ShardId, Vec<Key>>>,
-        ops: Arc<Vec<KVOp>>,
+        ops: Arc<Vec<StorageOp>>,
         votes: Vec<VoteRange>,
     ) -> Self {
         Self::AttachedVotes {

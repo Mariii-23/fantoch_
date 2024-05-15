@@ -692,7 +692,7 @@ mod tests {
     use super::*;
     use crate::util;
     use fantoch::id::{ClientId, Rifl, ShardId};
-    use fantoch::kvs::{KVOp, Key};
+    use fantoch::store::{StorageOp, Key};
     use fantoch::time::RunTime;
     use fantoch::HashMap;
     use permutator::{Combination, Permutation};
@@ -731,14 +731,14 @@ mod tests {
         // cmd 0
         let cmd_0 = Command::from(
             Rifl::new(1, 1),
-            vec![(String::from("A"), KVOp::Put(value))],
+            vec![(String::from("A"), StorageOp::Put(value))],
         );
         let deps_0 = vec![dep(dot_1, shard_id)];
 
         // cmd 1
         let cmd_1 = Command::from(
             Rifl::new(2, 1),
-            vec![(String::from("A"), KVOp::Put(value))],
+            vec![(String::from("A"), StorageOp::Put(value))],
         );
         let deps_1 = vec![dep(dot_0, shard_id)];
 
@@ -1074,7 +1074,7 @@ mod tests {
             });
             let ops = keys.into_iter().map(|key| {
                 let value = 10;
-                (key, KVOp::Put(value))
+                (key, StorageOp::Put(value))
             });
             let cmd = Command::from(rifl, ops);
 
@@ -1146,7 +1146,7 @@ mod tests {
             let rifl = Rifl::new(1, 1);
             Command::from(
                 rifl,
-                vec![(String::from("CONF"), KVOp::Put(2))],
+                vec![(String::from("CONF"), StorageOp::Put(2))],
             )
         };
 

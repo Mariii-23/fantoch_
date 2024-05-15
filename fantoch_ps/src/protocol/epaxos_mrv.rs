@@ -7,7 +7,7 @@ use crate::protocol::common::synod::{Synod, SynodMessage};
 use fantoch::command::Command;
 use fantoch::config::Config;
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::kvs::Key;
+use fantoch::store::Key;
 use fantoch::protocol::{
     Action, BaseProcess, Info, MessageIndex, Protocol, ProtocolMetrics,
     SequentialCommandsInfo, VClockGCTrack,

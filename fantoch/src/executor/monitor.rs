@@ -1,5 +1,5 @@
 use crate::id::Rifl;
-use crate::kvs::Key;
+use crate::store::Key;
 use crate::HashMap;
 
 /// This structure can be used to monitor the order in which commands are

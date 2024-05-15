@@ -90,7 +90,7 @@ impl AggregatePending {
 mod tests {
     use super::*;
     use crate::command::Command;
-    use crate::kvs::{KVOp, KVStore};
+    use crate::store::{StorageOp, Store};
 
     #[test]
     fn pending_flow() {
@@ -99,7 +99,7 @@ mod tests {
         let shard_id = 0;
         let mut pending = AggregatePending::new(process_id, shard_id);
         let monitor = false;
-        let mut store = KVStore::new(monitor);
+        let mut store = Store::new(monitor, true,None);
 
         // keys and commands
         let key_a = String::from("A");
@@ -111,21 +111,21 @@ mod tests {
         let put_a_rifl = Rifl::new(1, 1);
         let put_a = Command::from(
             put_a_rifl,
-            vec![(key_a.clone(), KVOp::Put(foo))],
+            vec![(key_a.clone(), StorageOp::Put(foo))],
         );
 
         // command put b
         let put_b_rifl = Rifl::new(2, 1);
         let put_b = Command::from(
             put_b_rifl,
-            vec![(key_b.clone(), KVOp::Put(bar))],
+            vec![(key_b.clone(), StorageOp::Put(bar))],
         );
 
         // command get a and b
         let get_ab_rifl = Rifl::new(3, 1);
         let get_ab = Command::from(
             get_ab_rifl,
-            vec![(key_a.clone(), KVOp::Get), (key_b.clone(), KVOp::Get)],
+            vec![(key_a.clone(), StorageOp::Get), (key_b.clone(), StorageOp::Get)],
         );
 
         // wait for `get_ab` and `put_b`
@@ -136,7 +136,7 @@ mod tests {
         assert!(!pending.wait_for(&put_b));
 
         // add the result of get b and assert that the command is not ready yet
-        let get_b_res = store.test_execute(&key_b, KVOp::Get);
+        let get_b_res = store.test_execute(&key_b, StorageOp::Get);
         let res = pending.add_executor_result(ExecutorResult::new(
             get_ab_rifl,
             key_b.clone(),
@@ -145,7 +145,7 @@ mod tests {
         assert!(res.is_none());
 
         // add the result of put a before being waited for
-        let put_a_res = store.test_execute(&key_a, KVOp::Put(foo.clone()));
+        let put_a_res = store.test_execute(&key_a, StorageOp::Put(foo.clone()));
         let res = pending.add_executor_result(ExecutorResult::new(
             put_a_rifl,
             key_a.clone(),
@@ -173,7 +173,7 @@ mod tests {
         assert_eq!(res.results().get(&key_a).unwrap(), &vec![None]);
 
         // add the result of put b and assert that the command is ready
-        let put_b_res = store.test_execute(&key_b, KVOp::Put(bar.clone()));
+        let put_b_res = store.test_execute(&key_b, StorageOp::Put(bar.clone()));
         let res = pending.add_executor_result(ExecutorResult::new(
             put_b_rifl,
             key_b.clone(),
@@ -189,7 +189,7 @@ mod tests {
         assert_eq!(res.results().get(&key_b).unwrap(), &vec![None]);
 
         // add the result of get a and assert that the command is ready
-        let get_a_res = store.test_execute(&key_a, KVOp::Get);
+        let get_a_res = store.test_execute(&key_a, StorageOp::Get);
         let res = pending.add_executor_result(ExecutorResult::new(
             get_ab_rifl,
             key_a.clone(),

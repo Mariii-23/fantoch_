@@ -2,7 +2,7 @@ use super::{Clock, KeyClocks};
 use crate::protocol::common::pred::CaesarDeps;
 use fantoch::command::Command;
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::kvs::Key;
+use fantoch::store::Key;
 use fantoch::shared::{SharedMap, SharedMapRef};
 use fantoch::{HashMap, HashSet};
 use parking_lot::{Mutex, RwLock};
@@ -165,7 +165,7 @@ impl LockedKeyClocks {
 mod tests {
     use super::*;
     use fantoch::id::Rifl;
-    use fantoch::kvs::KVOp;
+    use fantoch::store::StorageOp;
     use std::iter::FromIterator;
 
     fn deps(deps: Vec<Dot>) -> HashSet<Dot> {
@@ -209,27 +209,27 @@ mod tests {
         // create command on key A
         let cmd_a = Command::from(
             Rifl::new(1, 1),
-            vec![(String::from("A"), KVOp::Put(value))],
+            vec![(String::from("A"), StorageOp::Put(value))],
         );
 
         // create command on key B
         let cmd_b = Command::from(
             Rifl::new(1, 1),
-            vec![(String::from("B"), KVOp::Put(value))],
+            vec![(String::from("B"), StorageOp::Put(value))],
         );
 
         // create command on key C
         let cmd_c = Command::from(
             Rifl::new(1, 1),
-            vec![(String::from("C"), KVOp::Put(value))],
+            vec![(String::from("C"), StorageOp::Put(value))],
         );
 
         // create command on keys A and C
         let cmd_ac = Command::from(
             Rifl::new(1, 1),
             vec![
-                (String::from("A"), KVOp::Put(value)),
-                (String::from("C"), KVOp::Put(value)),
+                (String::from("A"), StorageOp::Put(value)),
+                (String::from("C"), StorageOp::Put(value)),
             ],
         );
 

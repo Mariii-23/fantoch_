@@ -2,7 +2,7 @@ use super::KeyClocks;
 use crate::protocol::common::table::{VoteRange, Votes};
 use fantoch::command::Command;
 use fantoch::id::{ProcessId, ShardId};
-use fantoch::kvs::Key;
+use fantoch::store::Key;
 use fantoch::HashMap;
 use std::cmp;
 

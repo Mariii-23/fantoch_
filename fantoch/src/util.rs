@@ -1,5 +1,5 @@
 use crate::id::{Dot, ProcessId, ShardId};
-use crate::kvs::Key;
+use crate::store::Key;
 use crate::planet::{Planet, Region};
 use crate::HashMap;
 use std::hash::{Hash, Hasher};

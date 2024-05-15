@@ -13,7 +13,7 @@ pub use sequential::SequentialKeyDeps;
 pub use mrvs::MultiRecordValues;
 pub use mrvs::Key_Deps_MRV;
 
-use fantoch::kvs::Value;
+use fantoch::store::Value;
 use fantoch::command::Command;
 use fantoch::id::{Dot, ShardId};
 use fantoch::HashSet;
@@ -118,7 +118,7 @@ mod tests {
     use super::*;
     use crate::util;
     use fantoch::id::{DotGen, ProcessId, Rifl};
-    use fantoch::kvs::KVOp;
+    use fantoch::store::StorageOp;
     use fantoch::{HashMap, HashSet};
     use std::iter::FromIterator;
     use std::thread;
@@ -140,7 +140,7 @@ mod tests {
     fn get(rifl: Rifl, key: String) -> Command {
         Command::from(
             rifl,
-            vec![key].into_iter().map(|key| (key.clone(), KVOp::Get)),
+            vec![key].into_iter().map(|key| (key.clone(), StorageOp::Get)),
         )
     }
 
@@ -148,7 +148,7 @@ mod tests {
         Command::from(
             rifl,
             keys.into_iter()
-                .map(|key| (key.clone(), KVOp::Put(value))),
+                .map(|key| (key.clone(), StorageOp::Put(value))),
         )
     }
 

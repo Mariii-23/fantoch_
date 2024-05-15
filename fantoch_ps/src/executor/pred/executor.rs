@@ -6,7 +6,7 @@ use fantoch::executor::{
     ExecutionOrderMonitor, Executor, ExecutorMetrics, ExecutorResult,
 };
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::kvs::KVStore;
+use fantoch::store::Store;
 use fantoch::protocol::{CommittedAndExecuted, MessageIndex};
 use fantoch::time::SysTime;
 use fantoch::trace;
@@ -19,7 +19,7 @@ pub struct PredecessorsExecutor {
     process_id: ProcessId,
     shard_id: ShardId,
     graph: PredecessorsGraph,
-    store: KVStore,
+    store: Store,
     to_clients: VecDeque<ExecutorResult>,
 }
 
@@ -28,7 +28,8 @@ impl Executor for PredecessorsExecutor {
 
     fn new(process_id: ProcessId, shard_id: ShardId, config: Config) -> Self {
         let graph = PredecessorsGraph::new(process_id, &config);
-        let store = KVStore::new(config.executor_monitor_execution_order());
+        //TODO: change this
+        let store = Store::new(config.executor_monitor_execution_order(), true, None);
         let to_clients = Default::default();
         Self {
             process_id,

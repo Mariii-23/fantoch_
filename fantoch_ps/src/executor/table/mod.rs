@@ -8,7 +8,7 @@ pub use executor::{TableExecutionInfo, TableExecutor};
 use crate::protocol::common::table::VoteRange;
 use executor::Pending;
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::kvs::Key;
+use fantoch::store::Key;
 use fantoch::trace;
 use fantoch::util;
 use fantoch::HashMap;
@@ -271,7 +271,7 @@ mod tests {
     use super::*;
     use fantoch::command::DEFAULT_SHARD_ID;
     use fantoch::id::{ClientId, Rifl};
-    use fantoch::kvs::KVOp;
+    use fantoch::store::StorageOp;
     use permutator::Permutation;
     use std::sync::Arc;
 
@@ -306,7 +306,7 @@ mod tests {
                     .into_iter()
                     .collect(),
             );
-            let ops = Arc::new(vec![KVOp::Put(10)]);
+            let ops = Arc::new(vec![StorageOp::Put(10)]);
             Pending::new(DEFAULT_SHARD_ID, rifl, shard_to_keys, ops)
         };
 
@@ -501,7 +501,7 @@ mod tests {
                     .into_iter()
                     .collect(),
             );
-            let ops = Arc::new(vec![KVOp::Put(10)]);
+            let ops = Arc::new(vec![StorageOp::Put(10)]);
             Pending::new(DEFAULT_SHARD_ID, rifl, shard_to_keys, ops)
         };
 

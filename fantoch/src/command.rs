@@ -1,33 +1,33 @@
 use crate::executor::ExecutorResult;
 use crate::id::{Rifl, ShardId};
-use crate::kvs::{KVOp, KVOpResult, KVStore, Key};
+use crate::store::{StorageOp, StorageOpResult, Store, Key};
 use crate::HashMap;
 use serde::{Deserialize, Serialize};
 use std::fmt::{self, Debug};
 use std::iter::FromIterator;
 use std::sync::Arc;
 use rand::Rng;
-use crate::kvs::Value;
+use crate::store::Value;
 
 pub const DEFAULT_SHARD_ID: ShardId = 0;
 
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Command {
     rifl: Rifl,
-    shard_to_ops: HashMap<ShardId, HashMap<Key, Arc<Vec<KVOp>>>>,
+    shard_to_ops: HashMap<ShardId, HashMap<Key, Arc<Vec<StorageOp>>>>,
     // mapping from shard to the keys on that shard; this will be used by
     // `Tempo` to exchange `MStable` messages between shards
     shard_to_keys: Arc<HashMap<ShardId, Vec<Key>>>,
     // field used to output and empty iterator of keys when rustc can't figure
     // out what we mean
-    _empty_keys: HashMap<Key, Arc<Vec<KVOp>>>,
+    _empty_keys: HashMap<Key, Arc<Vec<StorageOp>>>,
 }
 
 impl Command {
     /// Create a new `Command`.
     pub fn new(
         rifl: Rifl,
-        shard_to_ops: HashMap<ShardId, HashMap<Key, Vec<KVOp>>>,
+        shard_to_ops: HashMap<ShardId, HashMap<Key, Vec<StorageOp>>>,
     ) -> Self {
         let mut shard_to_keys: HashMap<ShardId, Vec<Key>> = Default::default();
         let shard_to_ops = shard_to_ops
@@ -60,7 +60,7 @@ impl Command {
     }
 
     // Create a new `Command` from an iterator.
-    pub fn from<I: IntoIterator<Item = (Key, KVOp)>>(
+    pub fn from<I: IntoIterator<Item = (Key, StorageOp)>>(
         rifl: Rifl,
         iter: I,
     ) -> Self {
@@ -84,7 +84,7 @@ impl Command {
         self.shard_to_ops.values().all(|shard_ops| {
             shard_ops
                 .values()
-                .all(|ops| ops.iter().all(|op| op == &KVOp::Get))
+                .all(|ops| ops.iter().all(|op| op == &StorageOp::Get))
         })
     }
 
@@ -123,7 +123,7 @@ impl Command {
 
     /// Returns references to the operations accessed by this command on the shard and key
     /// provided.
-    pub fn operations(&self, shard_id: ShardId, key: &Key) -> impl Iterator<Item = &KVOp> {
+    pub fn operations(&self, shard_id: ShardId, key: &Key) -> impl Iterator<Item = &StorageOp> {
         self.shard_to_ops
             .get(&shard_id)
             .and_then(|shard_ops| shard_ops.get(key))
@@ -159,7 +159,7 @@ impl Command {
     pub fn execute<'a>(
         self,
         shard_id: ShardId,
-        store: &'a mut KVStore,
+        store: &'a mut Store,
     ) -> impl Iterator<Item = ExecutorResult> + 'a {
         let rifl = self.rifl;
         self.into_iter(shard_id).map(move |(key, ops)| {
@@ -177,7 +177,7 @@ impl Command {
     pub fn iter(
         &self,
         shard_id: ShardId,
-    ) -> impl Iterator<Item = (&Key, &Arc<Vec<KVOp>>)> {
+    ) -> impl Iterator<Item = (&Key, &Arc<Vec<StorageOp>>)> {
         self.shard_to_ops
             .get(&shard_id)
             .map(|shard_ops| shard_ops.iter())
@@ -188,7 +188,7 @@ impl Command {
     pub fn into_iter(
         mut self,
         shard_id: ShardId,
-    ) -> impl Iterator<Item = (Key, Arc<Vec<KVOp>>)> {
+    ) -> impl Iterator<Item = (Key, Arc<Vec<StorageOp>>)> {
         self.shard_to_ops
             .remove(&shard_id)
             .map(|shard_ops| shard_ops.into_iter())
@@ -244,7 +244,7 @@ impl fmt::Debug for Command {
 pub struct CommandResultBuilder {
     rifl: Rifl,
     key_count: usize,
-    results: HashMap<Key, Vec<KVOpResult>>,
+    results: HashMap<Key, Vec<StorageOpResult>>,
 }
 
 impl CommandResultBuilder {
@@ -260,7 +260,7 @@ impl CommandResultBuilder {
 
     /// Adds a partial command result to the overall result.
     /// Returns a boolean indicating whether the full result is ready.
-    pub fn add_partial(&mut self, key: Key, partial_results: Vec<KVOpResult>) {
+    pub fn add_partial(&mut self, key: Key, partial_results: Vec<StorageOpResult>) {
         // add op result for `key`
         let res = self.results.insert(key, partial_results);
 
@@ -278,12 +278,12 @@ impl CommandResultBuilder {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CommandResult {
     rifl: Rifl,
-    results: HashMap<Key, Vec<KVOpResult>>,
+    results: HashMap<Key, Vec<StorageOpResult>>,
 }
 
 impl CommandResult {
     /// Creates a new `CommandResult`.
-    pub fn new(rifl: Rifl, results: HashMap<Key, Vec<KVOpResult>>) -> Self {
+    pub fn new(rifl: Rifl, results: HashMap<Key, Vec<StorageOpResult>>) -> Self {
         CommandResult { rifl, results }
     }
 
@@ -293,7 +293,7 @@ impl CommandResult {
     }
 
     /// Returns the commands results.
-    pub fn results(&self) -> &HashMap<Key, Vec<KVOpResult>> {
+    pub fn results(&self) -> &HashMap<Key, Vec<StorageOpResult>> {
         &self.results
     }
 }
@@ -316,7 +316,7 @@ mod tests {
         let value = rand::thread_rng().gen_range(0..Value::MAX);
         Command::from(
             rifl,
-            keys.into_iter().map(|key| (key.clone(), KVOp::Put(value))),
+            keys.into_iter().map(|key| (key.clone(), StorageOp::Put(value))),
         )
     }
 

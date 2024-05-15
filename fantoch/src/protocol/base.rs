@@ -259,7 +259,7 @@ mod tests {
     use super::*;
     use crate::command::Command;
     use crate::id::Rifl;
-    use crate::kvs::KVOp;
+    use crate::store::StorageOp;
     use crate::planet::{Planet, Region};
     use crate::util;
     use std::collections::BTreeSet;
@@ -468,7 +468,7 @@ mod tests {
 
         // check replicated by
         let mut ops = HashMap::new();
-        ops.insert(String::from("a"), vec![KVOp::Get]);
+        ops.insert(String::from("a"), vec![StorageOp::Get]);
 
         // create command replicated by shard 0
         let rifl = Rifl::new(1, 1);

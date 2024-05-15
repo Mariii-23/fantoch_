@@ -2,7 +2,7 @@ use super::KeyClocks;
 use crate::protocol::common::table::{VoteRange, Votes};
 use fantoch::command::Command;
 use fantoch::id::{ProcessId, ShardId};
-use fantoch::kvs::Key;
+use fantoch::store::Key;
 use fantoch::shared::SharedMap;
 use parking_lot::Mutex;
 use std::cmp;
@@ -195,7 +195,7 @@ mod common {
 mod tests {
     use super::*;
     use fantoch::id::Rifl;
-    use fantoch::kvs::KVOp;
+    use fantoch::store::StorageOp;
 
     #[test]
     fn bump_test() {
@@ -209,7 +209,7 @@ mod tests {
         let rifl = Rifl::new(client_id, 1);
 
         // read-only commmands do not bump clocks
-        let ro_cmd = Command::from(rifl, vec![(String::from("K"), KVOp::Get)]);
+        let ro_cmd = Command::from(rifl, vec![(String::from("K"), StorageOp::Get)]);
         let (clock, votes) = clocks.proposal(&ro_cmd, 0);
         assert_eq!(clock, 0);
         assert!(votes.is_empty());
@@ -217,14 +217,14 @@ mod tests {
         // update command bump the clock
         let cmd = Command::from(
             rifl,
-            vec![(String::from("K"), KVOp::Put(12))],
+            vec![(String::from("K"), StorageOp::Put(12))],
         );
         let (clock, votes) = clocks.proposal(&cmd, 0);
         assert_eq!(clock, 1);
         assert!(!votes.is_empty());
 
         // read-only commmands do not bump clocks
-        let ro_cmd = Command::from(rifl, vec![(String::from("K"), KVOp::Get)]);
+        let ro_cmd = Command::from(rifl, vec![(String::from("K"), StorageOp::Get)]);
         let (clock, votes) = clocks.proposal(&ro_cmd, 0);
         assert_eq!(clock, 1);
         assert!(votes.is_empty());

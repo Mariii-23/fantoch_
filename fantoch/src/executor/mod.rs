@@ -15,7 +15,7 @@ pub use monitor::ExecutionOrderMonitor;
 
 use crate::config::Config;
 use crate::id::{ProcessId, Rifl, ShardId};
-use crate::kvs::{KVOpResult, Key};
+use crate::store::{StorageOpResult, Key};
 use crate::metrics::Metrics;
 use crate::protocol::{CommittedAndExecuted, MessageIndex};
 use crate::time::SysTime;
@@ -170,11 +170,11 @@ fn key_index(key: &Key) -> (usize, usize) {
 pub struct ExecutorResult {
     pub rifl: Rifl,
     pub key: Key,
-    pub partial_results: Vec<KVOpResult>,
+    pub partial_results: Vec<StorageOpResult>,
 }
 
 impl ExecutorResult {
-    pub fn new(rifl: Rifl, key: Key, partial_results: Vec<KVOpResult>) -> Self {
+    pub fn new(rifl: Rifl, key: Key, partial_results: Vec<StorageOpResult>) -> Self {
         ExecutorResult {
             rifl,
             key,

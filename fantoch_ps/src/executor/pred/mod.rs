@@ -400,7 +400,7 @@ impl fmt::Debug for PredecessorsGraph {
 mod tests {
     use super::*;
     use fantoch::id::{ClientId, Rifl};
-    use fantoch::kvs::{KVOp, Key};
+    use fantoch::store::{StorageOp, Key};
     use fantoch::time::RunTime;
     use fantoch::{HashMap, HashSet};
     use permutator::{Combination, Permutation};
@@ -433,7 +433,7 @@ mod tests {
         // cmd 0
         let cmd_0 = Command::from(
             Rifl::new(1, 1),
-            vec![(String::from("A"), KVOp::Put(1))],
+            vec![(String::from("A"), StorageOp::Put(1))],
         );
         let clock_0 = Clock::from(2, p1);
         let deps_0 = caesar_deps(vec![dot_1]);
@@ -441,7 +441,7 @@ mod tests {
         // cmd 1
         let cmd_1 = Command::from(
             Rifl::new(2, 1),
-            vec![(String::from("A"), KVOp::Put(1))],
+            vec![(String::from("A"), StorageOp::Put(1))],
         );
         let clock_1 = Clock::from(1, p2);
         let deps_1 = caesar_deps(vec![dot_0]);
@@ -614,7 +614,7 @@ mod tests {
             });
             let ops = keys.into_iter().map(|key| {
                 let value = 10;
-                (key, KVOp::Put(value))
+                (key, StorageOp::Put(value))
             });
             let cmd = Command::from(rifl, ops);
 
