@@ -181,8 +181,8 @@ impl Workload {
 
                 match dist.sample(&mut rng) {
                     0 => StorageOp::Put(value),
-                    1 => StorageOp::Add(value, HashMap::new()),
-                    2 => StorageOp::Subtract(value, HashMap::new()),
+                    1 => StorageOp::Add(value),
+                    2 => StorageOp::Subtract(value),
                     3 => StorageOp::Delete,
                     _ => unreachable!(),     
                 }

@@ -6,7 +6,7 @@ use fantoch::store::{StorageOp, Key};
 use fantoch::{HashMap, HashSet};
 use rand::Rng;
 
-const N: usize = 20;
+const N: usize = 30;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LatestRWDepArray {
@@ -41,7 +41,7 @@ pub struct MultiRecordValues {
     latest_noop: LatestDep,
 }
 
-pub type Key_Deps_MRV = HashMap<Key, Vec<usize>>;
+pub type KeyDepsMRV = HashMap<Key, Vec<usize>>;
 
 impl MultiRecordValues {
 
@@ -56,8 +56,8 @@ impl MultiRecordValues {
         dot: Dot,
         cmd: &Command,
         mut deps: HashSet<Dependency>,
-        mut keys_deps: Key_Deps_MRV,
-    ) -> (HashSet<Dependency>, Key_Deps_MRV) {
+        mut keys_deps: KeyDepsMRV,
+    ) -> (HashSet<Dependency>, KeyDepsMRV) {
         // create cmd dep
         let cmd_dep = Dependency::from_cmd(dot, cmd);
 
@@ -82,7 +82,7 @@ impl MultiRecordValues {
                    Some(value)  => value.clone(),
                    None => {
                     match op {
-                        StorageOp::Add(_, _) | StorageOp::Subtract(_,_) => {
+                        StorageOp::Add(_) | StorageOp::Subtract(_) => {
                             let n = rand::thread_rng().gen_range(0..N);
                             let vec = vec![n];
                             keys_deps.insert(key.clone(), vec.clone());
@@ -99,7 +99,6 @@ impl MultiRecordValues {
                     }
                    }
                 };
-
 
                 for n in deps_n {
                     let latest_rw = match self.latest.get_mut(key) {
@@ -203,8 +202,8 @@ impl MultiRecordValues {
         dot: Dot,
         cmd: &Command,
         past: Option<HashSet<Dependency>>,
-        keys_deps: Option<Key_Deps_MRV>,
-    ) -> (HashSet<Dependency>, Key_Deps_MRV) {
+        keys_deps: Option<KeyDepsMRV>,
+    ) -> (HashSet<Dependency>, KeyDepsMRV) {
         // we start with past in case there's one, or bottom otherwise
         let deps = match past {
             Some(past) => past,

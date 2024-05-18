@@ -4,5 +4,5 @@ mod deps;
 // Re-exports.
 pub use deps::{
     Dependency, KeyDeps, LockedKeyDeps, QuorumDeps, SequentialKeyDeps, MultiRecordValues,
-    Key_Deps_MRV,
+    KeyDepsMRV,
 };

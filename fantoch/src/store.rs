@@ -2,12 +2,12 @@ use crate::executor::ExecutionOrderMonitor;
 use crate::id::Rifl;
 use crate::HashMap;
 use serde::{Deserialize, Serialize};
+use rand::Rng;
 
 // Definition of `Key` and `Value` types.
 pub type Key = String;
 pub type Value = u16;
 
-pub type Key_Deps_MRV = HashMap<Key, Vec<usize>>;
 
 #[derive(
     Debug, Clone, PartialEq, Eq, Serialize, Deserialize,
@@ -15,8 +15,8 @@ pub type Key_Deps_MRV = HashMap<Key, Vec<usize>>;
 pub enum StorageOp {
     Get,
     Put(Value),
-    Add(Value, Key_Deps_MRV),
-    Subtract(Value, Key_Deps_MRV),
+    Add(Value ),
+    Subtract(Value),
     Delete,
 }
 
@@ -73,6 +73,60 @@ impl Store {
         self.do_execute(key, ops)
     }
 
+    pub fn get_n_deps_by_cmd(&self, key: Key, op: StorageOp) -> Option<Vec<usize>> {
+        match op {
+            StorageOp::Delete |  StorageOp::Get | StorageOp::Put(_) => {
+                let mut vec = Vec::new();
+                for i in 0..self.number {
+                    vec.push(i);
+                };
+
+                Some(vec)
+            },
+            StorageOp::Add(_) => {
+                let n = rand::thread_rng().gen_range(0..self.number);
+                let vec = vec![n];
+
+                Some(vec)
+            }
+            StorageOp::Subtract(value) => {
+                let n = rand::thread_rng().gen_range(0..self.number);
+                let mut vec = vec![n];
+                let mut value_consumed = 0;
+
+                match self.store.get(&key) {
+                    None => None,
+                    Some(values) => {
+                        for i in n..self.number {
+                            if value_consumed >= value {
+                                return Some(vec);
+                            }
+
+                            value_consumed += values[i];
+                            vec.push(i);
+                        }
+
+                        for i in 0..n {
+                            if value_consumed >= value {
+                                return Some(vec);
+                            }
+
+                            value_consumed += values[i];
+                            vec.push(i);
+                        }
+
+
+                        if value_consumed >= value {
+                            return Some(vec);
+                        }
+                        None
+                    }
+                }
+
+            }
+        }
+    }
+
     #[allow(clippy::ptr_arg)]
     fn do_execute(&mut self, key: &Key, ops: Vec<StorageOp>) -> Vec<StorageOpResult> {
         ops.into_iter()
@@ -108,7 +162,7 @@ impl Store {
                     }
                     None
             }
-            StorageOp::Add(value,deps) => {
+            StorageOp::Add(value) => {
                     if self.is_kv_storage {
                         if let Some(old_value) = self.store.get_mut(key) {
                              // In case the sum overflows, we will put the maximum possible value
@@ -130,7 +184,7 @@ impl Store {
                     }
                     None
             }
-            StorageOp::Subtract(value, deps ) => {
+            StorageOp::Subtract(value ) => {
                 if self.is_kv_storage {
 
                     // don't return the previous value
@@ -150,7 +204,7 @@ impl Store {
                     } 
 
                 } else  {
-                    //
+                    // verificar dependencias
                 }
                 None
             }
@@ -247,10 +301,10 @@ mod tests {
         // put key_c value_x -> 12
         assert_eq!(store.test_execute(&key_c, StorageOp::Put(value_x)), None);
         // add key_a value_y -> some(value_x + value_y)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Add(value_y, HashMap::new())), Some(value_x + value_y));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Add(value_y)), Some(value_x + value_y));
 
         // add key_a Maximum_value -> some(MAX)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Add(Value::MAX, HashMap::new())), Some(Value::MAX));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Add(Value::MAX)), Some(Value::MAX));
     }
 
     #[test]
@@ -266,10 +320,10 @@ mod tests {
         // put key_c value_x -> None
         assert_eq!(store.test_execute(&key_c, StorageOp::Put(value_x)), None);
         // subtract key_a value_y -> some(value_x - value_y)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_y, HashMap::new()) ), Some(value_x - value_y));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_y) ), Some(value_x - value_y));
 
         // subtract key_a Maximum_Value -> some(MIM)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(Value::MAX, HashMap::new())), Some(Value::MIN));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(Value::MAX)), Some(Value::MIN));
     }
 
     #[test]
@@ -285,18 +339,18 @@ mod tests {
         // put key_c value_x -> 12
         assert_eq!(store.test_execute(&key_c, StorageOp::Put(value_x)), None);
         // add key_a value_y -> some(value_x + value_y)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Add(value_y, HashMap::new())), Some(value_x + value_y));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Add(value_y)), Some(value_x + value_y));
 
         // subtract key_a value_x -> some(value_y)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_x, HashMap::new())), Some(value_y));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_x)), Some(value_y));
 
         // add key_a Maximum_value -> some(MAX)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Add(Value::MAX, HashMap::new())), Some(Value::MAX));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Add(Value::MAX)), Some(Value::MAX));
 
         // subtract key_a value_x -> some(MAX - value_x)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_x, HashMap::new())), Some(Value::MAX - value_x));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_x)), Some(Value::MAX - value_x));
 
         // subtract key_a Maximum_Value -> some(MIM)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(Value::MAX, HashMap::new())), Some(Value::MIN));
+        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(Value::MAX)), Some(Value::MIN));
     }
 }

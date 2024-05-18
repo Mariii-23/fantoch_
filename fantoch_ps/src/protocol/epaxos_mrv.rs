@@ -1,7 +1,7 @@
 use crate::executor::{GraphExecutionInfo, GraphExecutor};
 use crate::protocol::common::graph::{
     Dependency, KeyDeps, LockedKeyDeps, QuorumDeps, SequentialKeyDeps,
-    Key_Deps_MRV
+    KeyDepsMRV
 };
 use crate::protocol::common::synod::{Synod, SynodMessage};
 use fantoch::command::Command;
@@ -203,6 +203,12 @@ impl EPaxosMRV {
         // compute the command identifier
         let dot = dot.unwrap_or_else(|| self.bp.next_dot());
 
+        //TODO:
+        // compute its N deps
+        // let vec_n = self.t
+        // self.
+
+
         // compute its deps
         let (deps, keys_n) = self.key_deps.add_cmd(dot, &cmd, None, None);
 
@@ -232,7 +238,7 @@ impl EPaxosMRV {
         quorum: HashSet<ProcessId>,
         remote_deps: HashSet<Dependency>,
         time: &dyn SysTime,
-        key_deps: Key_Deps_MRV,
+        key_deps: KeyDepsMRV,
     ) {
         trace!(
             "p{}: MCollect({:?}, {:?}, {:?}) from {} | time={}",
@@ -273,13 +279,13 @@ impl EPaxosMRV {
         // check if it's a message from self
         let message_from_self = from == self.bp.process_id;
 
-        let deps = if message_from_self {
+        let (deps, n_deps) = if message_from_self {
             // if it is, do not recompute deps
-            remote_deps
+            (remote_deps, key_deps)
         } else {
             // otherwise, compute deps with the remote deps as past
-            let (deps, _) = self.key_deps.add_cmd(dot, &cmd, Some(remote_deps),Some(key_deps));
-            deps
+            let (deps, n_deps) = self.key_deps.add_cmd(dot, &cmd, Some(remote_deps),Some(key_deps));
+            (deps, n_deps)
         };
 
         // update command info
@@ -675,7 +681,7 @@ pub enum MessageMRV {
     MCollect {
         dot: Dot,
         cmd: Command,
-        keys_n: Key_Deps_MRV,
+        keys_n: KeyDepsMRV,
         deps: HashSet<Dependency>,
         quorum: HashSet<ProcessId>,
     },

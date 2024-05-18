@@ -15,7 +15,7 @@ pub use monitor::ExecutionOrderMonitor;
 
 use crate::config::Config;
 use crate::id::{ProcessId, Rifl, ShardId};
-use crate::store::{StorageOpResult, Key};
+use crate::store::{Key, StorageOp, StorageOpResult};
 use crate::metrics::Metrics;
 use crate::protocol::{CommittedAndExecuted, MessageIndex};
 use crate::time::SysTime;
@@ -68,6 +68,11 @@ pub trait Executor: Clone {
     #[must_use]
     fn to_executors_iter(&mut self) -> ToExecutorsIter<'_, Self> {
         ToExecutorsIter { executor: self }
+    }
+
+    fn get_n_deps_by_cmd(&self, key: Key, op: StorageOp) -> Option<Vec<usize>> {
+        // non-genuine protocols should overwrite this
+        None
     }
 
     #[must_use]

@@ -11,7 +11,7 @@ mod locked;
 pub use locked::LockedKeyDeps;
 pub use sequential::SequentialKeyDeps;
 pub use mrvs::MultiRecordValues;
-pub use mrvs::Key_Deps_MRV;
+pub use mrvs::KeyDepsMRV;
 
 use fantoch::store::Value;
 use fantoch::command::Command;

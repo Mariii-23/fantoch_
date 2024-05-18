@@ -165,7 +165,7 @@ fn tempo(aws: bool) {
     let ns = vec![5];
     // let clients_per_region = vec![64, 128, 256, 512];
     // let pool_sizes = vec![100, 50, 10, 1];
-    // let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
+    let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
     let clients_per_region = vec![
         32,
         // 512,
@@ -177,7 +177,7 @@ fn tempo(aws: bool) {
         // 1024 * 20,
     ];
     let pool_sizes = vec![1];
-    let conflicts = vec![30, 50, 60];
+    // let conflicts = vec![30, 50, 60];
     // let conflicts = vec![49];
 
     ns.into_par_iter().for_each(|n| {
@@ -228,9 +228,9 @@ fn tempo(aws: bool) {
                         }
 
                         if protocol == "EpaxosMRV" {
-                            config.set_is_kv_storage(true);
+                            // config.set_is_kv_storage(true);
                             //TODO: change this
-                            config.set_n_mrv(10);
+                            // config.set_n_mrv(10);
                         }
 
                         // clients workload

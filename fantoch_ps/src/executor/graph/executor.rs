@@ -6,7 +6,7 @@ use fantoch::executor::{
     ExecutionOrderMonitor, Executor, ExecutorMetrics, ExecutorResult,
 };
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::store::Store;
+use fantoch::store::{Key, StorageOp, Store};
 use fantoch::protocol::MessageIndex;
 use fantoch::time::SysTime;
 use fantoch::HashSet;
@@ -99,6 +99,10 @@ impl Executor for GraphExecutor {
 
     fn to_executors(&mut self) -> Option<(ShardId, GraphExecutionInfo)> {
         self.to_executors.pop()
+    }
+
+    fn get_n_deps_by_cmd(&self, key: Key, op: StorageOp) -> Option<Vec<usize>> {
+        self.store.get_n_deps_by_cmd(key, op)
     }
 
     fn parallel() -> bool {
