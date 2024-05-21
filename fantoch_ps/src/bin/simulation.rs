@@ -8,7 +8,8 @@ use fantoch::protocol::{Protocol, ProtocolMetrics, ProtocolMetricsKind};
 use fantoch::sim::Runner;
 use fantoch::HashMap;
 use fantoch_ps::protocol::{
-    AtlasSequential, CaesarLocked, EPaxosSequential, FPaxos, TempoSequential, EPaxosMRV
+    AtlasSequential, CaesarLocked, EPaxosMRV, EPaxosSequential, FPaxos,
+    TempoSequential, DEFAULT_N_MRV,
 };
 use rayon::prelude::*;
 use std::time::Duration;
@@ -165,7 +166,7 @@ fn tempo(aws: bool) {
     let ns = vec![5];
     // let clients_per_region = vec![64, 128, 256, 512];
     // let pool_sizes = vec![100, 50, 10, 1];
-    let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
+    // let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
     let clients_per_region = vec![
         32,
         // 512,
@@ -177,7 +178,7 @@ fn tempo(aws: bool) {
         // 1024 * 20,
     ];
     let pool_sizes = vec![1];
-    // let conflicts = vec![30, 50, 60];
+    let conflicts = vec![30, 50, 60];
     // let conflicts = vec![49];
 
     ns.into_par_iter().for_each(|n| {
@@ -228,9 +229,8 @@ fn tempo(aws: bool) {
                         }
 
                         if protocol == "EpaxosMRV" {
-                            // config.set_is_kv_storage(true);
-                            //TODO: change this
-                            // config.set_n_mrv(10);
+                            config.set_is_kv_storage(true);
+                            config.set_n_mrv(DEFAULT_N_MRV);
                         }
 
                         // clients workload
@@ -258,57 +258,61 @@ fn tempo(aws: bool) {
                         let client_regions = regions.clone();
                         let planet = planet.clone();
 
-                        let (metrics, client_latencies, elapsed_time) = match protocol {
-                            "Atlas" => run::<AtlasSequential>(
-                                config,
-                                workload,
-                                clients,
-                                process_regions,
-                                client_regions,
-                                planet,
-                            ),
-                            "EPaxos" => run::<EPaxosSequential>(
-                                config,
-                                workload,
-                                clients,
-                                process_regions,
-                                client_regions,
-                                planet,
-                            ),
-                            "EPaxosMRV" => run::<EPaxosMRV>(
-                                config,
-                                workload,
-                                clients,
-                                process_regions,
-                                client_regions,
-                                planet,
-                            ),
-                            "FPaxos" => run::<FPaxos>(
-                                config,
-                                workload,
-                                clients,
-                                process_regions,
-                                client_regions,
-                                planet,
-                            ),
-                            "Tempo" => run::<TempoSequential>(
-                                config,
-                                workload,
-                                clients,
-                                process_regions,
-                                client_regions,
-                                planet,
-                            ),
-                            "Caesar" => run::<CaesarLocked>(
-                                config,
-                                workload,
-                                clients,
-                                process_regions,
-                                client_regions,
-                                planet,
-                            ),
-                            _ => panic!("unsupported protocol {:?}", protocol),
-                        };
+                        let (metrics, client_latencies, elapsed_time) =
+                            match protocol {
+                                "Atlas" => run::<AtlasSequential>(
+                                    config,
+                                    workload,
+                                    clients,
+                                    process_regions,
+                                    client_regions,
+                                    planet,
+                                ),
+                                "EPaxos" => run::<EPaxosSequential>(
+                                    config,
+                                    workload,
+                                    clients,
+                                    process_regions,
+                                    client_regions,
+                                    planet,
+                                ),
+                                "EPaxosMRV" => run::<EPaxosMRV>(
+                                    config,
+                                    workload,
+                                    clients,
+                                    process_regions,
+                                    client_regions,
+                                    planet,
+                                ),
+                                "FPaxos" => run::<FPaxos>(
+                                    config,
+                                    workload,
+                                    clients,
+                                    process_regions,
+                                    client_regions,
+                                    planet,
+                                ),
+                                "Tempo" => run::<TempoSequential>(
+                                    config,
+                                    workload,
+                                    clients,
+                                    process_regions,
+                                    client_regions,
+                                    planet,
+                                ),
+                                "Caesar" => run::<CaesarLocked>(
+                                    config,
+                                    workload,
+                                    clients,
+                                    process_regions,
+                                    client_regions,
+                                    planet,
+                                ),
+                                _ => panic!(
+                                    "unsupported protocol {:?}",
+                                    protocol
+                                ),
+                            };
                         handle_run_result(
                             protocol,
                             config,
@@ -561,7 +565,8 @@ fn run<P: Protocol>(
         client_regions,
     );
 
-    let (metrics, _executors_monitors, client_latencies, elapsed_time) = runner.run(None);
+    let (metrics, _executors_monitors, client_latencies, elapsed_time) =
+        runner.run(None);
 
     // compute clients stats
     let issued_commands = client_latencies

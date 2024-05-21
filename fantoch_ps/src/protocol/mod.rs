@@ -1,3 +1,5 @@
+pub const DEFAULT_N_MRV: usize = 50;
+
 // This module contains common data-structures between protocols.
 pub mod common;
 
@@ -35,11 +37,11 @@ mod tests {
     use fantoch::config::Config;
     use fantoch::executor::ExecutionOrderMonitor;
     use fantoch::id::{ProcessId, Rifl};
-    use fantoch::store::Key;
     use fantoch::planet::Planet;
     use fantoch::protocol::{Protocol, ProtocolMetrics};
     use fantoch::run::tests::{run_test_with_inspect_fun, tokio_test_runtime};
     use fantoch::sim::Runner;
+    use fantoch::store::Key;
     use fantoch::HashMap;
     use std::time::Duration;
 

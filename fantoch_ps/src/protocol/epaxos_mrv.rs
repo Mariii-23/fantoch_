@@ -1,17 +1,17 @@
 use crate::executor::{GraphExecutionInfo, GraphExecutor};
 use crate::protocol::common::graph::{
-    Dependency, KeyDeps, LockedKeyDeps, QuorumDeps, SequentialKeyDeps,
-    KeyDepsMRV
+    Dependency, KeyDeps, KeyDepsMRV, LockedKeyDeps, QuorumDeps,
+    SequentialKeyDeps,
 };
 use crate::protocol::common::synod::{Synod, SynodMessage};
 use fantoch::command::Command;
 use fantoch::config::Config;
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::store::Key;
 use fantoch::protocol::{
     Action, BaseProcess, Info, MessageIndex, Protocol, ProtocolMetrics,
     SequentialCommandsInfo, VClockGCTrack,
 };
+use fantoch::store::Key;
 use fantoch::time::SysTime;
 use fantoch::{singleton, trace};
 use fantoch::{HashMap, HashSet};
@@ -21,6 +21,7 @@ use std::time::Duration;
 use threshold::VClock;
 
 use super::common::graph::MultiRecordValues;
+use super::DEFAULT_N_MRV;
 
 #[derive(Debug, Clone)]
 pub struct EPaxosMRV {
@@ -58,7 +59,8 @@ impl Protocol for EPaxosMRV {
             fast_quorum_size,
             write_quorum_size,
         );
-        let key_deps = MultiRecordValues::new(shard_id, config.nfr());
+        let key_deps =
+            MultiRecordValues::new(shard_id, config.nfr(), DEFAULT_N_MRV);
         let f = Self::allowed_faults(config.n());
         let cmds = SequentialCommandsInfo::new(
             process_id,
@@ -135,7 +137,9 @@ impl Protocol for EPaxosMRV {
                 keys_n,
                 quorum,
                 deps,
-            } => self.handle_mcollect(from, dot, cmd, quorum, deps, time, keys_n),
+            } => {
+                self.handle_mcollect(from, dot, cmd, quorum, deps, time, keys_n)
+            }
             MessageMRV::MCollectAck { dot, deps } => {
                 self.handle_mcollectack(from, dot, deps, time)
             }
@@ -203,12 +207,6 @@ impl EPaxosMRV {
         // compute the command identifier
         let dot = dot.unwrap_or_else(|| self.bp.next_dot());
 
-        //TODO:
-        // compute its N deps
-        // let vec_n = self.t
-        // self.
-
-
         // compute its deps
         let (deps, keys_n) = self.key_deps.add_cmd(dot, &cmd, None, None);
 
@@ -219,7 +217,7 @@ impl EPaxosMRV {
             cmd,
             deps,
             quorum,
-            keys_n
+            keys_n,
         };
         let target = self.bp.all();
 
@@ -284,7 +282,12 @@ impl EPaxosMRV {
             (remote_deps, key_deps)
         } else {
             // otherwise, compute deps with the remote deps as past
-            let (deps, n_deps) = self.key_deps.add_cmd(dot, &cmd, Some(remote_deps),Some(key_deps));
+            let (deps, n_deps) = self.key_deps.add_cmd(
+                dot,
+                &cmd,
+                Some(remote_deps),
+                Some(key_deps),
+            );
             (deps, n_deps)
         };
 
@@ -819,12 +822,9 @@ mod tests {
         let executor_3 = GraphExecutor::new(process_id_3, shard_id, config);
 
         // epaxos
-        let (mut epaxos_1, _) =
-            EPaxosMRV::new(process_id_1, shard_id, config);
-        let (mut epaxos_2, _) =
-            EPaxosMRV::new(process_id_2, shard_id, config);
-        let (mut epaxos_3, _) =
-            EPaxosMRV::new(process_id_3, shard_id, config);
+        let (mut epaxos_1, _) = EPaxosMRV::new(process_id_1, shard_id, config);
+        let (mut epaxos_2, _) = EPaxosMRV::new(process_id_2, shard_id, config);
+        let (mut epaxos_3, _) = EPaxosMRV::new(process_id_3, shard_id, config);
 
         // discover processes in all epaxos
         let sorted = util::sort_processes_by_distance(

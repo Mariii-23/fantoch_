@@ -221,7 +221,7 @@ impl Config {
         self.is_kv_storage
     }
 
-    pub fn set_is_kv_storage(&mut self, is_kv_storage: bool){
+    pub fn set_is_kv_storage(&mut self, is_kv_storage: bool) {
         self.is_kv_storage = is_kv_storage;
     }
 
@@ -229,7 +229,7 @@ impl Config {
         self.n_mrv
     }
 
-    pub fn set_n_mrv(&mut self, n_mrv: usize){
+    pub fn set_n_mrv(&mut self, n_mrv: usize) {
         self.n_mrv = n_mrv;
     }
 

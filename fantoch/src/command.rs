@@ -1,13 +1,13 @@
 use crate::executor::ExecutorResult;
 use crate::id::{Rifl, ShardId};
-use crate::store::{StorageOp, StorageOpResult, Store, Key};
+use crate::store::Value;
+use crate::store::{Key, StorageOp, StorageOpResult, Store};
 use crate::HashMap;
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::fmt::{self, Debug};
 use std::iter::FromIterator;
 use std::sync::Arc;
-use rand::Rng;
-use crate::store::Value;
 
 pub const DEFAULT_SHARD_ID: ShardId = 0;
 
@@ -15,6 +15,7 @@ pub const DEFAULT_SHARD_ID: ShardId = 0;
 pub struct Command {
     rifl: Rifl,
     shard_to_ops: HashMap<ShardId, HashMap<Key, Arc<Vec<StorageOp>>>>,
+    shard_to_n_deps_ops: HashMap<ShardId, HashMap<Key, Arc<Vec<Vec<usize>>>>>,
     // mapping from shard to the keys on that shard; this will be used by
     // `Tempo` to exchange `MStable` messages between shards
     shard_to_keys: Arc<HashMap<ShardId, Vec<Key>>>,
@@ -30,7 +31,10 @@ impl Command {
         shard_to_ops: HashMap<ShardId, HashMap<Key, Vec<StorageOp>>>,
     ) -> Self {
         let mut shard_to_keys: HashMap<ShardId, Vec<Key>> = Default::default();
-        let shard_to_ops = shard_to_ops
+        let new_shard_to_ops: HashMap<
+            ShardId,
+            HashMap<Key, Arc<Vec<StorageOp>>>,
+        > = shard_to_ops
             .into_iter()
             .map(|(shard_id, shard_ops)| {
                 (
@@ -51,9 +55,36 @@ impl Command {
                 )
             })
             .collect();
+
+        let shard_to_n_deps_ops: HashMap<
+            ShardId,
+            HashMap<Key, Arc<Vec<Vec<usize>>>>,
+        > = new_shard_to_ops
+            .iter()
+            .map(|(&shard_id, shard_ops)| {
+                (
+                    shard_id,
+                    shard_ops
+                        .iter()
+                        .map(|(key, _)| {
+                            // populate `shard_to_keys`
+                            shard_to_keys
+                                .entry(shard_id)
+                                .or_default()
+                                .push(key.clone());
+
+                            // `Arc` the ops on this key with an empty Vec
+                            (key.clone(), Arc::new(vec![]))
+                        })
+                        .collect(),
+                )
+            })
+            .collect();
+
         Self {
             rifl,
-            shard_to_ops,
+            shard_to_ops: new_shard_to_ops,
+            shard_to_n_deps_ops,
             shard_to_keys: Arc::new(shard_to_keys),
             _empty_keys: HashMap::new(),
         }
@@ -123,7 +154,11 @@ impl Command {
 
     /// Returns references to the operations accessed by this command on the shard and key
     /// provided.
-    pub fn operations(&self, shard_id: ShardId, key: &Key) -> impl Iterator<Item = &StorageOp> {
+    pub fn operations(
+        &self,
+        shard_id: ShardId,
+        key: &Key,
+    ) -> impl Iterator<Item = &StorageOp> {
         self.shard_to_ops
             .get(&shard_id)
             .and_then(|shard_ops| shard_ops.get(key))
@@ -260,7 +295,11 @@ impl CommandResultBuilder {
 
     /// Adds a partial command result to the overall result.
     /// Returns a boolean indicating whether the full result is ready.
-    pub fn add_partial(&mut self, key: Key, partial_results: Vec<StorageOpResult>) {
+    pub fn add_partial(
+        &mut self,
+        key: Key,
+        partial_results: Vec<StorageOpResult>,
+    ) {
         // add op result for `key`
         let res = self.results.insert(key, partial_results);
 
@@ -283,7 +322,10 @@ pub struct CommandResult {
 
 impl CommandResult {
     /// Creates a new `CommandResult`.
-    pub fn new(rifl: Rifl, results: HashMap<Key, Vec<StorageOpResult>>) -> Self {
+    pub fn new(
+        rifl: Rifl,
+        results: HashMap<Key, Vec<StorageOpResult>>,
+    ) -> Self {
         CommandResult { rifl, results }
     }
 
@@ -316,7 +358,8 @@ mod tests {
         let value = rand::thread_rng().gen_range(0..Value::MAX);
         Command::from(
             rifl,
-            keys.into_iter().map(|key| (key.clone(), StorageOp::Put(value))),
+            keys.into_iter()
+                .map(|key| (key.clone(), StorageOp::Put(value))),
         )
     }
 

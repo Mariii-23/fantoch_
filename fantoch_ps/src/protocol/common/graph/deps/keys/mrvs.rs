@@ -1,12 +1,11 @@
+use crate::protocol::DEFAULT_N_MRV;
 
 use super::{Dependency, LatestDep, LatestRWDep};
 use fantoch::command::Command;
 use fantoch::id::{Dot, ShardId};
-use fantoch::store::{StorageOp, Key};
+use fantoch::store::{Key, StorageOp};
 use fantoch::{HashMap, HashSet};
 use rand::Rng;
-
-const N: usize = 30;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LatestRWDepArray {
@@ -19,16 +18,16 @@ impl Default for LatestRWDepArray {
     fn default() -> Self {
         let mut data = Vec::new();
 
-        for _ in 0..N {
-            data.push(LatestRWDep{
+        for _ in 0..DEFAULT_N_MRV {
+            data.push(LatestRWDep {
                 read: None,
-                write: None
+                write: None,
             })
         }
 
         LatestRWDepArray {
             data,
-            n:N,
+            n: DEFAULT_N_MRV,
         }
     }
 }
@@ -37,6 +36,7 @@ impl Default for LatestRWDepArray {
 pub struct MultiRecordValues {
     shard_id: ShardId,
     nfr: bool,
+    n_mrv: usize,
     latest: HashMap<Key, LatestRWDepArray>,
     latest_noop: LatestDep,
 }
@@ -44,7 +44,6 @@ pub struct MultiRecordValues {
 pub type KeyDepsMRV = HashMap<Key, Vec<usize>>;
 
 impl MultiRecordValues {
-
     fn maybe_add_noop_latest(&self, deps: &mut HashSet<Dependency>) {
         if let Some(dep) = self.latest_noop.as_ref() {
             deps.insert(dep.clone());
@@ -73,37 +72,36 @@ impl MultiRecordValues {
         // iterate through all command keys, get their current latest and set
         // ourselves to be the new latest
         cmd.keys(self.shard_id).for_each(|key| {
-
             let operations = cmd.operations(self.shard_id, key);
             for op in operations {
                 // get latest read and write on this key
 
-                let deps_n : Vec<usize> = match keys_deps.get(key) {
-                   Some(value)  => value.clone(),
-                   None => {
-                    match op {
+                let deps_n: Vec<usize> = match keys_deps.get(key) {
+                    Some(value) => value.clone(),
+                    None => match op {
                         StorageOp::Add(_) | StorageOp::Subtract(_) => {
-                            let n = rand::thread_rng().gen_range(0..N);
+                            let n =
+                                rand::thread_rng().gen_range(0..DEFAULT_N_MRV);
                             let vec = vec![n];
                             keys_deps.insert(key.clone(), vec.clone());
                             vec
-                        },
-                        StorageOp::Delete |  StorageOp::Get | StorageOp::Put(_) => {
+                        }
+                        StorageOp::Delete
+                        | StorageOp::Get
+                        | StorageOp::Put(_) => {
                             let mut vec = Vec::new();
-                            for i in 0..N {
+                            for i in 0..DEFAULT_N_MRV {
                                 vec.push(i);
-                            };
+                            }
                             keys_deps.insert(key.clone(), vec.clone());
                             vec
                         }
-                    }
-                   }
+                    },
                 };
 
                 for n in deps_n {
                     let latest_rw = match self.latest.get_mut(key) {
-
-                        Some(vec) => { 
+                        Some(vec) => {
                             if let Some(value) = vec.data.get_mut(n) {
                                 value
                             } else {
@@ -111,13 +109,19 @@ impl MultiRecordValues {
                                 panic!("should ...");
                                 // self.latest.entry(key.clone()).or_default()
                             }
-                        },
+                        }
                         None => {
-                            &mut self.latest.entry(key.clone()).or_default().data[n]
-                        },
+                            &mut self
+                                .latest
+                                .entry(key.clone())
+                                .or_default()
+                                .data[n]
+                        }
                     };
 
-                    super::maybe_add_deps(read_only, self.nfr, latest_rw, &mut deps);
+                    super::maybe_add_deps(
+                        read_only, self.nfr, latest_rw, &mut deps,
+                    );
 
                     // finally, store the command
                     if read_only {
@@ -137,7 +141,6 @@ impl MultiRecordValues {
         // and finally return the computed deps
         (deps, keys_deps)
     }
-
 
     fn do_noop_deps(&self, deps: &mut HashSet<Dependency>) {
         // iterate through all keys, grab a read lock, and include their latest
@@ -163,7 +166,9 @@ impl MultiRecordValues {
             // get latest command on this key
             if let Some(vec) = self.latest.get(key) {
                 for latest_rw in vec.data {
-                    super::maybe_add_deps(read_only, self.nfr, &latest_rw, deps);
+                    super::maybe_add_deps(
+                        read_only, self.nfr, &latest_rw, deps,
+                    );
                 }
             }
         });
@@ -188,12 +193,13 @@ impl MultiRecordValues {
     }
 
     /// Create a new `MultiRecordValuesKeyValues` instance.
-    pub fn new(shard_id: ShardId, nfr: bool) -> Self {
+    pub fn new(shard_id: ShardId, nfr: bool, n_mrv: usize) -> Self {
         Self {
             shard_id,
             nfr,
             latest: HashMap::new(),
             latest_noop: None,
+            n_mrv,
         }
     }
 
@@ -210,8 +216,8 @@ impl MultiRecordValues {
             None => HashSet::new(),
         };
         match keys_deps {
-           None => self.do_add_cmd(dot, cmd, deps, HashMap::new()),
-           Some(value) => self.do_add_cmd(dot, cmd, deps, value),
+            None => self.do_add_cmd(dot, cmd, deps, HashMap::new()),
+            Some(value) => self.do_add_cmd(dot, cmd, deps, value),
         }
     }
 
