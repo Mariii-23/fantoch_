@@ -56,7 +56,7 @@ impl MultiRecordValues {
         cmd: &Command,
         mut deps: HashSet<Dependency>,
         mut keys_deps: KeyDepsMRV,
-    ) -> (HashSet<Dependency>, KeyDepsMRV) {
+    ) -> (HashSet<Dependency>, KeyDepsMRV, Command) {
         // create cmd dep
         let cmd_dep = Dependency::from_cmd(dot, cmd);
 
@@ -69,13 +69,17 @@ impl MultiRecordValues {
             true
         });
 
+        let mut new_cmd = cmd.clone();
+
         // iterate through all command keys, get their current latest and set
         // ourselves to be the new latest
         cmd.keys(self.shard_id).for_each(|key| {
             let operations = cmd.operations(self.shard_id, key);
-            for op in operations {
+            for (op_index, op) in operations.enumerate() {
                 // get latest read and write on this key
 
+                //TODO: Se o cmd já tiver o n_deps preenchido é só ir buscar essas
+                //  dependencias e nao gerar novas
                 let deps_n: Vec<usize> = match keys_deps.get(key) {
                     Some(value) => value.clone(),
                     None => match op {
@@ -98,6 +102,13 @@ impl MultiRecordValues {
                         }
                     },
                 };
+
+                new_cmd.update_n_deps_op(
+                    self.shard_id,
+                    key,
+                    op_index,
+                    deps_n.clone(),
+                );
 
                 for n in deps_n {
                     let latest_rw = match self.latest.get_mut(key) {
@@ -139,7 +150,7 @@ impl MultiRecordValues {
         self.maybe_add_noop_latest(&mut deps);
 
         // and finally return the computed deps
-        (deps, keys_deps)
+        (deps, keys_deps, new_cmd)
     }
 
     fn do_noop_deps(&self, deps: &mut HashSet<Dependency>) {
@@ -209,7 +220,7 @@ impl MultiRecordValues {
         cmd: &Command,
         past: Option<HashSet<Dependency>>,
         keys_deps: Option<KeyDepsMRV>,
-    ) -> (HashSet<Dependency>, KeyDepsMRV) {
+    ) -> (HashSet<Dependency>, KeyDepsMRV, Command) {
         // we start with past in case there's one, or bottom otherwise
         let deps = match past {
             Some(past) => past,

@@ -66,7 +66,7 @@ impl Command {
                     shard_id,
                     shard_ops
                         .iter()
-                        .map(|(key, _)| {
+                        .map(|(key, ops)| {
                             // populate `shard_to_keys`
                             shard_to_keys
                                 .entry(shard_id)
@@ -74,7 +74,7 @@ impl Command {
                                 .push(key.clone());
 
                             // `Arc` the ops on this key with an empty Vec
-                            (key.clone(), Arc::new(vec![]))
+                            (key.clone(), Arc::new(vec![Vec::new(); ops.len()]))
                         })
                         .collect(),
                 )
@@ -150,6 +150,32 @@ impl Command {
             .get(&shard_id)
             .map(|shard_ops| shard_ops.keys())
             .unwrap_or_else(|| self._empty_keys.keys())
+    }
+
+    pub fn update_n_deps_op(
+        &mut self,
+        shard_id: ShardId,
+        key: &Key,
+        op: usize,
+        n_deps: Vec<usize>,
+    ) {
+        if let Some(shards_ops) = self.shard_to_n_deps_ops.get_mut(&shard_id) {
+            if let Some(deps_vec) = shards_ops.get_mut(key) {
+                if let Some(deps) = Arc::get_mut(deps_vec) {
+                    if op < deps.len() {
+                        deps[op] = n_deps;
+                    } else {
+                        panic!("Index out of bounds: op {}", op);
+                    }
+                } else {
+                    panic!("Cannot get mutable reference to deps_vec");
+                }
+            } else {
+                panic!("Key not found: {}", key);
+            }
+        } else {
+            panic!("ShardId not found: {}", shard_id);
+        }
     }
 
     /// Returns references to the operations accessed by this command on the shard and key

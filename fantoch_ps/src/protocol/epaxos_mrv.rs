@@ -208,13 +208,14 @@ impl EPaxosMRV {
         let dot = dot.unwrap_or_else(|| self.bp.next_dot());
 
         // compute its deps
-        let (deps, keys_n) = self.key_deps.add_cmd(dot, &cmd, None, None);
+        let (deps, keys_n, new_cmd) =
+            self.key_deps.add_cmd(dot, &cmd, None, None);
 
         // create `MCollect` and target
         let quorum = self.bp.maybe_adjust_fast_quorum(&cmd);
         let mcollect = MessageMRV::MCollect {
             dot,
-            cmd,
+            cmd: new_cmd,
             deps,
             quorum,
             keys_n,
@@ -282,7 +283,7 @@ impl EPaxosMRV {
             (remote_deps, key_deps)
         } else {
             // otherwise, compute deps with the remote deps as past
-            let (deps, n_deps) = self.key_deps.add_cmd(
+            let (deps, n_deps, _) = self.key_deps.add_cmd(
                 dot,
                 &cmd,
                 Some(remote_deps),
