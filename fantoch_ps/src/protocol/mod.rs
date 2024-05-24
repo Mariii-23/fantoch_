@@ -748,7 +748,7 @@ mod tests {
 
         // run simulation until the clients end + another 10 seconds (for GC)
         let extra_sim_time = Some(Duration::from_secs(10));
-        let (metrics, executors_monitors, _) = runner.run(extra_sim_time);
+        let (metrics, executors_monitors, _, _) = runner.run(extra_sim_time);
 
         // fetch slow paths and stable count from metrics
         let metrics = metrics

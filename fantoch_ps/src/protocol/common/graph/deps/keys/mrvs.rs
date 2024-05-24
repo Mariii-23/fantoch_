@@ -41,7 +41,7 @@ pub struct MultiRecordValues {
     latest_noop: LatestDep,
 }
 
-pub type KeyDepsMRV = HashMap<Key, Vec<usize>>;
+pub type KeyDepsMRV = HashMap<Key, Vec<Vec<usize>>>;
 
 impl MultiRecordValues {
     fn maybe_add_noop_latest(&self, deps: &mut HashSet<Dependency>) {
@@ -56,7 +56,7 @@ impl MultiRecordValues {
         cmd: &Command,
         mut deps: HashSet<Dependency>,
         mut keys_deps: KeyDepsMRV,
-    ) -> (HashSet<Dependency>, KeyDepsMRV, Command) {
+    ) -> (HashSet<Dependency>, KeyDepsMRV) {
         // create cmd dep
         let cmd_dep = Dependency::from_cmd(dot, cmd);
 
@@ -69,25 +69,25 @@ impl MultiRecordValues {
             true
         });
 
-        let mut new_cmd = cmd.clone();
-
         // iterate through all command keys, get their current latest and set
         // ourselves to be the new latest
         cmd.keys(self.shard_id).for_each(|key| {
             let operations = cmd.operations(self.shard_id, key);
-            for (op_index, op) in operations.enumerate() {
+            let n_key_dep: &mut Vec<Vec<usize>> =
+                keys_deps.entry(key.clone()).or_insert_with(Vec::new);
+
+            for (index, op) in operations.enumerate() {
                 // get latest read and write on this key
 
-                //TODO: Se o cmd já tiver o n_deps preenchido é só ir buscar essas
-                //  dependencias e nao gerar novas
-                let deps_n: Vec<usize> = match keys_deps.get(key) {
+                let op_n_deps = match n_key_dep.get(index) {
                     Some(value) => value.clone(),
                     None => match op {
                         StorageOp::Add(_) | StorageOp::Subtract(_) => {
                             let n =
                                 rand::thread_rng().gen_range(0..DEFAULT_N_MRV);
                             let vec = vec![n];
-                            keys_deps.insert(key.clone(), vec.clone());
+                            n_key_dep.insert(index, vec.clone());
+
                             vec
                         }
                         StorageOp::Delete
@@ -97,20 +97,13 @@ impl MultiRecordValues {
                             for i in 0..DEFAULT_N_MRV {
                                 vec.push(i);
                             }
-                            keys_deps.insert(key.clone(), vec.clone());
+                            n_key_dep.insert(index, vec.clone());
                             vec
                         }
                     },
                 };
 
-                new_cmd.update_n_deps_op(
-                    self.shard_id,
-                    key,
-                    op_index,
-                    deps_n.clone(),
-                );
-
-                for n in deps_n {
+                for n in op_n_deps {
                     let latest_rw = match self.latest.get_mut(key) {
                         Some(vec) => {
                             if let Some(value) = vec.data.get_mut(n) {
@@ -150,7 +143,7 @@ impl MultiRecordValues {
         self.maybe_add_noop_latest(&mut deps);
 
         // and finally return the computed deps
-        (deps, keys_deps, new_cmd)
+        (deps, keys_deps)
     }
 
     fn do_noop_deps(&self, deps: &mut HashSet<Dependency>) {
@@ -176,7 +169,7 @@ impl MultiRecordValues {
         cmd.keys(self.shard_id).for_each(|key| {
             // get latest command on this key
             if let Some(vec) = self.latest.get(key) {
-                for latest_rw in vec.data {
+                for latest_rw in &vec.data {
                     super::maybe_add_deps(
                         read_only, self.nfr, &latest_rw, deps,
                     );
@@ -220,7 +213,7 @@ impl MultiRecordValues {
         cmd: &Command,
         past: Option<HashSet<Dependency>>,
         keys_deps: Option<KeyDepsMRV>,
-    ) -> (HashSet<Dependency>, KeyDepsMRV, Command) {
+    ) -> (HashSet<Dependency>, KeyDepsMRV) {
         // we start with past in case there's one, or bottom otherwise
         let deps = match past {
             Some(past) => past,

@@ -1,7 +1,7 @@
 use crate::executor::ExecutorResult;
 use crate::id::{Rifl, ShardId};
 use crate::store::Value;
-use crate::store::{Key, StorageOp, StorageOpResult, Store};
+use crate::store::{Key, Storage, StorageOp, StorageOpResult};
 use crate::HashMap;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -9,6 +9,7 @@ use std::fmt::{self, Debug};
 use std::iter::FromIterator;
 use std::sync::Arc;
 
+pub type KeyDepsMRV = HashMap<Key, Vec<Vec<usize>>>;
 pub const DEFAULT_SHARD_ID: ShardId = 0;
 
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -152,32 +153,6 @@ impl Command {
             .unwrap_or_else(|| self._empty_keys.keys())
     }
 
-    pub fn update_n_deps_op(
-        &mut self,
-        shard_id: ShardId,
-        key: &Key,
-        op: usize,
-        n_deps: Vec<usize>,
-    ) {
-        if let Some(shards_ops) = self.shard_to_n_deps_ops.get_mut(&shard_id) {
-            if let Some(deps_vec) = shards_ops.get_mut(key) {
-                if let Some(deps) = Arc::get_mut(deps_vec) {
-                    if op < deps.len() {
-                        deps[op] = n_deps;
-                    } else {
-                        panic!("Index out of bounds: op {}", op);
-                    }
-                } else {
-                    panic!("Cannot get mutable reference to deps_vec");
-                }
-            } else {
-                panic!("Key not found: {}", key);
-            }
-        } else {
-            panic!("ShardId not found: {}", shard_id);
-        }
-    }
-
     /// Returns references to the operations accessed by this command on the shard and key
     /// provided.
     pub fn operations(
@@ -220,16 +195,23 @@ impl Command {
     pub fn execute<'a>(
         self,
         shard_id: ShardId,
-        store: &'a mut Store,
+        store: &'a mut Storage,
+        n_deps: Option<&'a KeyDepsMRV>,
     ) -> impl Iterator<Item = ExecutorResult> + 'a {
         let rifl = self.rifl;
+        static EMPTY_VEC: Vec<Vec<usize>> = Vec::new();
+
         self.into_iter(shard_id).map(move |(key, ops)| {
+            let n_Key_deps = match n_deps {
+                Some(n_deps) => n_deps.get(&key).unwrap_or(&EMPTY_VEC),
+                None => &EMPTY_VEC,
+            };
             // take the ops inside the arc if we're the last with a
             // reference to it (otherwise, clone them)
             let ops =
                 Arc::try_unwrap(ops).unwrap_or_else(|ops| ops.as_ref().clone());
             // execute this op
-            let partial_results = store.execute(&key, ops, rifl);
+            let partial_results = store.execute(&key, ops, rifl, n_Key_deps);
             ExecutorResult::new(rifl, key, partial_results)
         })
     }

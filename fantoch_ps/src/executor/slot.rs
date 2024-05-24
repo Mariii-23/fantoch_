@@ -4,8 +4,8 @@ use fantoch::executor::{
     ExecutionOrderMonitor, Executor, ExecutorMetrics, ExecutorResult,
 };
 use fantoch::id::{ProcessId, ShardId};
-use fantoch::store::Store;
 use fantoch::protocol::MessageIndex;
+use fantoch::store::Storage;
 use fantoch::time::SysTime;
 use fantoch::HashMap;
 use serde::{Deserialize, Serialize};
@@ -17,7 +17,7 @@ type Slot = u64;
 pub struct SlotExecutor {
     shard_id: ShardId,
     config: Config,
-    store: Store,
+    store: Storage,
     next_slot: Slot,
     // TODO maybe BinaryHeap
     to_execute: HashMap<Slot, Command>,
@@ -30,7 +30,8 @@ impl Executor for SlotExecutor {
 
     fn new(_process_id: ProcessId, shard_id: ShardId, config: Config) -> Self {
         //TODO: Change this
-        let store = Store::new(config.executor_monitor_execution_order(),true, None);
+        let store =
+            Storage::new(config.executor_monitor_execution_order(), true, None);
         // the next slot to be executed is 1
         let next_slot = 1;
         // there's nothing to execute in the beginning
@@ -98,7 +99,7 @@ impl SlotExecutor {
 
     fn execute(&mut self, cmd: Command) {
         // execute the command
-        let results = cmd.execute(self.shard_id, &mut self.store);
+        let results = cmd.execute(self.shard_id, &mut self.store, None);
         // update results if this rifl is pending
         self.to_clients.extend(results);
     }
@@ -142,20 +143,14 @@ mod tests {
 
         // create commands
         let key = String::from("a");
-        let cmd_1 = Command::from(
-            rifl_1,
-            vec![(key.clone(), StorageOp::Put(1))],
-        );
+        let cmd_1 =
+            Command::from(rifl_1, vec![(key.clone(), StorageOp::Put(1))]);
         let cmd_2 = Command::from(rifl_2, vec![(key.clone(), StorageOp::Get)]);
-        let cmd_3 = Command::from(
-            rifl_3,
-            vec![(key.clone(), StorageOp::Put(2))],
-        );
+        let cmd_3 =
+            Command::from(rifl_3, vec![(key.clone(), StorageOp::Put(2))]);
         let cmd_4 = Command::from(rifl_4, vec![(key.clone(), StorageOp::Get)]);
-        let cmd_5 = Command::from(
-            rifl_5,
-            vec![(key.clone(), StorageOp::Put(3))],
-        );
+        let cmd_5 =
+            Command::from(rifl_5, vec![(key.clone(), StorageOp::Put(3))]);
         let cmd_6 = Command::from(rifl_6, vec![(key.clone(), StorageOp::Get)]);
 
         // create expected results:

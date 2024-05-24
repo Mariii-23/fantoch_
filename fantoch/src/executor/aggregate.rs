@@ -90,7 +90,7 @@ impl AggregatePending {
 mod tests {
     use super::*;
     use crate::command::Command;
-    use crate::store::{StorageOp, Store};
+    use crate::store::{StorageOp, Storage};
 
     #[test]
     fn pending_flow() {
@@ -99,7 +99,7 @@ mod tests {
         let shard_id = 0;
         let mut pending = AggregatePending::new(process_id, shard_id);
         let monitor = false;
-        let mut store = Store::new(monitor, true,None);
+        let mut store = Storage::new(monitor, true,None);
 
         // keys and commands
         let key_a = String::from("A");

@@ -1,15 +1,16 @@
 use crate::executor::pred::PredecessorsGraph;
 use crate::protocol::common::pred::{CaesarDeps, Clock};
-use fantoch::command::Command;
+use fantoch::command::{Command, KeyDepsMRV};
 use fantoch::config::Config;
 use fantoch::executor::{
     ExecutionOrderMonitor, Executor, ExecutorMetrics, ExecutorResult,
 };
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::store::Store;
 use fantoch::protocol::{CommittedAndExecuted, MessageIndex};
+use fantoch::store::Storage;
 use fantoch::time::SysTime;
-use fantoch::trace;
+use fantoch::{trace, HashMap};
+use futures::future::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::sync::Arc;
@@ -19,7 +20,7 @@ pub struct PredecessorsExecutor {
     process_id: ProcessId,
     shard_id: ShardId,
     graph: PredecessorsGraph,
-    store: Store,
+    store: Storage,
     to_clients: VecDeque<ExecutorResult>,
 }
 
@@ -29,7 +30,8 @@ impl Executor for PredecessorsExecutor {
     fn new(process_id: ProcessId, shard_id: ShardId, config: Config) -> Self {
         let graph = PredecessorsGraph::new(process_id, &config);
         //TODO: change this
-        let store = Store::new(config.executor_monitor_execution_order(), true, None);
+        let store =
+            Storage::new(config.executor_monitor_execution_order(), true, None);
         let to_clients = Default::default();
         Self {
             process_id,
@@ -91,7 +93,7 @@ impl Executor for PredecessorsExecutor {
 impl PredecessorsExecutor {
     fn execute(&mut self, cmd: Command) {
         // execute the command
-        let results = cmd.execute(self.shard_id, &mut self.store);
+        let results = cmd.execute(self.shard_id, &mut self.store, None);
         self.to_clients.extend(results);
     }
 }

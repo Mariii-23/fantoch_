@@ -4,14 +4,16 @@ use crate::executor::{
     MessageKey,
 };
 use crate::id::{ProcessId, Rifl, ShardId};
-use crate::store::{StorageOp, Store, Key};
+use crate::store::{Key, Storage, StorageOp};
 use crate::time::SysTime;
+use hashbrown::HashMap;
 use serde::{Deserialize, Serialize};
+use std::hash::Hash;
 use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct BasicExecutor {
-    store: Store,
+    store: Storage,
     metrics: ExecutorMetrics,
     to_clients: Vec<ExecutorResult>,
 }
@@ -25,7 +27,7 @@ impl Executor for BasicExecutor {
         _config: Config,
     ) -> Self {
         let monitor = false;
-        let store = Store::new(monitor, true,None);
+        let store = Storage::new(monitor, true, None);
         let metrics = ExecutorMetrics::new();
         let to_clients = Vec::new();
 
@@ -43,7 +45,8 @@ impl Executor for BasicExecutor {
         let ops =
             Arc::try_unwrap(ops).unwrap_or_else(|ops| ops.as_ref().clone());
         // execute op in the `KVStore`
-        let partial_results = self.store.execute(&key, ops, rifl);
+        let partial_results = self.store.execute(&key, ops, rifl, &Vec::new());
+
         self.to_clients
             .push(ExecutorResult::new(rifl, key, partial_results));
     }

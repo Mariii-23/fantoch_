@@ -13,7 +13,7 @@ pub use executor::{GraphExecutionInfo, GraphExecutor};
 
 use self::index::{PendingIndex, VertexIndex};
 use self::tarjan::{FinderResult, TarjanSCCFinder, Vertex, SCC};
-use crate::protocol::common::graph::Dependency;
+use crate::protocol::common::graph::{Dependency, KeyDepsMRV};
 use fantoch::command::Command;
 use fantoch::config::Config;
 use fantoch::executor::{ExecutorMetrics, ExecutorMetricsKind};
@@ -42,6 +42,8 @@ pub enum RequestReply {
     },
 }
 
+pub type CommandAndNDeps = (Command, KeyDepsMRV);
+
 #[derive(Clone)]
 pub struct DependencyGraph {
     executor_index: usize,
@@ -56,7 +58,7 @@ pub struct DependencyGraph {
     // - `out_requests` dependencies to be able to order commands
     // - notifies remaining workers about what's been executed through
     //   `added_to_executed_clock`
-    to_execute: VecDeque<Command>,
+    to_execute: VecDeque<CommandAndNDeps>,
     out_requests: HashMap<ShardId, HashSet<Dot>>,
     added_to_executed_clock: HashSet<Dot>,
     // auxiliary workers (handles requests):
@@ -128,7 +130,7 @@ impl DependencyGraph {
 
     /// Returns a new command ready to be executed.
     #[must_use]
-    pub fn command_to_execute(&mut self) -> Option<Command> {
+    pub fn command_to_execute(&mut self) -> Option<CommandAndNDeps> {
         self.to_execute.pop_front()
     }
 
@@ -155,7 +157,7 @@ impl DependencyGraph {
     }
 
     #[cfg(test)]
-    fn commands_to_execute(&mut self) -> VecDeque<Command> {
+    fn commands_to_execute(&mut self) -> VecDeque<CommandAndNDeps> {
         std::mem::take(&mut self.to_execute)
     }
 
@@ -511,14 +513,14 @@ impl DependencyGraph {
             dots.push(dot);
 
             // get command
-            let (duration_ms, cmd) = vertex.into_command(time);
+            let (duration_ms, cmd, n_deps) = vertex.into_command(time);
 
             // save execution delay metric
             self.metrics
                 .collect(ExecutorMetricsKind::ExecutionDelay, duration_ms);
 
             // add command to commands to be executed
-            self.to_execute.push_back(cmd);
+            self.to_execute.push_back((cmd, n_deps));
         })
     }
 
@@ -692,7 +694,7 @@ mod tests {
     use super::*;
     use crate::util;
     use fantoch::id::{ClientId, Rifl, ShardId};
-    use fantoch::store::{StorageOp, Key};
+    use fantoch::store::{Key, StorageOp};
     use fantoch::time::RunTime;
     use fantoch::HashMap;
     use permutator::{Combination, Permutation};
@@ -750,7 +752,10 @@ mod tests {
         // add cmd 1
         queue.handle_add(dot_1, cmd_1.clone(), deps_1, &time);
         // check commands ready to be executed
-        assert_eq!(queue.commands_to_execute(), vec![cmd_0, cmd_1]);
+        assert_eq!(
+            queue.commands_to_execute(),
+            vec![(cmd_0, HashMap::new()), (cmd_1, HashMap::new())]
+        );
     }
 
     /// We have 5 commands by the same process (process A) that access the same
@@ -1088,7 +1093,7 @@ mod tests {
             let to_execute = queue.commands_to_execute();
 
             // for each command ready to be executed
-            to_execute.iter().for_each(|cmd| {
+            to_execute.iter().for_each(|(cmd, _)| {
                 // get its rifl
                 let rifl = cmd.rifl();
 
@@ -1144,10 +1149,7 @@ mod tests {
     fn check_sccs_found_with_missing_dep() -> bool {
         let conflicting_command = || {
             let rifl = Rifl::new(1, 1);
-            Command::from(
-                rifl,
-                vec![(String::from("CONF"), StorageOp::Put(2))],
-            )
+            Command::from(rifl, vec![(String::from("CONF"), StorageOp::Put(2))])
         };
 
         // create queue

@@ -1,6 +1,7 @@
 use crate::executor::{GraphExecutionInfo, GraphExecutor};
 use crate::protocol::common::graph::{
-    Dependency, KeyDeps, LockedKeyDeps, QuorumDeps, SequentialKeyDeps, MultiRecordValues
+    Dependency, KeyDeps, LockedKeyDeps, MultiRecordValues, QuorumDeps,
+    SequentialKeyDeps,
 };
 use crate::protocol::common::synod::{Synod, SynodMessage};
 use fantoch::command::Command;
@@ -405,8 +406,12 @@ impl<KD: KeyDeps> EPaxos<KD> {
 
         // create execution info
         let cmd = info.cmd.clone().expect("there should be a command payload");
-        let execution_info =
-            GraphExecutionInfo::add(dot, cmd, value.deps.clone());
+        let execution_info = GraphExecutionInfo::add(
+            dot,
+            cmd,
+            value.deps.clone(),
+            HashMap::new(),
+        );
         self.to_executors.push(execution_info);
 
         // update command info:

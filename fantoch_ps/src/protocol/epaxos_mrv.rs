@@ -140,18 +140,23 @@ impl Protocol for EPaxosMRV {
             } => {
                 self.handle_mcollect(from, dot, cmd, quorum, deps, time, keys_n)
             }
-            MessageMRV::MCollectAck { dot, deps } => {
-                self.handle_mcollectack(from, dot, deps, time)
+            MessageMRV::MCollectAck { dot, deps, keys_n } => {
+                self.handle_mcollectack(from, dot, deps, time, keys_n)
             }
-            MessageMRV::MCommit { dot, value } => {
-                self.handle_mcommit(from, dot, value, time)
+            MessageMRV::MCommit { dot, value, keys_n } => {
+                self.handle_mcommit(from, dot, value, time, keys_n)
             }
-            MessageMRV::MConsensus { dot, ballot, value } => {
-                self.handle_mconsensus(from, dot, ballot, value, time)
-            }
-            MessageMRV::MConsensusAck { dot, ballot } => {
-                self.handle_mconsensusack(from, dot, ballot, time)
-            }
+            MessageMRV::MConsensus {
+                dot,
+                ballot,
+                value,
+                keys_n,
+            } => self.handle_mconsensus(from, dot, ballot, value, time, keys_n),
+            MessageMRV::MConsensusAck {
+                dot,
+                ballot,
+                keys_n,
+            } => self.handle_mconsensusack(from, dot, ballot, time, keys_n),
             MessageMRV::MCommitDot { dot } => {
                 self.handle_mcommit_dot(from, dot, time)
             }
@@ -208,14 +213,13 @@ impl EPaxosMRV {
         let dot = dot.unwrap_or_else(|| self.bp.next_dot());
 
         // compute its deps
-        let (deps, keys_n, new_cmd) =
-            self.key_deps.add_cmd(dot, &cmd, None, None);
+        let (deps, keys_n) = self.key_deps.add_cmd(dot, &cmd, None, None);
 
         // create `MCollect` and target
         let quorum = self.bp.maybe_adjust_fast_quorum(&cmd);
         let mcollect = MessageMRV::MCollect {
             dot,
-            cmd: new_cmd,
+            cmd,
             deps,
             quorum,
             keys_n,
@@ -237,7 +241,7 @@ impl EPaxosMRV {
         quorum: HashSet<ProcessId>,
         remote_deps: HashSet<Dependency>,
         time: &dyn SysTime,
-        key_deps: KeyDepsMRV,
+        keys_n: KeyDepsMRV,
     ) {
         trace!(
             "p{}: MCollect({:?}, {:?}, {:?}) from {} | time={}",
@@ -250,7 +254,7 @@ impl EPaxosMRV {
         );
 
         // get cmd info
-        let info = self.cmds.get(dot);
+        let info: &mut EPaxosInfo = self.cmds.get(dot);
 
         // discard message if no longer in START
         if info.status != Status::START {
@@ -270,7 +274,7 @@ impl EPaxosMRV {
             // check if there's a buffered commit notification; if yes, handle
             // the commit again (since now we have the payload)
             if let Some((from, value)) = self.buffered_commits.remove(&dot) {
-                self.handle_mcommit(from, dot, value, time);
+                self.handle_mcommit(from, dot, value, time, keys_n);
             }
             return;
         }
@@ -280,14 +284,14 @@ impl EPaxosMRV {
 
         let (deps, n_deps) = if message_from_self {
             // if it is, do not recompute deps
-            (remote_deps, key_deps)
+            (remote_deps, keys_n)
         } else {
             // otherwise, compute deps with the remote deps as past
-            let (deps, n_deps, _) = self.key_deps.add_cmd(
+            let (deps, n_deps) = self.key_deps.add_cmd(
                 dot,
                 &cmd,
                 Some(remote_deps),
-                Some(key_deps),
+                Some(keys_n.clone()),
             );
             (deps, n_deps)
         };
@@ -305,7 +309,11 @@ impl EPaxosMRV {
 
         // create `MCollectAck` and target (only if not message from self)
         if !message_from_self {
-            let mcollectack = MessageMRV::MCollectAck { dot, deps };
+            let mcollectack = MessageMRV::MCollectAck {
+                dot,
+                deps,
+                keys_n: n_deps.clone(),
+            };
             let target = singleton![from];
 
             // save new action
@@ -322,6 +330,7 @@ impl EPaxosMRV {
         dot: Dot,
         deps: HashSet<Dependency>,
         _time: &dyn SysTime,
+        keys_n: KeyDepsMRV,
     ) {
         trace!(
             "p{}: MCollectAck({:?}, {:?}) from {} | time={}",
@@ -336,7 +345,7 @@ impl EPaxosMRV {
         assert_ne!(from, self.bp.process_id);
 
         // get cmd info
-        let info = self.cmds.get(dot);
+        let info: &mut EPaxosInfo = self.cmds.get(dot);
 
         // do nothing if we're no longer COLLECT
         if info.status != Status::COLLECT {
@@ -361,7 +370,7 @@ impl EPaxosMRV {
 
             if fast_path {
                 // fast path: create `MCommit`
-                let mcommit = MessageMRV::MCommit { dot, value };
+                let mcommit = MessageMRV::MCommit { dot, value, keys_n };
                 let target = self.bp.all();
 
                 // save new action
@@ -372,7 +381,12 @@ impl EPaxosMRV {
             } else {
                 // slow path: create `MConsensus`
                 let ballot = info.synod.skip_prepare();
-                let mconsensus = MessageMRV::MConsensus { dot, ballot, value };
+                let mconsensus = MessageMRV::MConsensus {
+                    dot,
+                    ballot,
+                    value,
+                    keys_n,
+                };
                 let target = self.bp.write_quorum();
                 // save new action
                 self.to_processes.push(Action::ToSend {
@@ -389,6 +403,7 @@ impl EPaxosMRV {
         dot: Dot,
         value: ConsensusValue,
         _time: &dyn SysTime,
+        keys_n: KeyDepsMRV,
     ) {
         trace!(
             "p{}: MCommit({:?}, {:?}) | time={}",
@@ -422,7 +437,7 @@ impl EPaxosMRV {
         // create execution info
         let cmd = info.cmd.clone().expect("there should be a command payload");
         let execution_info =
-            GraphExecutionInfo::add(dot, cmd, value.deps.clone());
+            GraphExecutionInfo::add(dot, cmd, value.deps.clone(), keys_n);
         self.to_executors.push(execution_info);
 
         // update command info:
@@ -450,6 +465,7 @@ impl EPaxosMRV {
         ballot: u64,
         value: ConsensusValue,
         _time: &dyn SysTime,
+        keys_n: KeyDepsMRV,
     ) {
         trace!(
             "p{}: MConsensus({:?}, {}, {:?}) | time={}",
@@ -470,11 +486,11 @@ impl EPaxosMRV {
         {
             Some(SynodMessage::MAccepted(ballot)) => {
                 // the accept message was accepted: create `MConsensusAck`
-                MessageMRV::MConsensusAck { dot, ballot }
+                MessageMRV::MConsensusAck { dot, ballot, keys_n }
             }
             Some(SynodMessage::MChosen(value)) => {
                 // the value has already been chosen: create `MCommit`
-                MessageMRV::MCommit { dot, value }
+                MessageMRV::MCommit { dot, value,keys_n }
             }
             None => {
                 // ballot too low to be accepted: nothing to do
@@ -498,6 +514,7 @@ impl EPaxosMRV {
         dot: Dot,
         ballot: u64,
         _time: &dyn SysTime,
+        keys_n: KeyDepsMRV,
     ) {
         trace!(
             "p{}: MConsensusAck({:?}, {}) | time={}",
@@ -515,7 +532,7 @@ impl EPaxosMRV {
             Some(SynodMessage::MChosen(value)) => {
                 // enough accepts were gathered and the value has been chosen: create `MCommit` and target
                 let target = self.bp.all();
-                let mcommit = MessageMRV::MCommit { dot, value };
+                let mcommit = MessageMRV::MCommit { dot, value, keys_n };
 
                 // save new action
                 self.to_processes.push(Action::ToSend {
@@ -692,19 +709,23 @@ pub enum MessageMRV {
     MCollectAck {
         dot: Dot,
         deps: HashSet<Dependency>,
+        keys_n: KeyDepsMRV,
     },
     MCommit {
         dot: Dot,
         value: ConsensusValue,
+        keys_n: KeyDepsMRV,
     },
     MConsensus {
         dot: Dot,
         ballot: u64,
         value: ConsensusValue,
+        keys_n: KeyDepsMRV,
     },
     MConsensusAck {
         dot: Dot,
         ballot: u64,
+        keys_n: KeyDepsMRV,
     },
     MCommitDot {
         dot: Dot,

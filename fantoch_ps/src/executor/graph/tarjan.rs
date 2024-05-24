@@ -1,12 +1,12 @@
 use super::index::{VertexIndex, VertexRef};
-use crate::protocol::common::graph::Dependency;
+use crate::protocol::common::graph::{Dependency, KeyDepsMRV};
 use fantoch::command::Command;
 use fantoch::config::Config;
 use fantoch::id::{Dot, ProcessId};
-use fantoch::singleton;
 use fantoch::time::SysTime;
 use fantoch::HashSet;
 use fantoch::{debug, trace};
+use fantoch::{singleton, HashMap};
 use std::cmp;
 use std::collections::BTreeSet;
 use threshold::AEClock;
@@ -318,6 +318,7 @@ pub struct Vertex {
     pub dot: Dot,
     pub cmd: Command,
     pub deps: Vec<Dependency>,
+    pub n_deps: KeyDepsMRV,
     pub start_time_ms: u64,
     // specific to tarjan's algorithm
     id: usize,
@@ -341,13 +342,17 @@ impl Vertex {
             id: 0,
             low: 0,
             on_stack: false,
+            n_deps: HashMap::new(),
         }
     }
 
     /// Consumes the vertex, returning its command.
-    pub fn into_command(self, time: &dyn SysTime) -> (u64, Command) {
+    pub fn into_command(
+        self,
+        time: &dyn SysTime,
+    ) -> (u64, Command, KeyDepsMRV) {
         let end_time_ms = time.millis();
         let duration_ms = end_time_ms - self.start_time_ms;
-        (duration_ms, self.cmd)
+        (duration_ms, self.cmd, self.n_deps)
     }
 }

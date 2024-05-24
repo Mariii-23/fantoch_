@@ -1,13 +1,13 @@
 use crate::executor::graph::DependencyGraph;
-use crate::protocol::common::graph::Dependency;
+use crate::protocol::common::graph::{Dependency, KeyDepsMRV};
 use fantoch::command::Command;
 use fantoch::config::Config;
 use fantoch::executor::{
     ExecutionOrderMonitor, Executor, ExecutorMetrics, ExecutorResult,
 };
 use fantoch::id::{Dot, ProcessId, ShardId};
-use fantoch::store::{Key, StorageOp, Store};
 use fantoch::protocol::MessageIndex;
+use fantoch::store::{Key, Storage, StorageOp};
 use fantoch::time::SysTime;
 use fantoch::HashSet;
 use fantoch::{debug, trace};
@@ -23,7 +23,7 @@ pub struct GraphExecutor {
     shard_id: ShardId,
     config: Config,
     graph: DependencyGraph,
-    store: Store,
+    store: Storage,
     to_clients: VecDeque<ExecutorResult>,
     to_executors: Vec<(ShardId, GraphExecutionInfo)>,
 }
@@ -36,7 +36,11 @@ impl Executor for GraphExecutor {
         let executor_index = 0;
         let graph = DependencyGraph::new(process_id, shard_id, &config);
         //TODO: Change this
-        let store = Store::new(config.executor_monitor_execution_order(), config.is_kv_storage(), None);
+        let store = Storage::new(
+            config.executor_monitor_execution_order(),
+            config.is_kv_storage(),
+            None,
+        );
         let to_clients = Default::default();
         let to_executors = Default::default();
         Self {
@@ -69,9 +73,14 @@ impl Executor for GraphExecutor {
 
     fn handle(&mut self, info: GraphExecutionInfo, time: &dyn SysTime) {
         match info {
-            GraphExecutionInfo::Add { dot, cmd, deps } => {
+            GraphExecutionInfo::Add {
+                dot,
+                cmd,
+                deps,
+                n_deps,
+            } => {
                 if self.config.execute_at_commit() {
-                    self.execute(cmd);
+                    self.execute(cmd, n_deps);
                 } else {
                     // handle new command
                     let deps = Vec::from_iter(deps);
@@ -130,7 +139,7 @@ impl GraphExecutor {
 
     fn fetch_commands_to_execute(&mut self, _time: &dyn SysTime) {
         // get more commands that are ready to be executed
-        while let Some(cmd) = self.graph.command_to_execute() {
+        while let Some((cmd, n_deps)) = self.graph.command_to_execute() {
             trace!(
                 "p{}: @{} GraphExecutor::comands_to_execute {:?} | time = {}",
                 self.process_id,
@@ -138,7 +147,7 @@ impl GraphExecutor {
                 cmd.rifl(),
                 _time.millis()
             );
-            self.execute(cmd);
+            self.execute(cmd, n_deps);
         }
     }
 
@@ -186,9 +195,10 @@ impl GraphExecutor {
         }
     }
 
-    fn execute(&mut self, cmd: Command) {
+    fn execute(&mut self, cmd: Command, n_deps: KeyDepsMRV) {
         // execute the command
-        let results = cmd.execute(self.shard_id, &mut self.store);
+        let results =
+            cmd.execute(self.shard_id, &mut self.store, Some(&n_deps));
         self.to_clients.extend(results);
     }
 }
@@ -205,6 +215,7 @@ pub enum GraphExecutionInfo {
         dot: Dot,
         cmd: Command,
         deps: HashSet<Dependency>,
+        n_deps: KeyDepsMRV,
     },
     Request {
         from: ShardId,
@@ -219,8 +230,18 @@ pub enum GraphExecutionInfo {
 }
 
 impl GraphExecutionInfo {
-    pub fn add(dot: Dot, cmd: Command, deps: HashSet<Dependency>) -> Self {
-        Self::Add { dot, cmd, deps }
+    pub fn add(
+        dot: Dot,
+        cmd: Command,
+        deps: HashSet<Dependency>,
+        n_deps: KeyDepsMRV,
+    ) -> Self {
+        Self::Add {
+            dot,
+            cmd,
+            deps,
+            n_deps,
+        }
     }
 
     fn request(from: ShardId, dots: HashSet<Dot>) -> Self {

@@ -447,8 +447,12 @@ impl<KD: KeyDeps> Atlas<KD> {
             .expect("there should be a command payload");
 
         // create execution info
-        let execution_info =
-            GraphExecutionInfo::add(dot, cmd.clone(), value.deps.clone());
+        let execution_info = GraphExecutionInfo::add(
+            dot,
+            cmd.clone(),
+            value.deps.clone(),
+            HashMap::new(),
+        );
         self.to_executors.push(execution_info);
 
         // update command info:

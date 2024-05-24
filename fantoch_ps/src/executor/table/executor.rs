@@ -6,11 +6,11 @@ use fantoch::executor::{
     MessageKey,
 };
 use fantoch::id::{Dot, ProcessId, Rifl, ShardId};
-use fantoch::store::{StorageOp, Store, Key};
 use fantoch::shared::SharedMap;
+use fantoch::store::{Key, Storage, StorageOp};
 use fantoch::time::SysTime;
-use fantoch::trace;
 use fantoch::HashMap;
+use fantoch::{trace, HashSet};
 use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
@@ -22,7 +22,7 @@ pub struct TableExecutor {
     shard_id: ShardId,
     execute_at_commit: bool,
     table: MultiVotesTable,
-    store: Store,
+    store: Storage,
     metrics: ExecutorMetrics,
     to_clients: VecDeque<ExecutorResult>,
     to_executors: Vec<(ShardId, TableExecutionInfo)>,
@@ -87,7 +87,8 @@ impl Executor for TableExecutor {
             stability_threshold,
         );
         //TODO: Change this
-        let store = Store::new(config.executor_monitor_execution_order(), true, None);
+        let store =
+            Storage::new(config.executor_monitor_execution_order(), true, None);
         let metrics = ExecutorMetrics::new();
         let to_clients = Default::default();
         let to_executors = Default::default();
@@ -281,7 +282,7 @@ impl TableExecutor {
     fn execute_single_or_mark_it_as_stable(
         key: &Key,
         mut pending: Pending,
-        store: &mut Store,
+        store: &mut Storage,
         to_clients: &mut VecDeque<ExecutorResult>,
         to_executors: &mut Vec<(ShardId, TableExecutionInfo)>,
         stable_shards_buffered: &mut HashMap<Rifl, usize>,
@@ -366,7 +367,7 @@ impl TableExecutor {
     fn do_execute(
         key: Key,
         stable: Pending,
-        store: &mut Store,
+        store: &mut Storage,
         to_clients: &mut VecDeque<ExecutorResult>,
     ) {
         // take the ops inside the arc if we're the last with a reference to it
@@ -376,7 +377,7 @@ impl TableExecutor {
         let ops =
             Arc::try_unwrap(ops).unwrap_or_else(|ops| ops.as_ref().clone());
         // execute ops in the `KVStore`
-        let partial_results = store.execute(&key, ops, rifl);
+        let partial_results = store.execute(&key, ops, rifl, &Vec::new());
         to_clients.push_back(ExecutorResult::new(rifl, key, partial_results));
     }
 }

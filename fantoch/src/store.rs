@@ -1,21 +1,20 @@
-use crate::executor::ExecutionOrderMonitor;
+use std::vec;
+
 use crate::id::Rifl;
 use crate::HashMap;
-use serde::{Deserialize, Serialize};
+use crate::{command::KeyDepsMRV, executor::ExecutionOrderMonitor};
 use rand::Rng;
+use serde::{Deserialize, Serialize};
 
 // Definition of `Key` and `Value` types.
 pub type Key = String;
 pub type Value = u16;
 
-
-#[derive(
-    Debug, Clone, PartialEq, Eq, Serialize, Deserialize,
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum StorageOp {
     Get,
     Put(Value),
-    Add(Value ),
+    Add(Value),
     Subtract(Value),
     Delete,
 }
@@ -23,16 +22,20 @@ pub enum StorageOp {
 pub type StorageOpResult = Option<Value>;
 
 #[derive(Default, Clone)]
-pub struct Store {
+pub struct Storage {
     store: HashMap<Key, Vec<Value>>,
     monitor: Option<ExecutionOrderMonitor>,
     is_kv_storage: bool,
-    number: usize
+    number: usize,
 }
 
-impl Store {
+impl Storage {
     /// Creates a new `KVStore` instance.
-    pub fn new(monitor_execution_order: bool, is_kv_storage: bool, n: Option<usize>) -> Self {
+    pub fn new(
+        monitor_execution_order: bool,
+        is_kv_storage: bool,
+        n: Option<usize>,
+    ) -> Self {
         let monitor = if monitor_execution_order {
             Some(ExecutionOrderMonitor::new())
         } else {
@@ -53,8 +56,12 @@ impl Store {
 
     /// Executes `StorageOp`s in the `KVStore`.
     #[cfg(test)]
-    pub fn test_execute(&mut self, key: &Key, op: StorageOp) -> StorageOpResult {
-        let mut results = self.do_execute(key, vec![op]);
+    pub fn test_execute(
+        &mut self,
+        key: &Key,
+        op: StorageOp,
+    ) -> StorageOpResult {
+        let mut results = self.do_execute(key, vec![op], &Vec::new());
         assert_eq!(results.len(), 1);
         results.pop().unwrap()
     }
@@ -64,25 +71,30 @@ impl Store {
         key: &Key,
         ops: Vec<StorageOp>,
         rifl: Rifl,
+        n_deps: &Vec<Vec<usize>>,
     ) -> Vec<StorageOpResult> {
         // update monitor, if we're monitoring
         if let Some(monitor) = self.monitor.as_mut() {
             let read_only = ops.iter().all(|op| op == &StorageOp::Get);
             monitor.add(&key, read_only, rifl);
         }
-        self.do_execute(key, ops)
+        self.do_execute(&key, ops, n_deps)
     }
 
-    pub fn get_n_deps_by_cmd(&self, key: Key, op: StorageOp) -> Option<Vec<usize>> {
+    pub fn get_n_deps_by_cmd(
+        &self,
+        key: Key,
+        op: StorageOp,
+    ) -> Option<Vec<usize>> {
         match op {
-            StorageOp::Delete |  StorageOp::Get | StorageOp::Put(_) => {
+            StorageOp::Delete | StorageOp::Get | StorageOp::Put(_) => {
                 let mut vec = Vec::new();
                 for i in 0..self.number {
                     vec.push(i);
-                };
+                }
 
                 Some(vec)
-            },
+            }
             StorageOp::Add(_) => {
                 let n = rand::thread_rng().gen_range(0..self.number);
                 let vec = vec![n];
@@ -115,78 +127,87 @@ impl Store {
                             vec.push(i);
                         }
 
-
                         if value_consumed >= value {
                             return Some(vec);
                         }
                         None
                     }
                 }
-
             }
         }
     }
 
     #[allow(clippy::ptr_arg)]
-    fn do_execute(&mut self, key: &Key, ops: Vec<StorageOp>) -> Vec<StorageOpResult> {
+    fn do_execute(
+        &mut self,
+        key: &Key,
+        ops: Vec<StorageOp>,
+        n_deps: &Vec<Vec<usize>>,
+    ) -> Vec<StorageOpResult> {
         ops.into_iter()
-            .map(|op| self.do_execute_op(key, op))
+            .enumerate()
+            .map(|(index, op)| {
+                self.do_execute_op(
+                    key,
+                    op,
+                    n_deps.get(index).unwrap_or(&vec![]).clone(),
+                )
+            })
             .collect()
     }
 
-    //TODO: Criar funcao para  verificar as dependencias de uma dada operacao para uma dada chave
-
-    
-    //TODO: verificar as dependencias
-    fn do_execute_op(&mut self, key: &Key, op: StorageOp) -> StorageOpResult {
-
+    fn do_execute_op(
+        &mut self,
+        key: &Key,
+        op: StorageOp,
+        n_deps: Vec<usize>,
+    ) -> StorageOpResult {
         match op {
             StorageOp::Get => match self.store.get(key) {
                 None => None,
-                Some(values) => Some(values.iter().sum())
+                Some(values) => Some(values.iter().sum()),
             },
             StorageOp::Delete => match self.store.get(key) {
                 None => None,
                 Some(values) => {
-                    let sum =  values.iter().sum();
+                    let sum = values.iter().sum();
                     self.store.remove(key);
                     Some(sum)
                 }
             },
             StorageOp::Put(value) => {
-                    if self.is_kv_storage {
-                        self.store.insert(key.to_string(), vec![value]);
-                    } else {
-                        // 1. get dependencia
-                        // 2. Adicionar nesse n o valor
-                    }
-                    None
+                if self.is_kv_storage {
+                    self.store.insert(key.to_string(), vec![value]);
+                } else {
+                    // 1. get dependencia
+                    // 2. Adicionar nesse n o valor
+                }
+                None
             }
             StorageOp::Add(value) => {
-                    if self.is_kv_storage {
-                        if let Some(old_value) = self.store.get_mut(key) {
-                             // In case the sum overflows, we will put the maximum possible value
-                             return match old_value[0].checked_add(value) {
-                                 Some(new_value) => {
-                                     old_value[0] = new_value;
-                                     Some(new_value)
-                                 },
-                                 None => {
-                                     let new_value = Value::MAX;
-                                     old_value[0] = new_value;
-                                     Some(new_value)
-                                 }
-                             }
-                        }
-                    } else {
-                        // 1. get dependencia
-                        // 2. Adicionar nesse n o valor
-                    }
-                    None
-            }
-            StorageOp::Subtract(value ) => {
                 if self.is_kv_storage {
-
+                    if let Some(old_value) = self.store.get_mut(key) {
+                        // In case the sum overflows, we will put the maximum possible value
+                        return match old_value[0].checked_add(value) {
+                            Some(new_value) => {
+                                old_value[0] = new_value;
+                                Some(new_value)
+                            }
+                            None => {
+                                let new_value = Value::MAX;
+                                old_value[0] = new_value;
+                                Some(new_value)
+                            }
+                        };
+                    }
+                } else {
+                    // 1. get dependencia
+                    // 2. Adicionar nesse n o valor
+                }
+                None
+            }
+            StorageOp::Subtract(value) => {
+                if self.is_kv_storage {
                     // don't return the previous value
                     if let Some(old_value) = self.store.get_mut(key) {
                         // In case the subtraction overflows, we will put the minimum possible value
@@ -194,16 +215,15 @@ impl Store {
                             Some(new_value) => {
                                 old_value[0] = new_value;
                                 Some(new_value)
-                            },
+                            }
                             None => {
                                 let new_value = Value::MIN;
                                 old_value[0] = new_value;
                                 Some(new_value)
                             }
-                        }
-                    } 
-
-                } else  {
+                        };
+                    }
+                } else {
                     // verificar dependencias
                 }
                 None
@@ -229,7 +249,7 @@ mod tests {
 
         // store
         let monitor = false;
-        let mut store = Store::new(monitor, true,None);
+        let mut store = Storage::new(monitor, true, None);
 
         // get key_a    -> none
         assert_eq!(store.test_execute(&key_a, StorageOp::Get), None);
@@ -287,12 +307,11 @@ mod tests {
         assert_eq!(store.test_execute(&key_a, StorageOp::Get), None);
     }
 
-
     #[test]
     fn add_flow() {
         // store
         let monitor = false;
-        let mut store = Store::new(monitor, true,None);
+        let mut store = Storage::new(monitor, true, None);
 
         let key_c = String::from("Add");
         let value_x = 12;
@@ -301,17 +320,23 @@ mod tests {
         // put key_c value_x -> 12
         assert_eq!(store.test_execute(&key_c, StorageOp::Put(value_x)), None);
         // add key_a value_y -> some(value_x + value_y)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Add(value_y)), Some(value_x + value_y));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Add(value_y)),
+            Some(value_x + value_y)
+        );
 
         // add key_a Maximum_value -> some(MAX)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Add(Value::MAX)), Some(Value::MAX));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Add(Value::MAX)),
+            Some(Value::MAX)
+        );
     }
 
     #[test]
     fn subtract_flow() {
         // store
         let monitor = false;
-        let mut store = Store::new(monitor, false,None);
+        let mut store = Storage::new(monitor, false, None);
 
         let key_c = String::from("Add");
         let value_x = 12;
@@ -320,17 +345,23 @@ mod tests {
         // put key_c value_x -> None
         assert_eq!(store.test_execute(&key_c, StorageOp::Put(value_x)), None);
         // subtract key_a value_y -> some(value_x - value_y)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_y) ), Some(value_x - value_y));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Subtract(value_y)),
+            Some(value_x - value_y)
+        );
 
         // subtract key_a Maximum_Value -> some(MIM)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(Value::MAX)), Some(Value::MIN));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Subtract(Value::MAX)),
+            Some(Value::MIN)
+        );
     }
 
     #[test]
     fn add_and_subtract_flow() {
         // store
         let monitor = false;
-        let mut store = Store::new(monitor, true,None);
+        let mut store = Storage::new(monitor, true, None);
 
         let key_c = String::from("Add");
         let value_x = 12;
@@ -339,18 +370,33 @@ mod tests {
         // put key_c value_x -> 12
         assert_eq!(store.test_execute(&key_c, StorageOp::Put(value_x)), None);
         // add key_a value_y -> some(value_x + value_y)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Add(value_y)), Some(value_x + value_y));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Add(value_y)),
+            Some(value_x + value_y)
+        );
 
         // subtract key_a value_x -> some(value_y)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_x)), Some(value_y));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Subtract(value_x)),
+            Some(value_y)
+        );
 
         // add key_a Maximum_value -> some(MAX)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Add(Value::MAX)), Some(Value::MAX));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Add(Value::MAX)),
+            Some(Value::MAX)
+        );
 
         // subtract key_a value_x -> some(MAX - value_x)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(value_x)), Some(Value::MAX - value_x));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Subtract(value_x)),
+            Some(Value::MAX - value_x)
+        );
 
         // subtract key_a Maximum_Value -> some(MIM)
-        assert_eq!(store.test_execute(&key_c, StorageOp::Subtract(Value::MAX)), Some(Value::MIN));
+        assert_eq!(
+            store.test_execute(&key_c, StorageOp::Subtract(Value::MAX)),
+            Some(Value::MIN)
+        );
     }
 }
