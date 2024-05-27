@@ -1,4 +1,4 @@
-use crate::protocol::DEFAULT_N_MRV;
+use crate::protocol::{DEFAULT_K_SUB_MRV, DEFAULT_N_MRV};
 
 use super::{Dependency, LatestDep, LatestRWDep};
 use fantoch::command::Command;
@@ -82,7 +82,7 @@ impl MultiRecordValues {
                 let op_n_deps = match n_key_dep.get(index) {
                     Some(value) => value.clone(),
                     None => match op {
-                        StorageOp::Add(_) | StorageOp::Subtract(_) => {
+                        StorageOp::Add(_) => {
                             let n =
                                 rand::thread_rng().gen_range(0..DEFAULT_N_MRV);
                             let vec = vec![n];
@@ -98,6 +98,19 @@ impl MultiRecordValues {
                                 vec.push(i);
                             }
                             n_key_dep.insert(index, vec.clone());
+                            vec
+                        }
+                        StorageOp::Subtract(_) => {
+                            let n =
+                                rand::thread_rng().gen_range(0..DEFAULT_N_MRV);
+
+                            let mut vec = Vec::new();
+                            for i in n..DEFAULT_K_SUB_MRV {
+                                vec.push((n + i) % DEFAULT_N_MRV);
+                            }
+
+                            n_key_dep.insert(index, vec.clone());
+
                             vec
                         }
                     },
