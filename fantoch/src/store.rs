@@ -178,31 +178,42 @@ impl Storage {
             StorageOp::Put(value) => {
                 if self.is_kv_storage {
                     self.store.insert(key.to_string(), vec![value]);
+                    return Some(value);
                 } else {
-                    // 1. get dependencia
-                    // 2. Adicionar nesse n o valor
+                    if !n_deps.is_empty() {
+                        let index = n_deps[0];
+                        let mut vec = vec![0; self.number];
+                        vec[index] = value;
+
+                        self.store.insert(key.to_string(), vec);
+                        return Some(value);
+                    }
                 }
                 None
             }
             StorageOp::Add(value) => {
-                if self.is_kv_storage {
-                    if let Some(old_value) = self.store.get_mut(key) {
-                        // In case the sum overflows, we will put the maximum possible value
-                        return match old_value[0].checked_add(value) {
-                            Some(new_value) => {
-                                old_value[0] = new_value;
-                                Some(new_value)
-                            }
-                            None => {
-                                let new_value = Value::MAX;
-                                old_value[0] = new_value;
-                                Some(new_value)
-                            }
-                        };
-                    }
+                let index = if self.is_kv_storage {
+                    0
                 } else {
-                    // 1. get dependencia
-                    // 2. Adicionar nesse n o valor
+                    if n_deps.is_empty() {
+                        return None;
+                    }
+                    n_deps[0]
+                };
+
+                if let Some(old_value) = self.store.get_mut(key) {
+                    // In case the sum overflows, we will put the maximum possible value
+                    return match old_value[index].checked_add(value) {
+                        Some(new_value) => {
+                            old_value[index] = new_value;
+                            Some(new_value)
+                        }
+                        None => {
+                            let new_value = Value::MAX;
+                            old_value[index] = new_value;
+                            Some(new_value)
+                        }
+                    };
                 }
                 None
             }
@@ -224,7 +235,32 @@ impl Storage {
                         };
                     }
                 } else {
-                    // verificar dependencias
+                    if let Some(old_vec) = self.store.get_mut(key) {
+                        let sum: Value = n_deps
+                            .iter()
+                            .map(|&index| *old_vec.get(index).unwrap_or(&0))
+                            .sum();
+
+                        if sum < value {
+                            return None;
+                        }
+                        let mut remaining_value = value;
+
+                        for index in n_deps {
+                            if let Some(entry) = old_vec.get_mut(index) {
+                                if *entry <= remaining_value {
+                                    remaining_value -= *entry;
+                                    *entry = 0;
+                                } else {
+                                    *entry -= remaining_value;
+                                    // remaining_value = 0;
+                                    break;
+                                }
+                            }
+                        }
+
+                        return Some(value);
+                    }
                 }
                 None
             }
