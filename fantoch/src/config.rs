@@ -86,7 +86,7 @@ impl Config {
         // by default `skip_fast_ack = false;
         let skip_fast_ack = false;
         // by default `is_kv_storage = false;
-        let is_kv_storage = false;
+        let is_kv_storage = true;
         let n_mrv = 1;
         Self {
             n,
@@ -225,7 +225,7 @@ impl Config {
         self.is_kv_storage = is_kv_storage;
     }
 
-    pub fn n_mrv(&mut self) -> usize {
+    pub fn n_mrv(&self) -> usize {
         self.n_mrv
     }
 

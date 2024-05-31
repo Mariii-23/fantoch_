@@ -35,11 +35,10 @@ impl Executor for GraphExecutor {
         // this value will be overwritten
         let executor_index = 0;
         let graph = DependencyGraph::new(process_id, shard_id, &config);
-        //TODO: Change this
         let store = Storage::new(
             config.executor_monitor_execution_order(),
             config.is_kv_storage(),
-            None,
+         Some(config.n_mrv()),
         );
         let to_clients = Default::default();
         let to_executors = Default::default();

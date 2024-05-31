@@ -229,7 +229,7 @@ fn tempo(aws: bool) {
                         }
 
                         if protocol == "EpaxosMRV" {
-                            config.set_is_kv_storage(true);
+                            config.set_is_kv_storage(false);
                             config.set_n_mrv(DEFAULT_N_MRV);
                         }
 
