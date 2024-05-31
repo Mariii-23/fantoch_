@@ -1,5 +1,5 @@
 pub const DEFAULT_N_MRV: usize = 30;
-pub const DEFAULT_K_SUB_MRV: usize = 5;
+pub const DEFAULT_K_SUB_MRV: usize = 10;
 
 // This module contains common data-structures between protocols.
 pub mod common;
