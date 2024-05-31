@@ -1,0 +1,16 @@
+POOL_SIZE: 1
+CONFLICTS: 80
+FPaxos   n = 5 f = 1 c = 32  | execution latency   : avg=188   std=71    p95=258   p99=258   p99.9=258   p99.99=258   min=72    max=258  
+FPaxos   n = 5 f = 1 c = 32  | fast path rate      : NaN    
+Tempo    n = 5 f = 1 c = 32  | execution latency   : avg=280   std=79    p95=376   p99=390   p99.9=412   p99.99=434   min=78    max=434  
+Tempo    n = 5 f = 1 c = 32  | fast path rate      : 100.0  
+Atlas    n = 5 f = 1 c = 32  | execution latency   : avg=278   std=105   p95=445   p99=577   p99.9=649   p99.99=752   min=78    max=752  
+Atlas    n = 5 f = 1 c = 32  | execution delay     : avg=80    std=92    p95=261   p99=359   p99.9=460   p99.99=564   min=0     max=570  
+Atlas    n = 5 f = 1 c = 32  | fast path rate      : 100.0  
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=381   std=145   p95=558   p99=706   p99.9=802   p99.99=917   min=78    max=926  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=95    std=105   p95=288   p99=394   p99.9=570   p99.99=769   min=0     max=771  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 37.8   
+CaesarNW n = 5 f = 2 c = 32  | commit latency      : avg=266   std=85    p95=372   p99=372   p99.9=406   p99.99=406   min=122   max=406  
+CaesarNW n = 5 f = 2 c = 32  | execution latency   : avg=490   std=169   p95=660   p99=694   p99.9=720   p99.99=726   min=122   max=740  
+CaesarNW n = 5 f = 2 c = 32  | execution delay     : avg=158   std=118   p95=326   p99=406   p99.9=434   p99.99=448   min=0     max=476  
+CaesarNW n = 5 f = 2 c = 32  | fast path rate      : 23.4   

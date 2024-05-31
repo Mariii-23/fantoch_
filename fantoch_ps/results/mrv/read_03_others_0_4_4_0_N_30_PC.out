@@ -1,0 +1,1525 @@
+| | eu-west-1 | us-west-1 | ap-southeast-1 | ca-central-1 | sa-east-1 |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| __eu-west-1__ | 0 | 141 | 186 | 72 | 183 |
+| __us-west-1__ | 141 | 0 | 181 | 78 | 190 |
+| __ap-southeast-1__ | 186 | 181 | 0 | 221 | 338 |
+| __ca-central-1__ | 72 | 78 | 221 | 0 | 123 |
+| __sa-east-1__ | 183 | 190 | 338 | 123 | 0 |
+
+POOL_SIZE: 1
+CONFLICTS: 0
+2:
+  process metrics:
+fast_path: 6400
+fast_path_reads: 199
+stable: 31936
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+5:
+  process metrics:
+fast_path: 6400
+fast_path_reads: 200
+stable: 31936
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+3:
+  process metrics:
+fast_path_reads: 210
+fast_path: 6400
+stable: 31936
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+4:
+  process metrics:
+stable: 31936
+fast_path: 6400
+fast_path_reads: 177
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+1:
+  process metrics:
+fast_path_reads: 195
+stable: 31936
+fast_path: 6400
+
+  executor metrics:
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+
+region = ap-southeast-1 | avg=186   std=0     p95=186   p99=186   p99.9=186   p99.99=186   min=186   max=186  
+region = eu-west-1      | avg=140   std=0     p95=140   p99=140   p99.9=140   p99.99=140   min=140   max=140  
+region = us-west-1      | avg=140   std=0     p95=140   p99=140   p99.9=140   p99.99=140   min=140   max=140  
+region = ca-central-1   | avg=78    std=0     p95=78    p99=78    p99.9=78    p99.99=78    min=78    max=78   
+region = sa-east-1      | avg=182   std=0     p95=182   p99=182   p99.9=182   p99.99=182   min=182   max=182  
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 100.0  
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1652.8959
+3:
+  process metrics:
+stable: 31936
+fast_path: 6400
+fast_path_reads: 196
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+5:
+  process metrics:
+stable: 31936
+fast_path_reads: 180
+fast_path: 6400
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+2:
+  process metrics:
+fast_path: 6400
+fast_path_reads: 199
+stable: 31936
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+4:
+  process metrics:
+fast_path: 6400
+fast_path_reads: 188
+stable: 31936
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+1:
+  process metrics:
+fast_path_reads: 189
+stable: 31936
+fast_path: 6400
+
+  executor metrics:
+execution_delay: avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=1     min=1     max=1    
+
+region = ap-southeast-1 | avg=186   std=0     p95=186   p99=186   p99.9=186   p99.99=186   min=186   max=186  
+region = sa-east-1      | avg=182   std=0     p95=182   p99=182   p99.9=182   p99.99=182   min=182   max=182  
+region = eu-west-1      | avg=140   std=0     p95=140   p99=140   p99.9=140   p99.99=140   min=140   max=140  
+region = us-west-1      | avg=140   std=0     p95=140   p99=140   p99.9=140   p99.99=140   min=140   max=140  
+region = ca-central-1   | avg=78    std=0     p95=78    p99=78    p99.9=78    p99.99=78    min=78    max=78   
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=145   std=39    p95=186   p99=186   p99.9=186   p99.99=186   min=78    max=186  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=0     std=0     p95=0     p99=0     p99.9=0     p99.99=0     min=0     max=0    
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 100.0  
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1479.6919
+CONFLICTS: 2
+2:
+  process metrics:
+fast_path_reads: 192
+fast_path: 6320
+stable: 31996
+slow_path_reads: 1
+slow_path: 80
+
+  executor metrics:
+execution_delay: avg=1     std=14    p95=0     p99=18    p99.9=204   p99.99=277   min=0     max=346  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=4     p99.99=6     min=1     max=7    
+out_requests: 0
+
+4:
+  process metrics:
+stable: 31997
+fast_path: 6308
+slow_path: 92
+slow_path_reads: 1
+fast_path_reads: 198
+
+  executor metrics:
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=4     p99.99=6     min=1     max=7    
+execution_delay: avg=1     std=15    p95=0     p99=23    p99.9=235   p99.99=326   min=0     max=363  
+out_requests: 0
+
+3:
+  process metrics:
+slow_path_reads: 2
+stable: 31996
+fast_path_reads: 188
+fast_path: 6313
+slow_path: 87
+
+  executor metrics:
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=4     p99.99=6     min=1     max=7    
+execution_delay: avg=1     std=12    p95=0     p99=17    p99.9=189   p99.99=262   min=0     max=301  
+out_requests: 0
+
+1:
+  process metrics:
+stable: 31996
+fast_path_reads: 202
+slow_path: 88
+fast_path: 6312
+slow_path_reads: 1
+
+  executor metrics:
+execution_delay: avg=1     std=13    p95=0     p99=14    p99.9=195   p99.99=273   min=0     max=310  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=4     p99.99=6     min=1     max=7    
+out_requests: 0
+
+5:
+  process metrics:
+slow_path: 51
+fast_path: 6349
+fast_path_reads: 174
+slow_path_reads: 2
+stable: 31997
+
+  executor metrics:
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=4     p99.99=6     min=1     max=7    
+execution_delay: avg=1     std=16    p95=0     p99=41    p99.9=244   p99.99=330   min=0     max=401  
+out_requests: 0
+
+region = ap-southeast-1 | avg=190   std=31    p95=186   p99=389   p99.9=527   p99.99=552   min=186   max=570  
+region = eu-west-1      | avg=144   std=28    p95=140   p99=315   p99.9=437   p99.99=466   min=140   max=486  
+region = ca-central-1   | avg=82    std=31    p95=78    p99=299   p99.9=404   p99.99=428   min=78    max=519  
+region = us-west-1      | avg=144   std=30    p95=140   p99=358   p99.9=434   p99.99=481   min=140   max=486  
+region = sa-east-1      | avg=185   std=29    p95=182   p99=364   p99.9=556   p99.99=583   min=182   max=583  
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=149   std=49    p95=186   p99=356   p99.9=499   p99.99=579   min=78    max=583  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=1     std=14    p95=0     p99=20    p99.9=214   p99.99=300   min=0     max=401  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 98.8   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1504.0548
+1:
+  process metrics:
+fast_path: 6340
+stable: 31991
+fast_path_reads: 202
+slow_path_reads: 6
+slow_path: 60
+
+  executor metrics:
+execution_delay: avg=0     std=6     p95=0     p99=0     p99.9=111   p99.99=219   min=0     max=265  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=3     min=1     max=6    
+out_requests: 0
+
+2:
+  process metrics:
+fast_path: 6366
+stable: 31990
+slow_path: 34
+fast_path_reads: 226
+slow_path_reads: 3
+
+  executor metrics:
+execution_delay: avg=0     std=6     p95=0     p99=0     p99.9=98    p99.99=238   min=0     max=277  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=3     min=1     max=6    
+out_requests: 0
+
+3:
+  process metrics:
+fast_path_reads: 211
+slow_path_reads: 2
+slow_path: 48
+stable: 31983
+fast_path: 6352
+
+  executor metrics:
+execution_delay: avg=0     std=6     p95=0     p99=0     p99.9=96    p99.99=219   min=0     max=261  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=3     min=1     max=6    
+out_requests: 0
+
+4:
+  process metrics:
+stable: 31991
+fast_path_reads: 174
+fast_path: 6363
+slow_path: 37
+slow_path_reads: 5
+
+  executor metrics:
+execution_delay: avg=0     std=6     p95=0     p99=0     p99.9=103   p99.99=243   min=0     max=318  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=3     min=1     max=6    
+out_requests: 0
+
+5:
+  process metrics:
+slow_path: 56
+fast_path: 6344
+slow_path_reads: 4
+fast_path_reads: 172
+stable: 31992
+
+  executor metrics:
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=1     p99.99=3     min=1     max=6    
+execution_delay: avg=0     std=6     p95=0     p99=0     p99.9=103   p99.99=258   min=0     max=316  
+out_requests: 0
+
+region = ca-central-1   | avg=79    std=15    p95=78    p99=78    p99.9=336   p99.99=396   min=78    max=428  
+region = ap-southeast-1 | avg=188   std=18    p95=186   p99=186   p99.9=427   p99.99=506   min=186   max=591  
+region = sa-east-1      | avg=184   std=19    p95=182   p99=241   p99.9=417   p99.99=483   min=182   max=497  
+region = eu-west-1      | avg=142   std=18    p95=140   p99=259   p99.9=393   p99.99=430   min=140   max=431  
+region = us-west-1      | avg=141   std=13    p95=140   p99=140   p99.9=343   p99.99=389   min=140   max=417  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=147   std=43    p95=186   p99=186   p99.9=390   p99.99=483   min=78    max=591  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=0     std=6     p95=0     p99=0     p99.9=104   p99.99=233   min=0     max=318  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 99.3   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1412.0816
+CONFLICTS: 10
+2:
+  process metrics:
+fast_path_reads: 172
+slow_path_reads: 13
+fast_path: 5929
+slow_path: 471
+stable: 31998
+
+  executor metrics:
+chain_size: avg=1     std=1     p95=1     p99=1     p99.9=25    p99.99=46    min=1     max=51   
+execution_delay: avg=17    std=66    p95=157   p99=359   p99.9=560   p99.99=667   min=0     max=737  
+out_requests: 0
+
+3:
+  process metrics:
+fast_path: 5868
+fast_path_reads: 197
+stable: 31998
+slow_path_reads: 12
+slow_path: 532
+
+  executor metrics:
+chain_size: avg=1     std=1     p95=1     p99=1     p99.9=25    p99.99=46    min=1     max=51   
+execution_delay: avg=17    std=66    p95=157   p99=351   p99.9=538   p99.99=640   min=0     max=683  
+out_requests: 0
+
+1:
+  process metrics:
+stable: 31998
+slow_path: 503
+slow_path_reads: 14
+fast_path: 5897
+fast_path_reads: 181
+
+  executor metrics:
+chain_size: avg=1     std=1     p95=1     p99=1     p99.9=25    p99.99=46    min=1     max=51   
+execution_delay: avg=17    std=67    p95=161   p99=356   p99.9=568   p99.99=664   min=0     max=743  
+out_requests: 0
+
+4:
+  process metrics:
+slow_path_reads: 13
+slow_path: 496
+fast_path_reads: 162
+stable: 31998
+fast_path: 5904
+
+  executor metrics:
+chain_size: avg=1     std=1     p95=1     p99=1     p99.9=25    p99.99=46    min=1     max=51   
+execution_delay: avg=18    std=71    p95=166   p99=380   p99.9=574   p99.99=717   min=0     max=796  
+out_requests: 0
+
+5:
+  process metrics:
+stable: 31998
+slow_path_reads: 10
+fast_path_reads: 209
+fast_path: 5950
+slow_path: 450
+
+  executor metrics:
+execution_delay: avg=20    std=76    p95=185   p99=391   p99.9=610   p99.99=717   min=0     max=794  
+chain_size: avg=1     std=1     p95=1     p99=1     p99.9=25    p99.99=46    min=1     max=51   
+out_requests: 0
+
+region = ca-central-1   | avg=117   std=122   p95=452   p99=629   p99.9=800   p99.99=875   min=78    max=915  
+region = us-west-1      | avg=174   std=105   p95=446   p99=608   p99.9=807   p99.99=852   min=140   max=873  
+region = ap-southeast-1 | avg=220   std=109   p95=523   p99=690   p99.9=852   p99.99=900   min=186   max=905  
+region = sa-east-1      | avg=219   std=116   p95=533   p99=714   p99.9=907   p99.99=975   min=182   max=994  
+region = eu-west-1      | avg=172   std=103   p95=446   p99=618   p99.9=765   p99.99=814   min=140   max=852  
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=180   std=118   p95=485   p99=654   p99.9=832   p99.99=931   min=78    max=994  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=18    std=69    p95=164   p99=369   p99.9=568   p99.99=685   min=0     max=796  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 92.3   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1360.6209
+5:
+  process metrics:
+slow_path_reads: 22
+slow_path: 318
+stable: 31993
+fast_path: 6082
+fast_path_reads: 171
+
+  executor metrics:
+execution_delay: avg=6     std=33    p95=2     p99=192   p99.9=312   p99.99=385   min=0     max=429  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=6     p99.99=15    min=1     max=18   
+out_requests: 0
+
+3:
+  process metrics:
+stable: 31991
+slow_path_reads: 13
+slow_path: 386
+fast_path_reads: 160
+fast_path: 6014
+
+  executor metrics:
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=6     p99.99=15    min=1     max=18   
+execution_delay: avg=5     std=26    p95=0     p99=152   p99.9=259   p99.99=314   min=0     max=328  
+out_requests: 0
+
+4:
+  process metrics:
+fast_path: 6064
+stable: 31993
+slow_path_reads: 17
+slow_path: 336
+fast_path_reads: 158
+
+  executor metrics:
+execution_delay: avg=5     std=30    p95=0     p99=180   p99.9=302   p99.99=386   min=0     max=431  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=6     p99.99=15    min=1     max=18   
+out_requests: 0
+
+1:
+  process metrics:
+stable: 31992
+fast_path: 5975
+slow_path_reads: 21
+slow_path: 425
+fast_path_reads: 171
+
+  executor metrics:
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=6     p99.99=15    min=1     max=18   
+execution_delay: avg=5     std=27    p95=0     p99=158   p99.9=267   p99.99=333   min=0     max=378  
+out_requests: 0
+
+2:
+  process metrics:
+slow_path_reads: 16
+fast_path_reads: 177
+fast_path: 6105
+stable: 31992
+slow_path: 295
+
+  executor metrics:
+execution_delay: avg=5     std=27    p95=0     p99=168   p99.9=268   p99.99=336   min=0     max=372  
+chain_size: avg=1     std=0     p95=1     p99=1     p99.9=6     p99.99=15    min=1     max=18   
+out_requests: 0
+
+region = ca-central-1   | avg=95    std=61    p95=237   p99=395   p99.9=473   p99.99=525   min=78    max=534  
+region = ap-southeast-1 | avg=204   std=62    p95=372   p99=495   p99.9=573   p99.99=595   min=186   max=596  
+region = sa-east-1      | avg=199   std=62    p95=364   p99=507   p99.9=571   p99.99=611   min=182   max=613  
+region = eu-west-1      | avg=157   std=56    p95=280   p99=416   p99.9=453   p99.99=499   min=140   max=502  
+region = us-west-1      | avg=155   std=54    p95=280   p99=417   p99.9=481   p99.99=500   min=140   max=504  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=162   std=71    p95=323   p99=444   p99.9=539   p99.99=595   min=78    max=613  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=5     std=29    p95=0     p99=170   p99.9=285   p99.99=367   min=0     max=431  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 94.5   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1293.1022
+CONFLICTS: 30
+2:
+  process metrics:
+slow_path_reads: 56
+fast_path_reads: 126
+stable: 31998
+slow_path: 1123
+fast_path: 5277
+
+  executor metrics:
+execution_delay: avg=28    std=70    p95=199   p99=301   p99.9=463   p99.99=604   min=0     max=627  
+chain_size: avg=1     std=2     p95=1     p99=3     p99.9=29    p99.99=68    min=1     max=105  
+out_requests: 0
+
+3:
+  process metrics:
+fast_path: 4966
+stable: 31998
+fast_path_reads: 159
+slow_path: 1434
+slow_path_reads: 60
+
+  executor metrics:
+execution_delay: avg=29    std=70    p95=195   p99=301   p99.9=451   p99.99=570   min=0     max=635  
+chain_size: avg=1     std=2     p95=1     p99=3     p99.9=29    p99.99=68    min=1     max=105  
+out_requests: 0
+
+5:
+  process metrics:
+fast_path: 5207
+slow_path: 1193
+stable: 31998
+slow_path_reads: 55
+fast_path_reads: 149
+
+  executor metrics:
+chain_size: avg=1     std=2     p95=1     p99=3     p99.9=29    p99.99=68    min=1     max=105  
+execution_delay: avg=35    std=83    p95=238   p99=348   p99.9=544   p99.99=626   min=0     max=663  
+out_requests: 0
+
+4:
+  process metrics:
+fast_path: 5024
+slow_path: 1376
+slow_path_reads: 57
+fast_path_reads: 142
+stable: 31998
+
+  executor metrics:
+chain_size: avg=1     std=2     p95=1     p99=3     p99.9=29    p99.99=68    min=1     max=105  
+execution_delay: avg=31    std=76    p95=220   p99=331   p99.9=504   p99.99=615   min=0     max=665  
+out_requests: 0
+
+1:
+  process metrics:
+stable: 31998
+slow_path_reads: 48
+slow_path: 1464
+fast_path: 4936
+fast_path_reads: 150
+
+  executor metrics:
+chain_size: avg=1     std=2     p95=1     p99=3     p99.9=29    p99.99=68    min=1     max=105  
+execution_delay: avg=28    std=69    p95=196   p99=299   p99.9=464   p99.99=575   min=0     max=612  
+out_requests: 0
+
+region = us-west-1      | avg=210   std=119   p95=443   p99=566   p99.9=734   p99.99=744   min=140   max=767  
+region = sa-east-1      | avg=259   std=131   p95=536   p99=634   p99.9=747   p99.99=833   min=182   max=836  
+region = ca-central-1   | avg=159   std=139   p95=445   p99=565   p99.9=744   p99.99=756   min=78    max=771  
+region = eu-west-1      | avg=209   std=118   p95=444   p99=552   p99.9=743   p99.99=744   min=140   max=771  
+region = ap-southeast-1 | avg=262   std=128   p95=530   p99=624   p99.9=815   p99.99=827   min=186   max=862  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=220   std=133   p95=495   p99=589   p99.9=744   p99.99=827   min=78    max=862  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=30    std=74    p95=207   p99=323   p99.9=489   p99.99=608   min=0     max=665  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 79.4   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 1121.8285
+5:
+  process metrics:
+fast_path_reads: 158
+slow_path: 1562
+stable: 31999
+slow_path_reads: 47
+fast_path: 4838
+
+  executor metrics:
+execution_delay: avg=72    std=151   p95=403   p99=662   p99.9=928   p99.99=1060  min=0     max=1098 
+chain_size: avg=1     std=5     p95=1     p99=5     p99.9=88    p99.99=126   min=1     max=147  
+out_requests: 0
+
+3:
+  process metrics:
+slow_path_reads: 49
+slow_path: 1536
+fast_path_reads: 164
+stable: 31999
+fast_path: 4864
+
+  executor metrics:
+chain_size: avg=1     std=5     p95=1     p99=5     p99.9=88    p99.99=126   min=1     max=147  
+execution_delay: avg=67    std=143   p95=380   p99=626   p99.9=892   p99.99=1012  min=0     max=1088 
+out_requests: 0
+
+2:
+  process metrics:
+slow_path: 1446
+fast_path_reads: 138
+fast_path: 4954
+slow_path_reads: 40
+stable: 31999
+
+  executor metrics:
+chain_size: avg=1     std=5     p95=1     p99=5     p99.9=88    p99.99=126   min=1     max=147  
+execution_delay: avg=61    std=137   p95=381   p99=611   p99.9=875   p99.99=1040  min=0     max=1041 
+out_requests: 0
+
+1:
+  process metrics:
+slow_path_reads: 33
+stable: 31999
+fast_path_reads: 146
+slow_path: 1580
+fast_path: 4820
+
+  executor metrics:
+chain_size: avg=1     std=5     p95=1     p99=5     p99.9=88    p99.99=126   min=1     max=147  
+execution_delay: avg=61    std=136   p95=376   p99=611   p99.9=845   p99.99=1009  min=0     max=1054 
+out_requests: 0
+
+4:
+  process metrics:
+slow_path: 1578
+slow_path_reads: 32
+stable: 31999
+fast_path_reads: 174
+fast_path: 4822
+
+  executor metrics:
+execution_delay: avg=66    std=144   p95=399   p99=635   p99.9=861   p99.99=1062  min=0     max=1100 
+chain_size: avg=1     std=5     p95=1     p99=5     p99.9=88    p99.99=126   min=1     max=147  
+out_requests: 0
+
+region = sa-east-1      | avg=312   std=219   p95=748   p99=1071  p99.9=1284  p99.99=1300  min=182   max=1312 
+region = us-west-1      | avg=253   std=194   p95=671   p99=916   p99.9=1126  p99.99=1193  min=140   max=1249 
+region = ap-southeast-1 | avg=311   std=212   p95=730   p99=1066  p99.9=1294  p99.99=1294  min=186   max=1294 
+region = eu-west-1      | avg=248   std=190   p95=665   p99=915   p99.9=1123  p99.99=1169  min=140   max=1191 
+region = ca-central-1   | avg=201   std=214   p95=666   p99=881   p99.9=1152  p99.99=1218  min=78    max=1218 
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=265   std=210   p95=718   p99=934   p99.9=1185  p99.99=1296  min=78    max=1312 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=66    std=142   p95=386   p99=633   p99.9=883   p99.99=1054  min=0     max=1100 
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 75.9   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 1051.4946
+CONFLICTS: 50
+4:
+  process metrics:
+fast_path: 3675
+slow_path: 2725
+slow_path_reads: 96
+stable: 31998
+fast_path_reads: 82
+
+  executor metrics:
+chain_size: avg=1     std=4     p95=2     p99=6     p99.9=58    p99.99=108   min=1     max=117  
+execution_delay: avg=59    std=98    p95=278   p99=387   p99.9=512   p99.99=662   min=0     max=662  
+out_requests: 0
+
+5:
+  process metrics:
+fast_path: 4203
+slow_path: 2197
+fast_path_reads: 99
+slow_path_reads: 79
+stable: 31998
+
+  executor metrics:
+chain_size: avg=1     std=4     p95=2     p99=6     p99.9=58    p99.99=108   min=1     max=117  
+execution_delay: avg=67    std=105   p95=289   p99=390   p99.9=532   p99.99=660   min=0     max=660  
+out_requests: 0
+
+3:
+  process metrics:
+fast_path: 3889
+stable: 31998
+slow_path: 2511
+fast_path_reads: 114
+slow_path_reads: 78
+
+  executor metrics:
+chain_size: avg=1     std=4     p95=2     p99=6     p99.9=58    p99.99=108   min=1     max=117  
+execution_delay: avg=57    std=91    p95=251   p99=350   p99.9=453   p99.99=504   min=0     max=525  
+out_requests: 0
+
+1:
+  process metrics:
+fast_path_reads: 100
+fast_path: 3906
+stable: 31998
+slow_path_reads: 113
+slow_path: 2494
+
+  executor metrics:
+chain_size: avg=1     std=4     p95=2     p99=6     p99.9=58    p99.99=108   min=1     max=117  
+execution_delay: avg=52    std=90    p95=247   p99=349   p99.9=463   p99.99=609   min=0     max=609  
+out_requests: 0
+
+2:
+  process metrics:
+fast_path: 4264
+slow_path: 2136
+fast_path_reads: 92
+stable: 31998
+slow_path_reads: 110
+
+  executor metrics:
+chain_size: avg=1     std=4     p95=2     p99=6     p99.9=58    p99.99=108   min=1     max=117  
+execution_delay: avg=52    std=90    p95=252   p99=346   p99.9=482   p99.99=603   min=0     max=616  
+out_requests: 0
+
+region = us-west-1      | avg=267   std=141   p95=495   p99=583   p99.9=698   p99.99=756   min=140   max=786  
+region = ca-central-1   | avg=235   std=168   p95=508   p99=598   p99.9=704   p99.99=818   min=78    max=818  
+region = sa-east-1      | avg=323   std=159   p95=572   p99=677   p99.9=896   p99.99=908   min=182   max=968  
+region = eu-west-1      | avg=267   std=140   p95=493   p99=579   p99.9=698   p99.99=756   min=140   max=821  
+region = ap-southeast-1 | avg=324   std=155   p95=576   p99=662   p99.9=771   p99.99=777   min=186   max=777  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=283   std=157   p95=550   p99=628   p99.9=756   p99.99=896   min=78    max=968  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=58    std=95    p95=265   p99=372   p99.9=489   p99.99=618   min=0     max=662  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 62.3   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 954.6506
+2:
+  process metrics:
+slow_path_reads: 83
+fast_path_reads: 131
+stable: 31999
+fast_path: 3902
+slow_path: 2498
+
+  executor metrics:
+execution_delay: avg=87    std=144   p95=393   p99=619   p99.9=794   p99.99=879   min=0     max=900  
+chain_size: avg=2     std=7     p95=1     p99=33    p99.9=132   p99.99=150   min=1     max=156  
+out_requests: 0
+
+5:
+  process metrics:
+slow_path_reads: 72
+fast_path_reads: 129
+stable: 31999
+fast_path: 3820
+slow_path: 2580
+
+  executor metrics:
+execution_delay: avg=106   std=159   p95=432   p99=662   p99.9=839   p99.99=942   min=0     max=970  
+chain_size: avg=2     std=7     p95=1     p99=33    p99.9=132   p99.99=150   min=1     max=156  
+out_requests: 0
+
+3:
+  process metrics:
+slow_path: 2689
+fast_path: 3711
+stable: 31999
+slow_path_reads: 61
+fast_path_reads: 124
+
+  executor metrics:
+chain_size: avg=2     std=7     p95=1     p99=33    p99.9=132   p99.99=150   min=1     max=156  
+execution_delay: avg=98    std=150   p95=420   p99=642   p99.9=802   p99.99=919   min=0     max=968  
+out_requests: 0
+
+4:
+  process metrics:
+fast_path: 3720
+slow_path: 2680
+slow_path_reads: 48
+stable: 31999
+fast_path_reads: 141
+
+  executor metrics:
+execution_delay: avg=95    std=152   p95=425   p99=628   p99.9=814   p99.99=918   min=0     max=944  
+chain_size: avg=2     std=7     p95=1     p99=33    p99.9=132   p99.99=150   min=1     max=156  
+out_requests: 0
+
+1:
+  process metrics:
+stable: 31999
+fast_path: 3477
+slow_path: 2923
+slow_path_reads: 85
+fast_path_reads: 114
+
+  executor metrics:
+chain_size: avg=2     std=7     p95=1     p99=33    p99.9=132   p99.99=150   min=1     max=156  
+execution_delay: avg=88    std=144   p95=394   p99=618   p99.9=794   p99.99=898   min=0     max=934  
+out_requests: 0
+
+region = us-west-1      | avg=308   std=195   p95=695   p99=906   p99.9=1015  p99.99=1074  min=140   max=1082 
+region = sa-east-1      | avg=381   std=223   p95=746   p99=962   p99.9=1142  p99.99=1152  min=182   max=1152 
+region = ca-central-1   | avg=278   std=229   p95=732   p99=921   p99.9=1022  p99.99=1074  min=78    max=1094 
+region = eu-west-1      | avg=312   std=194   p95=706   p99=898   p99.9=1014  p99.99=1074  min=140   max=1075 
+region = ap-southeast-1 | avg=385   std=219   p95=750   p99=954   p99.9=1154  p99.99=1154  min=186   max=1156 
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=333   std=217   p95=736   p99=934   p99.9=1100  p99.99=1154  min=78    max=1156 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=94    std=150   p95=412   p99=631   p99.9=814   p99.99=918   min=0     max=970  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 58.2   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 887.3126
+CONFLICTS: 60
+3:
+  process metrics:
+slow_path: 2968
+slow_path_reads: 104
+fast_path: 3432
+fast_path_reads: 87
+stable: 31998
+
+  executor metrics:
+chain_size: avg=2     std=5     p95=2     p99=14    p99.9=66    p99.99=110   min=1     max=130  
+execution_delay: avg=69    std=97    p95=264   p99=368   p99.9=484   p99.99=536   min=0     max=560  
+out_requests: 0
+
+1:
+  process metrics:
+fast_path: 3350
+slow_path: 3050
+slow_path_reads: 122
+fast_path_reads: 95
+stable: 31998
+
+  executor metrics:
+chain_size: avg=2     std=5     p95=2     p99=14    p99.9=66    p99.99=110   min=1     max=130  
+execution_delay: avg=65    std=95    p95=261   p99=362   p99.9=477   p99.99=546   min=0     max=585  
+out_requests: 0
+
+5:
+  process metrics:
+slow_path_reads: 113
+slow_path: 2649
+fast_path_reads: 90
+fast_path: 3751
+stable: 31998
+
+  executor metrics:
+chain_size: avg=2     std=5     p95=2     p99=14    p99.9=66    p99.99=110   min=1     max=130  
+execution_delay: avg=80    std=109   p95=303   p99=404   p99.9=515   p99.99=563   min=0     max=636  
+out_requests: 0
+
+4:
+  process metrics:
+fast_path_reads: 77
+fast_path: 3199
+slow_path_reads: 109
+slow_path: 3201
+stable: 31998
+
+  executor metrics:
+chain_size: avg=2     std=5     p95=2     p99=14    p99.9=66    p99.99=110   min=1     max=130  
+execution_delay: avg=71    std=103   p95=285   p99=396   p99.9=517   p99.99=565   min=0     max=638  
+out_requests: 0
+
+2:
+  process metrics:
+fast_path_reads: 77
+stable: 31998
+slow_path_reads: 127
+fast_path: 3842
+slow_path: 2558
+
+  executor metrics:
+chain_size: avg=2     std=5     p95=2     p99=14    p99.9=66    p99.99=110   min=1     max=130  
+execution_delay: avg=64    std=96    p95=264   p99=363   p99.9=482   p99.99=546   min=0     max=579  
+out_requests: 0
+
+region = ca-central-1   | avg=263   std=167   p95=509   p99=605   p99.9=686   p99.99=686   min=78    max=794  
+region = us-west-1      | avg=295   std=143   p95=514   p99=606   p99.9=708   p99.99=751   min=140   max=756  
+region = ap-southeast-1 | avg=355   std=160   p95=594   p99=708   p99.9=803   p99.99=818   min=186   max=872  
+region = eu-west-1      | avg=293   std=141   p95=509   p99=589   p99.9=686   p99.99=717   min=140   max=755  
+region = sa-east-1      | avg=354   std=161   p95=592   p99=692   p99.9=744   p99.99=776   min=182   max=782  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=312   std=159   p95=562   p99=669   p99.9=746   p99.99=818   min=78    max=872  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=70    std=101   p95=277   p99=382   p99.9=491   p99.99=563   min=0     max=638  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 54.9   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 903.8571
+5:
+  process metrics:
+fast_path: 3084
+slow_path: 3316
+fast_path_reads: 101
+slow_path_reads: 76
+stable: 31999
+
+  executor metrics:
+chain_size: avg=2     std=9     p95=2     p99=49    p99.9=142   p99.99=156   min=1     max=158  
+execution_delay: avg=118   std=155   p95=434   p99=617   p99.9=748   p99.99=772   min=0     max=834  
+out_requests: 0
+
+3:
+  process metrics:
+fast_path: 3210
+stable: 31999
+slow_path_reads: 70
+slow_path: 3190
+fast_path_reads: 114
+
+  executor metrics:
+execution_delay: avg=106   std=145   p95=405   p99=587   p99.9=724   p99.99=794   min=0     max=794  
+chain_size: avg=2     std=9     p95=2     p99=49    p99.9=142   p99.99=156   min=1     max=158  
+out_requests: 0
+
+1:
+  process metrics:
+fast_path: 2984
+slow_path: 3416
+slow_path_reads: 79
+fast_path_reads: 110
+stable: 31999
+
+  executor metrics:
+chain_size: avg=2     std=9     p95=2     p99=49    p99.9=142   p99.99=156   min=1     max=158  
+execution_delay: avg=95    std=139   p95=391   p99=567   p99.9=707   p99.99=744   min=0     max=783  
+out_requests: 0
+
+2:
+  process metrics:
+fast_path_reads: 105
+stable: 31999
+fast_path: 3255
+slow_path: 3145
+slow_path_reads: 81
+
+  executor metrics:
+chain_size: avg=2     std=9     p95=2     p99=49    p99.9=142   p99.99=156   min=1     max=158  
+execution_delay: avg=95    std=139   p95=388   p99=566   p99.9=703   p99.99=778   min=0     max=779  
+out_requests: 0
+
+4:
+  process metrics:
+fast_path: 3159
+fast_path_reads: 123
+slow_path_reads: 87
+stable: 31999
+slow_path: 3241
+
+  executor metrics:
+execution_delay: avg=104   std=147   p95=417   p99=602   p99.9=745   p99.99=774   min=0     max=836  
+chain_size: avg=2     std=9     p95=2     p99=49    p99.9=142   p99.99=156   min=1     max=158  
+out_requests: 0
+
+region = us-west-1      | avg=334   std=183   p95=697   p99=808   p99.9=918   p99.99=978   min=140   max=978  
+region = ca-central-1   | avg=303   std=212   p95=709   p99=858   p99.9=916   p99.99=992   min=78    max=992  
+region = sa-east-1      | avg=422   std=220   p95=760   p99=926   p99.9=1100  p99.99=1106  min=182   max=1111 
+region = eu-west-1      | avg=330   std=185   p95=700   p99=817   p99.9=935   p99.99=968   min=140   max=987  
+region = ap-southeast-1 | avg=423   std=215   p95=753   p99=941   p99.9=1089  p99.99=1089  min=186   max=1113 
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=362   std=210   p95=731   p99=906   p99.9=1086  p99.99=1100  min=78    max=1113 
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=104   std=145   p95=406   p99=586   p99.9=732   p99.99=778   min=0     max=836  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 49.0   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 829.0095
+CONFLICTS: 70
+3:
+  process metrics:
+slow_path: 3758
+fast_path_reads: 54
+stable: 31998
+slow_path_reads: 128
+fast_path: 2642
+
+  executor metrics:
+chain_size: avg=2     std=6     p95=3     p99=32    p99.9=78    p99.99=127   min=1     max=138  
+execution_delay: avg=77    std=95    p95=255   p99=365   p99.9=474   p99.99=573   min=0     max=610  
+out_requests: 0
+
+1:
+  process metrics:
+fast_path: 2806
+fast_path_reads: 58
+slow_path_reads: 131
+slow_path: 3594
+stable: 31998
+
+  executor metrics:
+execution_delay: avg=73    std=98    p95=267   p99=370   p99.9=481   p99.99=571   min=0     max=579  
+chain_size: avg=2     std=6     p95=3     p99=32    p99.9=78    p99.99=127   min=1     max=138  
+out_requests: 0
+
+2:
+  process metrics:
+fast_path_reads: 68
+fast_path: 3267
+slow_path: 3133
+slow_path_reads: 118
+stable: 31998
+
+  executor metrics:
+execution_delay: avg=72    std=98    p95=268   p99=365   p99.9=475   p99.99=570   min=0     max=626  
+chain_size: avg=2     std=6     p95=3     p99=32    p99.9=78    p99.99=127   min=1     max=138  
+out_requests: 0
+
+4:
+  process metrics:
+fast_path: 2548
+stable: 31998
+slow_path_reads: 141
+slow_path: 3852
+fast_path_reads: 52
+
+  executor metrics:
+chain_size: avg=2     std=6     p95=3     p99=32    p99.9=78    p99.99=127   min=1     max=138  
+execution_delay: avg=82    std=107   p95=294   p99=406   p99.9=503   p99.99=620   min=0     max=624  
+out_requests: 0
+
+5:
+  process metrics:
+fast_path: 3071
+fast_path_reads: 44
+slow_path: 3329
+stable: 31998
+slow_path_reads: 128
+
+  executor metrics:
+execution_delay: avg=94    std=113   p95=313   p99=415   p99.9=520   p99.99=619   min=0     max=674  
+chain_size: avg=2     std=6     p95=3     p99=32    p99.9=78    p99.99=127   min=1     max=138  
+out_requests: 0
+
+region = ap-southeast-1 | avg=383   std=151   p95=583   p99=681   p99.9=861   p99.99=888   min=186   max=919  
+region = eu-west-1      | avg=320   std=134   p95=517   p99=598   p99.9=729   p99.99=780   min=140   max=782  
+region = us-west-1      | avg=318   std=136   p95=531   p99=612   p99.9=724   p99.99=737   min=140   max=766  
+region = ca-central-1   | avg=299   std=159   p95=531   p99=612   p99.9=725   p99.99=777   min=78    max=780  
+region = sa-east-1      | avg=388   std=157   p95=608   p99=709   p99.9=775   p99.99=856   min=182   max=856  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=342   std=152   p95=566   p99=648   p99.9=775   p99.99=884   min=78    max=919  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=79    std=103   p95=282   p99=383   p99.9=492   p99.99=610   min=0     max=674  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 44.8   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 851.1587
+2:
+  process metrics:
+slow_path: 3989
+stable: 31999
+fast_path_reads: 88
+fast_path: 2411
+slow_path_reads: 97
+
+  executor metrics:
+chain_size: avg=3     std=11    p95=4     p99=64    p99.9=128   p99.99=148   min=1     max=154  
+execution_delay: avg=81    std=107   p95=310   p99=414   p99.9=551   p99.99=621   min=0     max=661  
+out_requests: 0
+
+1:
+  process metrics:
+stable: 31999
+slow_path_reads: 106
+fast_path: 2554
+slow_path: 3846
+fast_path_reads: 100
+
+  executor metrics:
+chain_size: avg=3     std=11    p95=4     p99=64    p99.9=128   p99.99=148   min=1     max=154  
+execution_delay: avg=82    std=109   p95=317   p99=417   p99.9=548   p99.99=627   min=0     max=631  
+out_requests: 0
+
+4:
+  process metrics:
+slow_path_reads: 109
+stable: 31999
+fast_path: 2198
+fast_path_reads: 68
+slow_path: 4202
+
+  executor metrics:
+chain_size: avg=3     std=11    p95=4     p99=64    p99.9=128   p99.99=148   min=1     max=154  
+execution_delay: avg=93    std=116   p95=334   p99=434   p99.9=600   p99.99=680   min=0     max=684  
+out_requests: 0
+
+3:
+  process metrics:
+stable: 31999
+fast_path: 2312
+slow_path: 4088
+fast_path_reads: 73
+slow_path_reads: 113
+
+  executor metrics:
+chain_size: avg=3     std=11    p95=4     p99=64    p99.9=128   p99.99=148   min=1     max=154  
+execution_delay: avg=96    std=111   p95=328   p99=430   p99.9=564   p99.99=702   min=0     max=718  
+out_requests: 0
+
+5:
+  process metrics:
+slow_path: 3719
+fast_path_reads: 88
+stable: 31999
+slow_path_reads: 88
+fast_path: 2681
+
+  executor metrics:
+execution_delay: avg=108   std=125   p95=365   p99=500   p99.9=599   p99.99=721   min=0     max=732  
+chain_size: avg=3     std=11    p95=4     p99=64    p99.9=128   p99.99=148   min=1     max=154  
+out_requests: 0
+
+region = eu-west-1      | avg=337   std=146   p95=558   p99=724   p99.9=767   p99.99=810   min=140   max=813  
+region = sa-east-1      | avg=440   std=182   p95=716   p99=834   p99.9=910   p99.99=920   min=182   max=920  
+region = us-west-1      | avg=336   std=144   p95=554   p99=719   p99.9=760   p99.99=795   min=140   max=801  
+region = ap-southeast-1 | avg=436   std=178   p95=714   p99=757   p99.9=906   p99.99=915   min=186   max=915  
+region = ca-central-1   | avg=309   std=172   p95=556   p99=724   p99.9=836   p99.99=836   min=78    max=840  
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=372   std=174   p95=593   p99=744   p99.9=904   p99.99=915   min=78    max=920  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=92    std=114   p95=332   p99=438   p99.9=598   p99.99=678   min=0     max=732  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 38.0   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 840.0141
+CONFLICTS: 80
+4:
+  process metrics:
+slow_path: 4612
+fast_path: 1788
+fast_path_reads: 70
+stable: 31998
+slow_path_reads: 117
+
+  executor metrics:
+execution_delay: avg=85    std=96    p95=260   p99=385   p99.9=468   p99.99=550   min=0     max=566  
+chain_size: avg=4     std=13    p95=13    p99=72    p99.9=125   p99.99=140   min=1     max=140  
+out_requests: 0
+
+3:
+  process metrics:
+slow_path: 4225
+fast_path: 2175
+stable: 31998
+fast_path_reads: 76
+slow_path_reads: 111
+
+  executor metrics:
+execution_delay: avg=90    std=96    p95=282   p99=368   p99.9=528   p99.99=554   min=0     max=558  
+chain_size: avg=4     std=13    p95=13    p99=72    p99.9=125   p99.99=140   min=1     max=140  
+out_requests: 0
+
+5:
+  process metrics:
+fast_path: 1747
+slow_path_reads: 121
+slow_path: 4653
+stable: 31998
+fast_path_reads: 70
+
+  executor metrics:
+execution_delay: avg=101   std=103   p95=288   p99=385   p99.9=474   p99.99=564   min=0     max=580  
+chain_size: avg=4     std=13    p95=13    p99=72    p99.9=125   p99.99=140   min=1     max=140  
+out_requests: 0
+
+2:
+  process metrics:
+stable: 31998
+slow_path: 4772
+slow_path_reads: 140
+fast_path: 1628
+fast_path_reads: 50
+
+  executor metrics:
+execution_delay: avg=70    std=88    p95=243   p99=336   p99.9=422   p99.99=511   min=0     max=513  
+chain_size: avg=4     std=13    p95=13    p99=72    p99.9=125   p99.99=140   min=1     max=140  
+out_requests: 0
+
+1:
+  process metrics:
+slow_path_reads: 134
+slow_path: 4915
+stable: 31998
+fast_path_reads: 49
+fast_path: 1485
+
+  executor metrics:
+chain_size: avg=4     std=13    p95=13    p99=72    p99.9=125   p99.99=140   min=1     max=140  
+execution_delay: avg=72    std=88    p95=239   p99=337   p99.9=423   p99.99=512   min=0     max=513  
+out_requests: 0
+
+region = ap-southeast-1 | avg=455   std=152   p95=593   p99=740   p99.9=746   p99.99=746   min=186   max=748  
+region = sa-east-1      | avg=456   std=150   p95=582   p99=732   p99.9=762   p99.99=762   min=182   max=766  
+region = us-west-1      | avg=340   std=112   p95=538   p99=562   p99.9=630   p99.99=648   min=140   max=648  
+region = ca-central-1   | avg=323   std=134   p95=520   p99=562   p99.9=644   p99.99=662   min=78    max=684  
+region = eu-west-1      | avg=342   std=109   p95=505   p99=562   p99.9=613   p99.99=648   min=140   max=648  
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=383   std=145   p95=560   p99=710   p99.9=746   p99.99=762   min=78    max=766  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=84    std=95    p95=258   p99=369   p99.9=460   p99.99=554   min=0     max=580  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 27.6   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 852.2762
+1:
+  process metrics:
+fast_path_reads: 48
+stable: 31999
+slow_path_reads: 160
+fast_path: 2350
+slow_path: 4050
+
+  executor metrics:
+chain_size: avg=2     std=8     p95=3     p99=44    p99.9=96    p99.99=140   min=1     max=145  
+execution_delay: avg=82    std=99    p95=272   p99=358   p99.9=457   p99.99=548   min=0     max=548  
+out_requests: 0
+
+5:
+  process metrics:
+slow_path: 3873
+fast_path_reads: 38
+stable: 31999
+slow_path_reads: 139
+fast_path: 2527
+
+  executor metrics:
+chain_size: avg=2     std=8     p95=3     p99=44    p99.9=96    p99.99=140   min=1     max=145  
+execution_delay: avg=102   std=110   p95=309   p99=400   p99.9=479   p99.99=548   min=0     max=558  
+out_requests: 0
+
+3:
+  process metrics:
+fast_path_reads: 40
+stable: 31999
+fast_path: 2180
+slow_path: 4220
+slow_path_reads: 151
+
+  executor metrics:
+execution_delay: avg=88    std=97    p95=270   p99=376   p99.9=455   p99.99=533   min=0     max=570  
+chain_size: avg=2     std=8     p95=3     p99=44    p99.9=96    p99.99=140   min=1     max=145  
+out_requests: 0
+
+4:
+  process metrics:
+stable: 31999
+slow_path: 4435
+fast_path: 1965
+slow_path_reads: 156
+fast_path_reads: 37
+
+  executor metrics:
+chain_size: avg=2     std=8     p95=3     p99=44    p99.9=96    p99.99=140   min=1     max=145  
+execution_delay: avg=90    std=106   p95=297   p99=394   p99.9=475   p99.99=535   min=0     max=535  
+out_requests: 0
+
+2:
+  process metrics:
+stable: 31999
+slow_path_reads: 147
+fast_path_reads: 35
+slow_path: 3628
+fast_path: 2772
+
+  executor metrics:
+chain_size: avg=2     std=8     p95=3     p99=44    p99.9=96    p99.99=140   min=1     max=145  
+execution_delay: avg=82    std=100   p95=273   p99=362   p99.9=465   p99.99=516   min=0     max=548  
+out_requests: 0
+
+region = eu-west-1      | avg=344   std=121   p95=531   p99=605   p99.9=688   p99.99=688   min=140   max=717  
+region = ca-central-1   | avg=325   std=145   p95=519   p99=602   p99.9=638   p99.99=668   min=78    max=668  
+region = ap-southeast-1 | avg=412   std=140   p95=595   p99=689   p99.9=761   p99.99=769   min=186   max=803  
+region = us-west-1      | avg=346   std=120   p95=532   p99=604   p99.9=688   p99.99=718   min=140   max=718  
+region = sa-east-1      | avg=411   std=140   p95=601   p99=710   p99.9=744   p99.99=793   min=182   max=803  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=368   std=138   p95=567   p99=648   p99.9=753   p99.99=778   min=78    max=803  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=89    std=103   p95=287   p99=381   p99.9=471   p99.99=535   min=0     max=570  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 36.9   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 816.8848
+CONFLICTS: 90
+3:
+  process metrics:
+slow_path: 4815
+fast_path_reads: 81
+fast_path: 1585
+stable: 31998
+slow_path_reads: 126
+
+  executor metrics:
+chain_size: avg=7     std=18    p95=55    p99=86    p99.9=116   p99.99=151   min=1     max=151  
+execution_delay: avg=88    std=86    p95=233   p99=360   p99.9=426   p99.99=532   min=0     max=532  
+out_requests: 0
+
+1:
+  process metrics:
+slow_path: 5544
+fast_path_reads: 37
+stable: 31998
+fast_path: 856
+slow_path_reads: 151
+
+  executor metrics:
+chain_size: avg=7     std=18    p95=55    p99=86    p99.9=116   p99.99=151   min=1     max=151  
+execution_delay: avg=75    std=84    p95=224   p99=318   p99.9=418   p99.99=487   min=0     max=496  
+out_requests: 0
+
+5:
+  process metrics:
+slow_path: 4929
+slow_path_reads: 139
+fast_path: 1471
+fast_path_reads: 60
+stable: 31998
+
+  executor metrics:
+execution_delay: avg=109   std=100   p95=285   p99=376   p99.9=469   p99.99=540   min=0     max=554  
+chain_size: avg=7     std=18    p95=55    p99=86    p99.9=116   p99.99=151   min=1     max=151  
+out_requests: 0
+
+4:
+  process metrics:
+stable: 31998
+slow_path: 5184
+slow_path_reads: 123
+fast_path: 1216
+fast_path_reads: 54
+
+  executor metrics:
+execution_delay: avg=91    std=94    p95=264   p99=360   p99.9=468   p99.99=480   min=0     max=549  
+chain_size: avg=7     std=18    p95=55    p99=86    p99.9=116   p99.99=151   min=1     max=151  
+out_requests: 0
+
+2:
+  process metrics:
+fast_path: 1585
+slow_path: 4815
+slow_path_reads: 108
+stable: 31998
+fast_path_reads: 57
+
+  executor metrics:
+chain_size: avg=7     std=18    p95=55    p99=86    p99.9=116   p99.99=151   min=1     max=151  
+execution_delay: avg=74    std=86    p95=225   p99=319   p99.9=418   p99.99=487   min=0     max=490  
+out_requests: 0
+
+region = ap-southeast-1 | avg=468   std=113   p95=558   p99=677   p99.9=729   p99.99=729   min=186   max=729  
+region = ca-central-1   | avg=344   std=103   p95=465   p99=567   p99.9=627   p99.99=627   min=78    max=627  
+region = sa-east-1      | avg=477   std=117   p95=627   p99=671   p99.9=736   p99.99=736   min=182   max=736  
+region = us-west-1      | avg=356   std=83    p95=452   p99=558   p99.9=627   p99.99=627   min=140   max=627  
+region = eu-west-1      | avg=356   std=83    p95=452   p99=560   p99.9=627   p99.99=627   min=140   max=627  
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=400   std=117   p95=554   p99=634   p99.9=729   p99.99=736   min=78    max=736  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=87    std=91    p95=252   p99=359   p99.9=455   p99.99=491   min=0     max=554  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 21.0   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 862.6786
+2:
+  process metrics:
+stable: 31998
+slow_path: 4180
+fast_path_reads: 27
+fast_path: 2220
+slow_path_reads: 166
+
+  executor metrics:
+execution_delay: avg=86    std=97    p95=269   p99=331   p99.9=458   p99.99=479   min=0     max=495  
+chain_size: avg=3     std=10    p95=4     p99=68    p99.9=107   p99.99=128   min=1     max=139  
+out_requests: 0
+
+1:
+  process metrics:
+slow_path_reads: 177
+stable: 31998
+fast_path_reads: 23
+fast_path: 1361
+slow_path: 5039
+
+  executor metrics:
+chain_size: avg=3     std=10    p95=4     p99=68    p99.9=107   p99.99=128   min=1     max=139  
+execution_delay: avg=86    std=95    p95=261   p99=330   p99.9=457   p99.99=461   min=0     max=487  
+out_requests: 0
+
+3:
+  process metrics:
+slow_path_reads: 163
+stable: 31998
+fast_path: 1524
+slow_path: 4876
+fast_path_reads: 24
+
+  executor metrics:
+execution_delay: avg=92    std=93    p95=263   p99=346   p99.9=461   p99.99=479   min=0     max=503  
+chain_size: avg=3     std=10    p95=4     p99=68    p99.9=107   p99.99=128   min=1     max=139  
+out_requests: 0
+
+5:
+  process metrics:
+slow_path_reads: 172
+slow_path: 4311
+fast_path: 2089
+stable: 31998
+fast_path_reads: 18
+
+  executor metrics:
+chain_size: avg=3     std=10    p95=4     p99=68    p99.9=107   p99.99=128   min=1     max=139  
+execution_delay: avg=106   std=104   p95=296   p99=376   p99.9=434   p99.99=478   min=0     max=503  
+out_requests: 0
+
+4:
+  process metrics:
+fast_path: 1296
+stable: 31998
+fast_path_reads: 16
+slow_path_reads: 153
+slow_path: 5104
+
+  executor metrics:
+chain_size: avg=3     std=10    p95=4     p99=68    p99.9=107   p99.99=128   min=1     max=139  
+execution_delay: avg=93    std=103   p95=287   p99=360   p99.9=463   p99.99=477   min=0     max=480  
+out_requests: 0
+
+region = sa-east-1      | avg=426   std=113   p95=562   p99=623   p99.9=685   p99.99=724   min=182   max=724  
+region = us-west-1      | avg=364   std=95    p95=488   p99=545   p99.9=635   p99.99=635   min=140   max=635  
+region = eu-west-1      | avg=368   std=92    p95=489   p99=548   p99.9=635   p99.99=635   min=140   max=686  
+region = ap-southeast-1 | avg=427   std=111   p95=566   p99=637   p99.9=717   p99.99=717   min=186   max=717  
+region = ca-central-1   | avg=355   std=115   p95=500   p99=578   p99.9=623   p99.99=631   min=78    max=633  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=388   std=110   p95=546   p99=613   p99.9=688   p99.99=724   min=78    max=724  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=92    std=99    p95=276   p99=349   p99.9=461   p99.99=479   min=0     max=503  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 26.5   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 800.4045
+CONFLICTS: 100
+4:
+  process metrics:
+stable: 31939
+slow_path_reads: 192
+slow_path: 6272
+fast_path_reads: 13
+fast_path: 128
+
+  executor metrics:
+chain_size: avg=65    std=44    p95=128   p99=128   p99.9=128   p99.99=128   min=1     max=128  
+execution_delay: avg=93    std=102   p95=268   p99=268   p99.9=346   p99.99=346   min=0     max=346  
+out_requests: 0
+
+5:
+  process metrics:
+fast_path: 342
+slow_path: 6058
+fast_path_reads: 23
+stable: 31939
+slow_path_reads: 169
+
+  executor metrics:
+chain_size: avg=65    std=44    p95=128   p99=128   p99.9=128   p99.99=128   min=1     max=128  
+execution_delay: avg=101   std=97    p95=266   p99=269   p99.9=344   p99.99=344   min=0     max=344  
+out_requests: 0
+
+2:
+  process metrics:
+fast_path: 981
+slow_path_reads: 135
+fast_path_reads: 56
+slow_path: 5419
+stable: 31939
+
+  executor metrics:
+chain_size: avg=65    std=44    p95=128   p99=128   p99.9=128   p99.99=128   min=1     max=128  
+execution_delay: avg=84    std=87    p95=209   p99=284   p99.9=287   p99.99=287   min=0     max=287  
+out_requests: 0
+
+3:
+  process metrics:
+slow_path: 5904
+fast_path_reads: 41
+slow_path_reads: 153
+fast_path: 496
+stable: 31968
+
+  executor metrics:
+chain_size: avg=65    std=44    p95=128   p99=128   p99.9=128   p99.99=128   min=1     max=128  
+execution_delay: avg=46    std=59    p95=161   p99=209   p99.9=262   p99.99=347   min=0     max=347  
+out_requests: 0
+
+1:
+  process metrics:
+fast_path: 1243
+slow_path: 5157
+stable: 31939
+fast_path_reads: 74
+slow_path_reads: 134
+
+  executor metrics:
+execution_delay: avg=85    std=89    p95=215   p99=284   p99.9=293   p99.99=293   min=0     max=293  
+chain_size: avg=65    std=44    p95=128   p99=128   p99.9=128   p99.99=128   min=1     max=128  
+out_requests: 0
+
+region = ap-southeast-1 | avg=404   std=27    p95=425   p99=466   p99.9=533   p99.99=533   min=372   max=533  
+region = ca-central-1   | avg=392   std=34    p95=424   p99=424   p99.9=424   p99.99=424   min=299   max=424  
+region = us-west-1      | avg=391   std=33    p95=424   p99=424   p99.9=424   p99.99=424   min=346   max=424  
+region = sa-east-1      | avg=403   std=30    p95=466   p99=467   p99.9=467   p99.99=467   min=364   max=467  
+region = eu-west-1      | avg=391   std=32    p95=424   p99=424   p99.9=424   p99.99=424   min=346   max=424  
+EPaxos   n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxos   n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxos   n = 5 f = 0 c = 32  | execution latency   : avg=396   std=32    p95=424   p99=466   p99.9=500   p99.99=533   min=299   max=533  
+EPaxos   n = 5 f = 0 c = 32  | execution delay     : avg=82    std=90    p95=258   p99=274   p99.9=334   p99.99=346   min=0     max=347  
+EPaxos   n = 5 f = 0 c = 32  | fast path rate      : 10.0   
+EPaxos   n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxos   n = 5 f = 0 c = 32  | throughput          : 884.3858
+2:
+  process metrics:
+slow_path: 4957
+stable: 31953
+slow_path_reads: 210
+fast_path: 1443
+
+  executor metrics:
+chain_size: avg=8     std=25    p95=83    p99=127   p99.9=128   p99.99=128   min=1     max=128  
+execution_delay: avg=94    std=97    p95=277   p99=287   p99.9=301   p99.99=349   min=0     max=349  
+out_requests: 0
+
+1:
+  process metrics:
+slow_path: 4935
+slow_path_reads: 193
+fast_path: 1465
+stable: 31953
+
+  executor metrics:
+chain_size: avg=8     std=25    p95=83    p99=127   p99.9=128   p99.99=128   min=1     max=128  
+execution_delay: avg=96    std=98    p95=283   p99=293   p99.9=330   p99.99=348   min=0     max=348  
+out_requests: 0
+
+5:
+  process metrics:
+fast_path: 952
+slow_path: 5448
+slow_path_reads: 194
+stable: 31953
+
+  executor metrics:
+chain_size: avg=8     std=25    p95=83    p99=127   p99.9=128   p99.99=128   min=1     max=128  
+execution_delay: avg=115   std=106   p95=296   p99=344   p99.9=344   p99.99=381   min=0     max=381  
+out_requests: 0
+
+3:
+  process metrics:
+fast_path: 297
+slow_path: 6103
+stable: 31975
+slow_path_reads: 194
+
+  executor metrics:
+chain_size: avg=8     std=25    p95=83    p99=127   p99.9=128   p99.99=128   min=1     max=128  
+execution_delay: avg=57    std=69    p95=182   p99=251   p99.9=316   p99.99=414   min=0     max=456  
+out_requests: 0
+
+4:
+  process metrics:
+slow_path_reads: 199
+fast_path: 1954
+slow_path: 4446
+fast_path_reads: 1
+stable: 31953
+
+  executor metrics:
+execution_delay: avg=106   std=110   p95=328   p99=346   p99.9=351   p99.99=383   min=0     max=383  
+chain_size: avg=8     std=25    p95=83    p99=127   p99.9=128   p99.99=128   min=1     max=128  
+out_requests: 0
+
+region = ca-central-1   | avg=396   std=35    p95=424   p99=432   p99.9=539   p99.99=539   min=125   max=539  
+region = us-west-1      | avg=396   std=32    p95=424   p99=432   p99.9=478   p99.99=485   min=185   max=485  
+region = ap-southeast-1 | avg=409   std=33    p95=466   p99=527   p99.9=642   p99.99=642   min=253   max=642  
+region = eu-west-1      | avg=396   std=32    p95=424   p99=432   p99.9=491   p99.99=491   min=159   max=558  
+region = sa-east-1      | avg=408   std=35    p95=466   p99=520   p99.9=560   p99.99=560   min=182   max=560  
+EPaxosMRV n = 5 f = 0 c = 32  | wait condition delay: (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | commit latency      : (empty)
+EPaxosMRV n = 5 f = 0 c = 32  | execution latency   : avg=401   std=34    p95=427   p99=490   p99.9=560   p99.99=642   min=125   max=642  
+EPaxosMRV n = 5 f = 0 c = 32  | execution delay     : avg=94    std=99    p95=276   p99=344   p99.9=346   p99.99=381   min=0     max=456  
+EPaxosMRV n = 5 f = 0 c = 32  | fast path rate      : 19.1   
+EPaxosMRV n = 5 f = 0 c = 32  | total orders        : 32000
+EPaxosMRV n = 5 f = 0 c = 32  | throughput          : 867.6439
