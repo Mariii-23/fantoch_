@@ -122,9 +122,7 @@ impl MultiRecordValues {
                             if let Some(value) = vec.data.get_mut(n) {
                                 value
                             } else {
-                                //TODO: por erro
-                                panic!("should ...");
-                                // self.latest.entry(key.clone()).or_default()
+                                panic!("Something went wrong");
                             }
                         }
                         None => {

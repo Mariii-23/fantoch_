@@ -29,9 +29,8 @@ impl Executor for PredecessorsExecutor {
 
     fn new(process_id: ProcessId, shard_id: ShardId, config: Config) -> Self {
         let graph = PredecessorsGraph::new(process_id, &config);
-        //TODO: change this
         let store =
-            Storage::new(config.executor_monitor_execution_order(), true, None);
+            Storage::new(config.executor_monitor_execution_order(), config.is_kv_storage(), Some(config.n_mrv()));
         let to_clients = Default::default();
         Self {
             process_id,

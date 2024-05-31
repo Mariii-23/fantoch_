@@ -29,9 +29,8 @@ impl Executor for SlotExecutor {
     type ExecutionInfo = SlotExecutionInfo;
 
     fn new(_process_id: ProcessId, shard_id: ShardId, config: Config) -> Self {
-        //TODO: Change this
         let store =
-            Storage::new(config.executor_monitor_execution_order(), true, None);
+            Storage::new(config.executor_monitor_execution_order(), config.is_kv_storage(), Some(config.n_mrv()));
         // the next slot to be executed is 1
         let next_slot = 1;
         // there's nothing to execute in the beginning

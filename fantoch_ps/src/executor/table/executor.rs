@@ -86,9 +86,8 @@ impl Executor for TableExecutor {
             config.n(),
             stability_threshold,
         );
-        //TODO: Change this
         let store =
-            Storage::new(config.executor_monitor_execution_order(), true, None);
+            Storage::new(config.executor_monitor_execution_order(), config.is_kv_storage(), Some(config.n_mrv()));
         let metrics = ExecutorMetrics::new();
         let to_clients = Default::default();
         let to_executors = Default::default();
