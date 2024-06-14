@@ -1,7 +1,7 @@
 use crate::client::key_gen::{KeyGen, KeyGenState};
 use crate::command::Command;
 use crate::id::{RiflGen, ShardId};
-use crate::store::{StorageOp, Key, Value};
+use crate::store::{Key, StorageOp, Value};
 use crate::trace;
 use crate::HashMap;
 use rand::distributions::{Distribution, WeightedIndex};
@@ -10,10 +10,11 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 const MAX_NUMBER: u16 = u16::MAX;
-const MIN_NUMBER: u16 = u16::MIN; 
+const MIN_NUMBER: u16 = u16::MIN;
 
 // Put, Add, Subtract, Delete
-const WEIGHTED_KVO_WRITES: [u8;4] = [0,4,4,0];
+// const WEIGHTED_KVO_WRITES: [u8;4] = [0,4,4,0];
+const WEIGHTED_KVO_WRITES: [u8; 4] = [1, 2, 1, 0];
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Workload {
@@ -184,7 +185,7 @@ impl Workload {
                     1 => StorageOp::Add(value),
                     2 => StorageOp::Subtract(value),
                     3 => StorageOp::Delete,
-                    _ => unreachable!(),     
+                    _ => unreachable!(),
                 }
             };
 

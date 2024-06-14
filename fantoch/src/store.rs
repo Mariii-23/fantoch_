@@ -187,18 +187,24 @@ impl Storage {
 
                         self.store.insert(key.to_string(), vec);
                         return Some(value);
+                    } else {
+                        let mut vec = vec![0; self.number];
+                        vec[0] = value;
+
+                        self.store.insert(key.to_string(), vec);
+                        return Some(value);
                     }
                 }
-                None
             }
             StorageOp::Add(value) => {
                 let index = if self.is_kv_storage {
                     0
                 } else {
                     if n_deps.is_empty() {
-                        return None;
+                        0
+                    } else {
+                        n_deps[0]
                     }
-                    n_deps[0]
                 };
 
                 if let Some(old_value) = self.store.get_mut(key) {
@@ -214,8 +220,13 @@ impl Storage {
                             Some(new_value)
                         }
                     };
+                } else {
+                    let mut vec = vec![0; self.number];
+                    vec[index] = value;
+
+                    self.store.insert(key.to_string(), vec);
+                    return Some(value);
                 }
-                None
             }
             StorageOp::Subtract(value) => {
                 if self.is_kv_storage {

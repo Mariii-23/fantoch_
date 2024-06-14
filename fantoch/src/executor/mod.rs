@@ -15,9 +15,9 @@ pub use monitor::ExecutionOrderMonitor;
 
 use crate::config::Config;
 use crate::id::{ProcessId, Rifl, ShardId};
-use crate::store::{Key, StorageOp, StorageOpResult};
 use crate::metrics::Metrics;
 use crate::protocol::{CommittedAndExecuted, MessageIndex};
+use crate::store::{Key, StorageOp, StorageOpResult};
 use crate::time::SysTime;
 use crate::util;
 use serde::de::DeserializeOwned;
@@ -127,6 +127,8 @@ pub type ExecutorMetrics = Metrics<ExecutorMetricsKind>;
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ExecutorMetricsKind {
+    OperationSuccess,
+    OperationFailure,
     ExecutionDelay,
     ChainSize,
     OutRequests,
@@ -138,6 +140,12 @@ impl Debug for ExecutorMetricsKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             // general metric
+            ExecutorMetricsKind::OperationSuccess => {
+                write!(f, "operation_success")
+            }
+            ExecutorMetricsKind::OperationFailure => {
+                write!(f, "operation_failure")
+            }
             ExecutorMetricsKind::ExecutionDelay => write!(f, "execution_delay"),
             // graph executor specific
             ExecutorMetricsKind::ChainSize => write!(f, "chain_size"),
@@ -179,7 +187,11 @@ pub struct ExecutorResult {
 }
 
 impl ExecutorResult {
-    pub fn new(rifl: Rifl, key: Key, partial_results: Vec<StorageOpResult>) -> Self {
+    pub fn new(
+        rifl: Rifl,
+        key: Key,
+        partial_results: Vec<StorageOpResult>,
+    ) -> Self {
         ExecutorResult {
             rifl,
             key,
