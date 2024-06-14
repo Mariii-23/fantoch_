@@ -198,7 +198,12 @@ impl GraphExecutor {
         // execute the command
         let results =
             cmd.execute(self.shard_id, &mut self.store, Some(&n_deps));
-        self.to_clients.extend(results);
+
+        let results_vec: Vec<ExecutorResult> = results.collect();
+
+        self.graph.save_result_operations(results_vec.clone());
+
+        self.to_clients.extend(results_vec);
     }
 }
 

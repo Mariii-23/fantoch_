@@ -592,6 +592,8 @@ fn handle_run_result(
     client_latencies: HashMap<Region, (usize, Histogram)>,
     elapsed_time: Duration,
 ) {
+    let mut operations_sucess = 0;
+    let mut operations_failure = 0;
     let mut fast_paths = 0;
     let mut slow_paths = 0;
     let mut wait_condition_delay = Histogram::new();
@@ -607,6 +609,15 @@ fn handle_run_result(
             println!("  executor metrics:");
             println!("{:?}", executor_metrics);
 
+            let process_operations_sucess = executor_metrics
+                .get_aggregated(ExecutorMetricsKind::OperationSuccess)
+                .cloned()
+                .unwrap_or_default();
+            let process_operations_failure = executor_metrics
+                .get_aggregated(ExecutorMetricsKind::OperationFailure)
+                .cloned()
+                .unwrap_or_default();
+
             let process_fast_paths = process_metrics
                 .get_aggregated(ProtocolMetricsKind::FastPath)
                 .cloned()
@@ -615,12 +626,16 @@ fn handle_run_result(
                 .get_aggregated(ProtocolMetricsKind::SlowPath)
                 .cloned()
                 .unwrap_or_default();
+
             let process_wait_condition_delay = process_metrics
                 .get_collected(ProtocolMetricsKind::WaitConditionDelay);
             let process_commit_latency = process_metrics
                 .get_collected(ProtocolMetricsKind::CommitLatency);
             let executor_execution_delay = executor_metrics
                 .get_collected(ExecutorMetricsKind::ExecutionDelay);
+
+            operations_sucess += process_operations_sucess;
+            operations_failure += process_operations_failure;
 
             fast_paths += process_fast_paths;
             slow_paths += process_slow_paths;
@@ -668,6 +683,11 @@ fn handle_run_result(
         config.n(),
         config.f(),
         clients_per_region
+    );
+    println!("{} | operations success  : {:?}", prefix, operations_sucess);
+    println!(
+        "{} | operations failure  : {:?}",
+        prefix, operations_failure
     );
     println!(
         "{} | wait condition delay: {:?}",

@@ -13,10 +13,10 @@ pub use executor::{GraphExecutionInfo, GraphExecutor};
 
 use self::index::{PendingIndex, VertexIndex};
 use self::tarjan::{FinderResult, TarjanSCCFinder, Vertex, SCC};
-use crate::protocol::common::graph::{Dependency, KeyDepsMRV};
+use crate::protocol::common::graph::{self, Dependency, KeyDepsMRV};
 use fantoch::command::Command;
 use fantoch::config::Config;
-use fantoch::executor::{ExecutorMetrics, ExecutorMetricsKind};
+use fantoch::executor::{ExecutorMetrics, ExecutorMetricsKind, ExecutorResult};
 use fantoch::id::{Dot, ProcessId, ShardId};
 use fantoch::time::SysTime;
 use fantoch::util;
@@ -522,6 +522,26 @@ impl DependencyGraph {
             // add command to commands to be executed
             self.to_execute.push_back((cmd, n_deps));
         })
+    }
+
+    fn save_result_operations(
+        &mut self,
+        result_operations: Vec<ExecutorResult>,
+    ) {
+        let is_success = result_operations.iter().all(|result| {
+            result
+                .partial_results
+                .iter()
+                .all(|op_result| op_result.is_some())
+        });
+
+        if is_success {
+            self.metrics
+                .aggregate(ExecutorMetricsKind::OperationSuccess, 1);
+        } else {
+            self.metrics
+                .aggregate(ExecutorMetricsKind::OperationFailure, 1);
+        }
     }
 
     fn index_pending(
