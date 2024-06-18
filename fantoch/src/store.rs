@@ -188,6 +188,7 @@ impl Storage {
                         self.store.insert(key.to_string(), vec);
                         return Some(value);
                     } else {
+                        //TODO: nao devia acontecer
                         let mut vec = vec![0; self.number];
                         vec[0] = value;
 

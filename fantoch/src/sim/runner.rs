@@ -206,7 +206,7 @@ where
         HashMap<ProcessId, (ProtocolMetrics, ExecutorMetrics)>,
         HashMap<ProcessId, Option<ExecutionOrderMonitor>>,
         HashMap<Region, (usize, Histogram)>,
-        Duration
+        Duration,
     ) {
         // start clients
         self.simulation.start_clients().into_iter().for_each(
@@ -606,8 +606,12 @@ where
         &mut self,
     ) -> HashMap<ProcessId, (ProtocolMetrics, ExecutorMetrics)> {
         self.check_processes_and_executors(|process, executor| {
-            let process_metrics: crate::metrics::Metrics<crate::protocol::ProtocolMetricsKind> = process.metrics().clone();
-            let executor_metrics: crate::metrics::Metrics<crate::executor::ExecutorMetricsKind> = executor.metrics().clone();
+            let process_metrics: crate::metrics::Metrics<
+                crate::protocol::ProtocolMetricsKind,
+            > = process.metrics().clone();
+            let executor_metrics: crate::metrics::Metrics<
+                crate::executor::ExecutorMetricsKind,
+            > = executor.metrics().clone();
             (process_metrics, executor_metrics)
         })
     }

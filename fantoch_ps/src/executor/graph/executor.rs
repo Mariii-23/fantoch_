@@ -38,7 +38,7 @@ impl Executor for GraphExecutor {
         let store = Storage::new(
             config.executor_monitor_execution_order(),
             config.is_kv_storage(),
-         Some(config.n_mrv()),
+            Some(config.n_mrv()),
         );
         let to_clients = Default::default();
         let to_executors = Default::default();

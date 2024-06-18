@@ -167,8 +167,8 @@ fn tempo(aws: bool) {
     // let clients_per_region = vec![64, 128, 256, 512];
     // let pool_sizes = vec![100, 50, 10, 1];
     // let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
-    // let conflicts = vec![30, 50, 60];
-    let conflicts = vec![0];
+    let conflicts = vec![30, 50, 60, 100];
+    // let conflicts = vec![100];
     let clients_per_region = vec![
         32,
         // 512,
@@ -318,6 +318,7 @@ fn tempo(aws: bool) {
                             protocol,
                             config,
                             clients,
+                            n,
                             metrics,
                             client_latencies,
                             elapsed_time,
@@ -455,6 +456,7 @@ fn equidistant<P: Protocol>(protocol_name: &str) {
             protocol_name,
             config,
             clients_per_region,
+            n,
             process_metrics,
             client_latencies,
             elapsed_time,
@@ -531,6 +533,7 @@ fn increasing_regions<P: Protocol>(protocol_name: &str) {
             protocol_name,
             config,
             clients_per_region,
+            n,
             process_metrics,
             client_latencies,
             elapsed_time,
@@ -589,6 +592,7 @@ fn handle_run_result(
     protocol_name: &str,
     config: Config,
     clients_per_region: usize,
+    n: usize,
     metrics: HashMap<ProcessId, (ProtocolMetrics, ExecutorMetrics)>,
     client_latencies: HashMap<Region, (usize, Histogram)>,
     elapsed_time: Duration,
@@ -685,10 +689,15 @@ fn handle_run_result(
         config.f(),
         clients_per_region
     );
-    println!("{} | operations success  : {:?}", prefix, operations_sucess);
+    println!(
+        "{} | operations success  : {:?}",
+        prefix,
+        operations_sucess / n as u64
+    );
     println!(
         "{} | operations failure  : {:?}",
-        prefix, operations_failure
+        prefix,
+        operations_failure / n as u64
     );
     println!(
         "{} | wait condition delay: {:?}",
