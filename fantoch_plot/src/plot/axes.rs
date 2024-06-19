@@ -220,17 +220,17 @@ impl<'a> Axes<'a> {
         y: Vec<Y>,
         fmt: Option<&str>,
         kwargs: Option<&PyDict>,
-    ) -> Result<(), Report>
+    ) -> Result<&PyAny, Report>
     where
         X: IntoPy<PyObject>,
         Y: IntoPy<PyObject>,
     {
-        if let Some(fmt) = fmt {
-            pytry!(self.py(), self.ax.call_method("plot", (x, y, fmt), kwargs));
+        let result = if let Some(fmt) = fmt {
+            pytry!(self.py(), self.ax.call_method("plot", (x, y, fmt), kwargs))
         } else {
-            pytry!(self.py(), self.ax.call_method("plot", (x, y), kwargs));
+            pytry!(self.py(), self.ax.call_method("plot", (x, y), kwargs))
         };
-        Ok(())
+        Ok(result)
     }
 
     pub fn bar<X, H>(
