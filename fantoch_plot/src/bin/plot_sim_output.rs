@@ -5,7 +5,7 @@ use fantoch::protocol;
 use fantoch_plot::plot::pyplot::PyPlot;
 use pyo3::prelude::*;
 use std::collections::{BTreeMap, HashMap};
-use std::fmt;
+use std::fmt::{self, write};
 
 // file with the output of simulation
 const SIM_OUTPUT: &str = "sim.out";
@@ -45,6 +45,7 @@ struct Data {
     execution_latency: Option<Histogram>,
     execution_delay: Option<Histogram>,
     fast_path_rate: Option<f64>,
+    percentage_fail_operations: Option<f64>,
     throughput: Option<f64>,
 }
 
@@ -56,6 +57,7 @@ enum PlotType {
     ExecutionDelay,
     FastPath,
     Throughput,
+    PercentageFailOperations,
 }
 
 impl PlotType {
@@ -67,6 +69,9 @@ impl PlotType {
             PlotType::ExecutionDelay => "Execution Delay",
             PlotType::FastPath => "Fast Path",
             PlotType::Throughput => "Throughput",
+            PlotType::PercentageFailOperations => {
+                "Percentage of fail operations"
+            }
         }
     }
 }
@@ -80,6 +85,9 @@ impl fmt::Debug for PlotType {
             PlotType::ExecutionDelay => write!(f, "execution_delay"),
             PlotType::FastPath => write!(f, "fast_path"),
             PlotType::Throughput => write!(f, "throughput"),
+            PlotType::PercentageFailOperations => {
+                write!(f, "percentage_of_fail_operations")
+            }
         }
     }
 }
@@ -91,6 +99,7 @@ enum MetricType {
     P99_9,
     FastPathRath,
     Throughput,
+    PercentageFailOperations,
 }
 
 impl fmt::Debug for MetricType {
@@ -101,6 +110,9 @@ impl fmt::Debug for MetricType {
             MetricType::P99_9 => write!(f, "p99.9"),
             MetricType::FastPathRath => write!(f, "rath"),
             MetricType::Throughput => write!(f, "throughput"),
+            MetricType::PercentageFailOperations => {
+                write!(f, "percentage of fail operations")
+            }
         }
     }
 }
@@ -171,13 +183,14 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
         PlotType::ExecutionDelay,
         PlotType::FastPath,
         PlotType::Throughput,
+        PlotType::PercentageFailOperations,
     ];
     let metric_types =
         vec![MetricType::Avg, MetricType::P99, MetricType::P99_9];
     let pool_sizes = vec![1];
-    let conflicts = vec![0, 2, 10, 30, 50, 60, 70,80,90, 100];
+    // let conflicts = vec![0, 2, 10, 30, 50, 60, 70, 80, 90, 100];
     // let conflicts = vec![0, 2, 10, 30, 50, 60, 70];
-    // let conflicts = vec![0, 2, 10, 30];
+    let conflicts = vec![30, 50, 60, 100];
     // let conflicts = vec![80];
     let protocols = [
         // String::from("FPaxos"),
@@ -193,50 +206,64 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     // let cs = vec![32, 512, 1024];
 
     for protocol in protocols.clone() {
-    for pool_size in pool_sizes.clone() {
-        for plot_type in plot_types.clone() {
-            if plot_type == PlotType::FastPath {
-                plot(
-                    plot_type,
-                    MetricType::FastPathRath,
-                    pool_size,
-                    conflicts.clone(),
-                    protocol.clone(),
-                    n,
-                    f,
-                    cs.clone(),
-                    &all_data,
-                )?;
-                continue;
-            } else if plot_type == PlotType::Throughput {
-                plot(
-                    plot_type,
-                    MetricType::Throughput,
-                    pool_size,
-                    conflicts.clone(),
-                    protocol.clone(),
-                    n,
-                    f,
-                    cs.clone(),
-                    &all_data,
-                )?;
-                continue;
-            }
-            for metric_type in metric_types.clone() {
-                plot(
-                    plot_type,
-                    metric_type,
-                    pool_size,
-                    conflicts.clone(),
-                    protocol.clone(),
-                    n,
-                    f,
-                    cs.clone(),
-                    &all_data,
-                )?;
+        for pool_size in pool_sizes.clone() {
+            for plot_type in plot_types.clone() {
+                if plot_type == PlotType::FastPath {
+                    plot(
+                        plot_type,
+                        MetricType::FastPathRath,
+                        pool_size,
+                        conflicts.clone(),
+                        protocol.clone(),
+                        n,
+                        f,
+                        cs.clone(),
+                        &all_data,
+                    )?;
+                    continue;
+                } else if plot_type == PlotType::Throughput {
+                    plot(
+                        plot_type,
+                        MetricType::Throughput,
+                        pool_size,
+                        conflicts.clone(),
+                        protocol.clone(),
+                        n,
+                        f,
+                        cs.clone(),
+                        &all_data,
+                    )?;
+                    continue;
+                } else if plot_type == PlotType::Throughput {
+                    plot(
+                        plot_type,
+                        MetricType::PercentageFailOperations,
+                        pool_size,
+                        conflicts.clone(),
+                        protocol.clone(),
+                        n,
+                        f,
+                        cs.clone(),
+                        &all_data,
+                    )?;
+                    continue;
+                }
+                for metric_type in metric_types.clone() {
+                    plot(
+                        plot_type,
+                        metric_type,
+                        pool_size,
+                        conflicts.clone(),
+                        protocol.clone(),
+                        n,
+                        f,
+                        cs.clone(),
+                        &all_data,
+                    )?;
+                }
             }
         }
-    }}
+    }
 
     Ok(())
 }
@@ -286,8 +313,10 @@ fn plot(
         })
         .collect();
     let title = format!("{} (pool size = {:?})", plot_type.title(), pool_size);
-    let output_file =
-        format!("{}_{}_{:?}_{:?}.pdf",protocol, pool_size, metric_type, plot_type);
+    let output_file = format!(
+        "{}_{}_{:?}_{:?}.pdf",
+        protocol, pool_size, metric_type, plot_type
+    );
     latency_plot(title, metric_type, conflicts, data, PLOT_DIR, &output_file)
 }
 
@@ -370,7 +399,7 @@ fn latency_plot(
     let ylabel = match metric_type {
         MetricType::FastPathRath => format!("fast path rate (%)"),
         MetricType::Throughput => format!("throughput (Requests per Second)"),
-        _ =>  format!("{:?} latency (ms)", metric_type),
+        _ => format!("{:?} latency (ms)", metric_type),
     };
 
     ax.set_ylabel(&ylabel, None)?;
@@ -402,17 +431,21 @@ fn latency_plot(
     Ok(())
 }
 
-fn get_histogram_value(histogram: &Option<Histogram>, metric_type: MetricType) -> Option<usize> {
+fn get_histogram_value(
+    histogram: &Option<Histogram>,
+    metric_type: MetricType,
+) -> Option<usize> {
     if MetricType::FastPathRath == metric_type {
         return None;
     }
-    
+
     histogram.as_ref().map(|histogram| match metric_type {
         MetricType::Avg => histogram.avg,
         MetricType::P99 => histogram.p99,
         MetricType::P99_9 => histogram.p99_9,
         MetricType::FastPathRath => 0,
         MetricType::Throughput => 0,
+        MetricType::PercentageFailOperations => 0,
     })
 }
 
@@ -429,12 +462,27 @@ fn get_plot_value(
     };
 
     match plot_type {
-        PlotType::WaitConditionDelay => get_histogram_value(&data.wait_condition_delay, metric_type),
-        PlotType::CommitLatency => get_histogram_value(&data.commit_latency, metric_type),
-        PlotType::ExecutionLatency => get_histogram_value(&data.execution_latency, metric_type),
-        PlotType::ExecutionDelay => get_histogram_value(&data.execution_delay, metric_type),
-        PlotType::FastPath => data.fast_path_rate.map(|value| value.round() as usize),
-        PlotType::Throughput => data.throughput.map(|value| value.round() as usize),
+        PlotType::WaitConditionDelay => {
+            get_histogram_value(&data.wait_condition_delay, metric_type)
+        }
+        PlotType::CommitLatency => {
+            get_histogram_value(&data.commit_latency, metric_type)
+        }
+        PlotType::ExecutionLatency => {
+            get_histogram_value(&data.execution_latency, metric_type)
+        }
+        PlotType::ExecutionDelay => {
+            get_histogram_value(&data.execution_delay, metric_type)
+        }
+        PlotType::FastPath => {
+            data.fast_path_rate.map(|value| value.round() as usize)
+        }
+        PlotType::PercentageFailOperations => data
+            .percentage_fail_operations
+            .map(|value| value.round() as usize),
+        PlotType::Throughput => {
+            data.throughput.map(|value| value.round() as usize)
+        }
     }
 }
 
@@ -582,19 +630,25 @@ fn parse_result_entry(
                 .parse()
                 .expect("fast path rate should be a float");
             data.fast_path_rate = Some(fast_path_rate);
-        },
+        }
         "throughput" => {
             assert!(data.throughput.is_none());
-            let throughput = entry
+            let throughput =
+                entry.trim().parse().expect("throughput should be a float");
+            data.throughput = Some(throughput);
+        }
+        "percentage of fail operations" => {
+            assert!(data.percentage_fail_operations.is_none());
+            let percentage_fail_operations = entry
                 .trim()
                 .parse()
-                .expect("throughput should be a float");
-            data.throughput = Some(throughput);
-        },
-        "total orders" => {
+                .expect("percentage of fail operations should be a float");
+            data.percentage_fail_operations = Some(percentage_fail_operations);
+        }
+        "total orders" | "operations success" | "operations failure" => {
             //FIXME:
             //DO nothing for now
-        },
+        }
         entry_type => {
             panic!("unsupported entry type: {:?}", entry_type);
         }

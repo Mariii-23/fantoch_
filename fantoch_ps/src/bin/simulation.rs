@@ -683,7 +683,7 @@ fn handle_run_result(
     };
 
     let prefix = format!(
-        "{:<8} n = {} f = {} c = {:<3}",
+        "{:<10} n = {} f = {} c = {:<3}",
         name(protocol_name, config.caesar_wait_condition()),
         config.n(),
         config.f(),
@@ -698,6 +698,13 @@ fn handle_run_result(
         "{} | operations failure  : {:?}",
         prefix,
         operations_failure / n as u64
+    );
+    println!(
+        "{} | percentage of fail operations : {:?}",
+        prefix,
+        (operations_failure as f64
+            / (operations_failure + operations_sucess) as f64)
+            * 100.0
     );
     println!(
         "{} | wait condition delay: {:?}",
