@@ -203,7 +203,7 @@ fn tempo(aws: bool) {
                 // ("Atlas", config!(n, 2, false, None, false, false)),
                 ("EPaxos", config!(n, 0, false, None, false, false)),
                 ("EPaxosMRV", config!(n, 0, false, None, false, false)),
-                // ("FPaxos", config!(n, 1, false, None, false, false)),
+                ("FPaxos", config!(n, 1, false, None, false, false)),
                 // ("FPaxos", config!(n, 2, false, None, false, false)),
                 // ("Tempo", config!(n, 1, false, None, false, false)),
                 // ("Tempo", config!(n, 2, false, None, false, false)),
@@ -657,7 +657,10 @@ fn handle_run_result(
     );
 
     // compute the percentage of fast paths
-    let total = fast_paths + slow_paths;
+    let mut total = fast_paths + slow_paths;
+    if total == 0 {
+        total = (operations_sucess + operations_failure) as u64 / n as u64;
+    }
     let fp_percentage = (fast_paths as f64 * 100f64) / total as f64;
 
     // compute throughput

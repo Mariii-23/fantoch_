@@ -1,7 +1,8 @@
 use fantoch::command::Command;
 use fantoch::config::Config;
 use fantoch::executor::{
-    ExecutionOrderMonitor, Executor, ExecutorMetrics, ExecutorResult,
+    ExecutionOrderMonitor, Executor, ExecutorMetrics, ExecutorMetricsKind,
+    ExecutorResult,
 };
 use fantoch::id::{ProcessId, ShardId};
 use fantoch::protocol::MessageIndex;
@@ -29,8 +30,11 @@ impl Executor for SlotExecutor {
     type ExecutionInfo = SlotExecutionInfo;
 
     fn new(_process_id: ProcessId, shard_id: ShardId, config: Config) -> Self {
-        let store =
-            Storage::new(config.executor_monitor_execution_order(), config.is_kv_storage(), Some(config.n_mrv()));
+        let store = Storage::new(
+            config.executor_monitor_execution_order(),
+            config.is_kv_storage(),
+            Some(config.n_mrv()),
+        );
         // the next slot to be executed is 1
         let next_slot = 1;
         // there's nothing to execute in the beginning
@@ -99,8 +103,32 @@ impl SlotExecutor {
     fn execute(&mut self, cmd: Command) {
         // execute the command
         let results = cmd.execute(self.shard_id, &mut self.store, None);
+
+        let results_vec: Vec<ExecutorResult> = results.collect();
+        self.save_result_operations(results_vec.clone());
+
         // update results if this rifl is pending
-        self.to_clients.extend(results);
+        self.to_clients.extend(results_vec);
+    }
+
+    fn save_result_operations(
+        &mut self,
+        result_operations: Vec<ExecutorResult>,
+    ) {
+        let is_success = result_operations.iter().all(|result| {
+            result
+                .partial_results
+                .iter()
+                .all(|op_result| op_result.is_some())
+        });
+
+        if is_success {
+            self.metrics
+                .aggregate(ExecutorMetricsKind::OperationSuccess, 1);
+        } else {
+            self.metrics
+                .aggregate(ExecutorMetricsKind::OperationFailure, 1);
+        }
     }
 }
 
