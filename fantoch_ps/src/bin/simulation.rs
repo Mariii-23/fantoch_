@@ -692,22 +692,23 @@ fn handle_run_result(
         config.f(),
         clients_per_region
     );
+
+    let n_operations_success = operations_sucess / n as u64;
+    let n_operations_failure = operations_failure / n as u64;
+    let n_operations_total = n_operations_failure + n_operations_success;
+
     println!(
         "{} | operations success  : {:?}",
-        prefix,
-        operations_sucess / n as u64
+        prefix, n_operations_success
     );
     println!(
         "{} | operations failure  : {:?}",
-        prefix,
-        operations_failure / n as u64
+        prefix, n_operations_failure
     );
     println!(
         "{} | percentage of fail operations : {:?}",
         prefix,
-        (operations_failure as f64
-            / (operations_failure + operations_sucess) as f64)
-            * 100.0
+        n_operations_total as f64 * 100.0
     );
     println!(
         "{} | wait condition delay: {:?}",

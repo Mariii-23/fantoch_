@@ -185,7 +185,7 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
         // PlotType::WaitConditionDelay,
         // PlotType::CommitLatency,
         PlotType::ExecutionLatency,
-        PlotType::ExecutionDelay,
+        // PlotType::ExecutionDelay,
         PlotType::FastPath,
         PlotType::Throughput,
         PlotType::PercentageFailOperations,
@@ -198,7 +198,7 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     let conflicts = vec![30, 50, 60, 100];
     // let conflicts = vec![80];
     let protocols = [
-        // String::from("FPaxos"),
+        String::from("FPaxos"),
         // String::from("Tempo"),
         // String::from("Atlas"),
         String::from("EPaxos"),
@@ -210,8 +210,24 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     let cs = vec![32];
     // let cs = vec![32, 512, 1024];
 
-    for protocol in &protocols.clone() {
-        for pool_size in pool_sizes.clone() {
+    let draw_percentage_fail_operations =
+        plot_types.contains(&PlotType::PercentageFailOperations);
+
+    for pool_size in pool_sizes.clone() {
+        if draw_percentage_fail_operations {
+            plot_percentage_fail_operations(
+                PlotType::PercentageFailOperations,
+                pool_size,
+                conflicts.clone(),
+                protocols.clone().to_vec(),
+                n,
+                f,
+                cs.clone(),
+                &all_data,
+            );
+        }
+
+        for protocol in &protocols.clone() {
             for plot_type in plot_types.clone() {
                 if plot_type == PlotType::FastPath {
                     plot(
@@ -240,16 +256,6 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
                     )?;
                     continue;
                 } else if plot_type == PlotType::PercentageFailOperations {
-                    plot_percentage_fail_operations(
-                        PlotType::PercentageFailOperations,
-                        pool_size,
-                        conflicts.clone(),
-                        protocols.clone().to_vec(),
-                        n,
-                        f,
-                        cs.clone(),
-                        &all_data,
-                    );
                     continue;
                 }
                 for metric_type in metric_types.clone() {
@@ -286,7 +292,7 @@ fn plot_percentage_fail_operations(
     let mut data: Vec<(String, usize, Vec<(f64, f64)>)> = Vec::new();
 
     for protocol in protocols.iter() {
-        for &c in &cs {
+        for &c in &cs.clone() {
             let values: Vec<(f64, f64)> = conflicts
                 .iter()
                 .map(|&conflicts| {
@@ -301,7 +307,19 @@ fn plot_percentage_fail_operations(
                     let data_aux = if let Some(data) = all_data.get(&config) {
                         data
                     } else {
-                        panic!("config {:?} should exist", config);
+                        let config_aux = Config {
+                            pool_size,
+                            conflicts,
+                            protocol: protocol.clone(),
+                            n,
+                            f: f + 1,
+                            c,
+                        };
+                        if let Some(d) = all_data.get(&config_aux) {
+                            d
+                        } else {
+                            panic!("config {:?} should exist", config);
+                        }
                     };
                     let y_value =
                         data_aux.percentage_fail_operations.unwrap_or(0.0);
@@ -311,21 +329,29 @@ fn plot_percentage_fail_operations(
             data.push((protocol.clone(), c, values));
         }
     }
-    let title = format!(
-        "{} (pool size = {:?})",
-        PlotType::PercentageFailOperations.title(),
-        pool_size
-    );
-    let output_file =
-        format!("{}_{:?}.pdf", pool_size, PlotType::PercentageFailOperations);
-    draw_percentage_fail_operations(
-        title,
-        conflicts,
-        data,
-        PLOT_DIR,
-        &output_file,
-    )
-    // Ok(())
+
+    for &c in &cs {
+        let title = format!(
+            "{} (pool size = {:?})",
+            PlotType::PercentageFailOperations.title(),
+            pool_size
+        );
+        let output_file = format!(
+            "{}_{}_{:?}.pdf",
+            pool_size,
+            c,
+            PlotType::PercentageFailOperations
+        );
+        draw_percentage_fail_operations(
+            title,
+            conflicts.clone(),
+            data.clone(),
+            PLOT_DIR,
+            &output_file,
+        );
+    }
+
+    Ok(())
 }
 
 fn plot(
@@ -401,6 +427,7 @@ fn draw_percentage_fail_operations(
 
     // Keep track of the number of plotted instances
     let mut plotted = 0;
+    // let mut legends = BTreeMap::new();
 
     for (protocol, _, values) in data.into_iter() {
         // Extract x and y values
@@ -417,23 +444,17 @@ fn draw_percentage_fail_operations(
             ("marker", "o"),
             ("linestyle", "-"),
             ("linewidth", 2),
-            ("label", format!("{}", protocol))
+            ("label", format!("{}", protocol)),
         );
 
-        ax.plot(x, y, None, Some(kwargs))?;
+        ax.plot(x.clone(), y, None, Some(kwargs))?;
+        plotted += 1;
     }
-
-    // Set xticks
-    let labels: Vec<_> = conflicts
-        .into_iter()
-        .map(|conflict| format!("{}%", conflict))
-        .collect();
-    // ax.set_xticks(&x)?;
-    // ax.set_xticklabels(labels, None)?;
 
     // Set labels
     let xlabel = "conflict rate";
     ax.set_xlabel(xlabel, None)?;
+
     let ylabel = format!("percentage of fail operations (%)");
     ax.set_ylabel(&ylabel, None)?;
 
@@ -591,7 +612,19 @@ fn get_plot_value(
     let data = if let Some(data) = all_data.get(config) {
         data
     } else {
-        panic!("config {:?} should exist", config);
+        let config_aux = Config {
+            pool_size: config.pool_size,
+            conflicts: config.conflicts,
+            protocol: config.protocol.clone(),
+            n: config.n,
+            f: config.f + 1,
+            c: config.c,
+        };
+        if let Some(d) = all_data.get(&config_aux) {
+            d
+        } else {
+            panic!("config {:?} should exist", config);
+        }
     };
 
     match plot_type {
