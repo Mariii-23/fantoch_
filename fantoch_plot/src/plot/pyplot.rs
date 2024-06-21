@@ -121,6 +121,11 @@ impl<'p> PyPlot<'p> {
         Ok(())
     }
 
+    pub fn legend(&self) -> Result<(), Report> {
+        pytry!(self.py(), self.plt.getattr("legend")?.call0());
+        Ok(())
+    }
+
     fn py(&self) -> Python<'_> {
         self.plt.py()
     }

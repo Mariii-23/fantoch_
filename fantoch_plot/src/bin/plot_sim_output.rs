@@ -15,7 +15,6 @@ const MAX_COMBINATIONS: usize = 4;
 // 80% of `BLOCK_WIDTH ` when `MAX_COMBINATIONS` is reached
 const BAR_WIDTH: f64 = BLOCK_WIDTH * 0.8 / MAX_COMBINATIONS as f64;
 
-
 // folder where all plots will be stored
 const PLOT_DIR: Option<&str> = Some("plots");
 
@@ -241,15 +240,16 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
                     )?;
                     continue;
                 } else if plot_type == PlotType::PercentageFailOperations {
-                        plot_percentage_fail_operations(
-                            PlotType::PercentageFailOperations, 
-                            pool_size, 
-                            conflicts.clone(), 
-                            protocols.clone().to_vec(), 
-                            n, 
-                            f, 
-                            cs.clone(), 
-                            &all_data);
+                    plot_percentage_fail_operations(
+                        PlotType::PercentageFailOperations,
+                        pool_size,
+                        conflicts.clone(),
+                        protocols.clone().to_vec(),
+                        n,
+                        f,
+                        cs.clone(),
+                        &all_data,
+                    );
                     continue;
                 }
                 for metric_type in metric_types.clone() {
@@ -272,7 +272,16 @@ fn plot_data(all_data: HashMap<Config, Data>) -> Result<(), Report> {
     Ok(())
 }
 
-fn plot_percentage_fail_operations(percentage_fail_operations: PlotType, pool_size: usize, conflicts: Vec<usize>, protocols: Vec<String>, n: usize, f: usize, cs: Vec<usize>, all_data: &HashMap<Config, Data>) -> Result<(), Report> {
+fn plot_percentage_fail_operations(
+    percentage_fail_operations: PlotType,
+    pool_size: usize,
+    conflicts: Vec<usize>,
+    protocols: Vec<String>,
+    n: usize,
+    f: usize,
+    cs: Vec<usize>,
+    all_data: &HashMap<Config, Data>,
+) -> Result<(), Report> {
     // (protocol, c, (x, y))
     let mut data: Vec<(String, usize, Vec<(f64, f64)>)> = Vec::new();
 
@@ -290,23 +299,32 @@ fn plot_percentage_fail_operations(percentage_fail_operations: PlotType, pool_si
                         c,
                     };
                     let data_aux = if let Some(data) = all_data.get(&config) {
-                         data
+                        data
                     } else {
-                         panic!("config {:?} should exist", config);
+                        panic!("config {:?} should exist", config);
                     };
-                    let y_value = data_aux.percentage_fail_operations.unwrap_or(0.0);
+                    let y_value =
+                        data_aux.percentage_fail_operations.unwrap_or(0.0);
                     (conflicts as f64, y_value) // (x, y)
                 })
                 .collect();
             data.push((protocol.clone(), c, values));
         }
     }
-    let title = format!("{} (pool size = {:?})", PlotType::PercentageFailOperations.title(), pool_size);
-    let output_file = format!(
-        "{}_{:?}.pdf",
-        pool_size, PlotType::PercentageFailOperations
+    let title = format!(
+        "{} (pool size = {:?})",
+        PlotType::PercentageFailOperations.title(),
+        pool_size
     );
-    draw_percentage_fail_operations(title,conflicts, data, PLOT_DIR, &output_file)
+    let output_file =
+        format!("{}_{:?}.pdf", pool_size, PlotType::PercentageFailOperations);
+    draw_percentage_fail_operations(
+        title,
+        conflicts,
+        data,
+        PLOT_DIR,
+        &output_file,
+    )
     // Ok(())
 }
 
@@ -383,13 +401,11 @@ fn draw_percentage_fail_operations(
 
     // Keep track of the number of plotted instances
     let mut plotted = 0;
-    let mut legends = BTreeMap::new();
-    let mut legend_entries = Vec::new();  // Lista para armazenar as informações das legendas
-
 
     for (protocol, _, values) in data.into_iter() {
         // Extract x and y values
-        let x: Vec<_> = values.iter().map(|&(conflicts, _)| conflicts).collect();
+        let x: Vec<_> =
+            values.iter().map(|&(conflicts, _)| conflicts).collect();
         let y: Vec<_> = values.iter().map(|&(_, y_value)| y_value).collect();
 
         // Get the next color
@@ -401,18 +417,10 @@ fn draw_percentage_fail_operations(
             ("marker", "o"),
             ("linestyle", "-"),
             ("linewidth", 2),
-             ("label", format!("protocol = {}", protocol))
+            ("label", format!("{}", protocol))
         );
 
-        let line = ax.plot(x, y,None,Some(kwargs))?;
-        plotted += 1;
-
-        println!("{:?}",line);
-
-        // Save line with its legend order
-        legends.insert(plotted, (line, format!("protocol = {}", protocol)));
-        legend_entries.push((line, format!("protocol = {}", protocol)));
-
+        ax.plot(x, y, None, Some(kwargs))?;
     }
 
     // Set xticks
@@ -433,20 +441,7 @@ fn draw_percentage_fail_operations(
     ax.set_title(&title)?;
 
     // Legend
-    let mut legends_map = BTreeMap::new();
-    for (index, entry) in legend_entries.into_iter().enumerate() {
-        legends_map.insert(index, entry);
-    }
-    let y_bbox_to_anchor = Some(1.24);
-    // fantoch_plot::add_legend(
-    //     legends_map.len(),
-    //     Some(legends_map),
-    //     None,
-    //     y_bbox_to_anchor,
-    //     None,
-    //     py,
-    //     &ax,
-    // )?;
+    plt.legend();
 
     // End plot
     fantoch_plot::end_plot(
@@ -534,7 +529,9 @@ fn latency_plot(
     let ylabel = match metric_type {
         MetricType::FastPathRath => format!("fast path rate (%)"),
         MetricType::Throughput => format!("throughput (Requests per Second)"),
-        MetricType::PercentageFailOperations => format!("percentage of fail operations (%)"),
+        MetricType::PercentageFailOperations => {
+            format!("percentage of fail operations (%)")
+        }
         _ => format!("{:?} latency (ms)", metric_type),
     };
 
@@ -581,7 +578,7 @@ fn get_histogram_value(
             MetricType::FastPathRath => 0,
             MetricType::Throughput => 0,
             MetricType::PercentageFailOperations => 0,
-        })
+        }),
     }
 }
 
