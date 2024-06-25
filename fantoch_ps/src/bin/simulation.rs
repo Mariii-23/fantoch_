@@ -708,7 +708,7 @@ fn handle_run_result(
     println!(
         "{} | percentage of fail operations : {:?}",
         prefix,
-        n_operations_total as f64 * 100.0
+        (n_operations_failure as f64 / n_operations_total as f64) * 100.0
     );
     println!(
         "{} | wait condition delay: {:?}",
