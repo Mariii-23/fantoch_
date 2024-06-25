@@ -105,7 +105,7 @@ impl MultiRecordValues {
                                 rand::thread_rng().gen_range(0..DEFAULT_N_MRV);
 
                             let mut vec = Vec::new();
-                            for i in n..DEFAULT_K_SUB_MRV {
+                            for i in 0..DEFAULT_K_SUB_MRV {
                                 vec.push((n + i) % DEFAULT_N_MRV);
                             }
 
